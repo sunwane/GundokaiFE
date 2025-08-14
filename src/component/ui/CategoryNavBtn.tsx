@@ -4,41 +4,52 @@ import { Category } from '@/types/Category';
 interface CategoryNavBtnProps {
   category: Category;
   onClick?: (categoryId: string) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 function CategoryNavBtn({ 
   category, 
-  onClick 
+  onClick,
+  onMouseEnter,
+  onMouseLeave
 }: CategoryNavBtnProps) {
   
   const handleClick = () => {
-    if (onClick) {
+    // ✅ CHỈ category "info" mới được click
+    if (category.id === 'info' && onClick) {
       onClick(category.id);
     }
+    // ❌ Các category khác KHÔNG xử lý click
   };
 
   return (
     <button 
-      style={styles.button}
+      style={{
+        ...styles.button,
+        cursor: category.id === 'info' ? 'pointer' : 'default' // ✅ Chỉ info có cursor pointer
+      }}
       onClick={handleClick}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = '#f0f8ff';
-        e.currentTarget.style.color = '#007AFF';
+        // ✅ Hover effect - màu xanh nhạt
+        Object.assign(e.currentTarget.style, styles.buttonHover);
+        if (onMouseEnter) onMouseEnter();
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = '#fff';
-        e.currentTarget.style.color = '#333';
+        // ✅ Reset về màu ban đầu
+        Object.assign(e.currentTarget.style, styles.button);
+        if (onMouseLeave) onMouseLeave();
       }}
     >
       <div style={styles.iconContainer}>
         <img 
-          src={category.icon} 
-          alt={`${category.name} icon`} 
+          src={category.icon_img} 
+          alt={`${category.category_Name} icon`} 
           style={styles.icon}
         />
       </div>
       <span style={styles.text}>
-        {category.name}
+        {category.category_Name}
       </span>
     </button>
   );
@@ -51,17 +62,36 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    padding: '16px 8px',     // Giảm horizontal padding
-    backgroundColor: '#fff',
+    padding: '16px 8px',
+    backgroundColor: '#f3f3f3',
     border: 'none',
-    borderRadius: '0',       // Bỏ border radius để liền mạch
-    cursor: 'pointer',
+    borderRadius: '0',
+    cursor: 'default',  // ✅ Default cursor cho tất cả
     transition: 'background-color 0.2s ease, color 0.2s ease',
-    flex: 1,                 // Quan trọng: chia đều space
-    minWidth: 0,             // Cho phép shrink
+    width: '100%',
+    height: '60px',
+    minWidth: 0,
     textDecoration: 'none',
     whiteSpace: 'nowrap' as const,
-    height: '60px',          // Cố định chiều cao
+  },
+  buttonHover: {
+    display: 'flex',
+    flexDirection: 'row' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '16px 8px',
+    backgroundColor: '#f0f8ff',
+    border: 'none',
+    borderRadius: '0',
+    cursor: 'default',  // ✅ Keep default cursor even on hover
+    transition: 'background-color 0.2s ease, color 0.2s ease',
+    width: '100%',
+    height: '60px',
+    minWidth: 0,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap' as const,
+    color: '#007AFF',
   },
   iconContainer: {
     display: 'flex',
@@ -70,19 +100,19 @@ const styles = {
     flexShrink: 0,
   },
   icon: {
-    width: '30px',           // Giảm kích thước icon
+    width: '30px',
     height: '30px',
     objectFit: 'contain' as const,
   },
   text: {
-    fontSize: 'clamp(10px, 2vw, 16px)', // Responsive font size
+    fontSize: 'clamp(10px, 2vw, 16px)',
     fontWeight: 600,
     color: '#00417C',
     textTransform: 'uppercase' as const,
     lineHeight: 1.2,
     textAlign: 'center' as const,
-    overflow: 'hidden',      // Ẩn text overflow
-    textOverflow: 'ellipsis', // Hiển thị ... nếu text quá dài
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }
 };
 

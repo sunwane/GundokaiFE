@@ -3,22 +3,22 @@ import { Category } from '@/types/Category';
 export const mockCategories: Category[] = [
   {
     id: 'gundam',
-    name: 'GUNDAM',
-    icon: '/images/icons/gundamIcon.png',
+    category_Name: 'GUNDAM',
+    icon_img: '/images/icons/gundamIcon.png',
   },
   {
     id: 'cards',
-    name: 'THẺ BÀI',
-    icon: '/images/icons/cardIcon.png',
+    category_Name: 'THẺ BÀI',
+    icon_img: '/images/icons/cardIcon.png',
   },
   {
     id: 'figure',
-    name: 'FIGURE',
-    icon: '/images/icons/figureIcon.png',
+    category_Name: 'FIGURE',
+    icon_img: '/images/icons/figureIcon.png',
   },
   {
     id: 'other',
-    name: 'KHÁC',
-    icon: '/images/icons/othersIcon.png',
+    category_Name: 'KHÁC',
+    icon_img: '/images/icons/othersIcon.png',
   }
 ];

@@ -5,13 +5,12 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/a
 
 export class CategoryService {
   
-  // Fake API - trả về mock data
+  // Get all categories
   static async getCategories(): Promise<CategoryResponse> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     try {
-      // TODO: Thay thế bằng real API call khi có backend
+      // TODO: Real API call
       // const response = await fetch(`${API_BASE_URL}/categories`);
       // const data = await response.json();
       // return data;
@@ -28,17 +27,17 @@ export class CategoryService {
     }
   }
 
-  // Fake API - get category by id
-  static async getCategoryById(id: string): Promise<Category | null> {
-    await new Promise(resolve => setTimeout(resolve, 300));
+  // Get category by ID
+  static async getCategoryById(categoryId: string): Promise<Category | null> {
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     try {
       // TODO: Real API call
-      // const response = await fetch(`${API_BASE_URL}/categories/${id}`);
+      // const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`);
       // return await response.json();
 
-      // Mock response
-      const category = mockCategories.find(cat => cat.id === id);
+      // Mock response for now
+      const category = mockCategories.find(cat => cat.id === categoryId);
       return category || null;
     } catch (error) {
       console.error('Error fetching category:', error);
@@ -46,22 +45,9 @@ export class CategoryService {
     }
   }
 
-  // Real API method (comment out for now)
-  /*
-  static async getCategoriesFromAPI(): Promise<CategoryResponse> {
-    const response = await fetch(`${API_BASE_URL}/categories`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}` // if needed
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-
-    return await response.json();
+  // Get category name by ID (utility method)
+  static async getCategoryNameById(categoryId: string): Promise<string | null> {
+    const category = await this.getCategoryById(categoryId);
+    return category ? category.category_Name : null;
   }
-  */
 }

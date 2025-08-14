@@ -1,7 +1,7 @@
 export interface Category {
   id: string;
-  name: string;
-  icon: string;
+  category_Name: string;
+  icon_img: string;
 }
 
 export interface CategoryResponse {

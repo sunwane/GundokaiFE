@@ -1,127 +1,155 @@
 'use client';
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import CategoryNavigation from '@/component/navigation/CategoryNavigation';
 import { useRouter } from 'next/navigation';
+import { useCategories } from '@/hooks/useCategories';
+import CompactHeader from '@/component/layout/CompactHeader';
+import DesktopHeader from '@/component/layout/DesktopHeader';
+import MobileMenuDropdown from '@/component/navigation/MobileMenuDropdown';
 
 function PageHeader() {
   const router = useRouter();
+  const [windowWidth, setWindowWidth] = useState(1920);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  const { categories, loading, error } = useCategories();
 
+  // ✅ Check login status (replace with your actual auth logic)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  useEffect(() => {
+    // ✅ Check if user is logged in
+    // Replace this with your actual authentication check
+    const token = localStorage.getItem('authToken');
+    const userSession = localStorage.getItem('userSession');
+    
+    setIsLoggedIn(!!(token || userSession));
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isSmallScreen = windowWidth <= 1000;
+  const isMobile = windowWidth <= 760;
+
+  // ✅ Navigation handlers
   const handleLogoClick = () => {
-    router.push('/'); // Navigate về trang chủ
+    router.push('/');
   };
 
+  const handleCartClick = () => {
+    router.push('/cart');
+  };
+
+  const handleAccountClick = () => {
+    if (isLoggedIn) {
+      router.push('/account'); // ✅ Go to account page if logged in
+    } else {
+      router.push('/auth');   // ✅ Go to login page if not logged in
+    }
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    setSelectedCategory(null);
+    if (isSearchOpen) setIsSearchOpen(false);
+  };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (isMenuOpen) setIsMenuOpen(false);
+  };
+
+  const handleCategoryClick = (categoryId: string) => {
+    if (categoryId === 'info') {
+      router.push('/about');
+      setIsMenuOpen(false);
+    } else {
+      setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+    }
+  };
+
+  const handleSubCategoryClick = (subCategoryId: string) => {
+    router.push(`/products?subcategory=${subCategoryId}`);
+    setIsMenuOpen(false);
+    setSelectedCategory(null);
+  };
+
+  if (isMobile) {
+    // ✅ Mobile Layout
+    return (
+      <div style={{
+        ...styles.headerContainer,
+        height: '75px',
+      }}>
+        <CompactHeader
+          isMenuOpen={isMenuOpen}
+          isSearchOpen={isSearchOpen}
+          onToggleMenu={toggleMenu}
+          onToggleSearch={toggleSearch}
+          onLogoClick={handleLogoClick}
+          onCartClick={handleCartClick}
+          onAccountClick={handleAccountClick}
+          isLoggedIn={isLoggedIn} // ✅ Pass login status
+        />
+
+        <MobileMenuDropdown
+          isOpen={isMenuOpen}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryClick={handleCategoryClick}
+          onSubCategoryClick={handleSubCategoryClick}
+        />
+      </div>
+    );
+  }
+
+  // ✅ Desktop Layout
   return (
     <div style={styles.headerContainer}>
-        <button 
-          style={styles.logoContainer}
-          onClick={handleLogoClick}
-          title="Về trang chủ"
-        >
-            <img src="/images/logo.png" alt="Gundokai logo" style={styles.logo} />
-            <div style={styles.logoName}>HỘI ĐẠO <br/> CHIẾN BINH</div>
-        </button>
-        <div style={styles.headerContent}>
-            <div style={styles.headerTop}>
-                <div>
-
-                </div>
-                <button style={styles.buttonContainer}>
-                    <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
-                    <div style={styles.buttonText}>Giỏ hàng</div>
-                </button>
-                <button style={styles.buttonContainer}>
-                    <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
-                    <div style={styles.buttonText}>Giỏ hàng</div>
-                </button>
-                <button style={styles.buttonContainer}>
-                    <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
-                    <div style={styles.buttonText}>Giỏ hàng</div>
-                </button>
-            </div>
-            <div style={styles.headerBottom}>
-                <CategoryNavigation />
-            </div>
-        </div>
+      <DesktopHeader
+        isSmallScreen={isSmallScreen}
+        onLogoClick={handleLogoClick}
+        onCartClick={handleCartClick}
+        onAccountClick={handleAccountClick}
+        isLoggedIn={isLoggedIn} // ✅ Pass login status
+      />
+      <div style={styles.headerBottom}>
+        <CategoryNavigation />
+      </div>
     </div>
   );
 }
 
 const styles = {
-    headerContainer: {
-      display: 'flex',
-      boxShadow: '0 4px 4px rgba(0, 0, 0, 0.1)',
-      height: '120px',
-      paddingLeft: '35px',
-    },  
-    logo: {
-        height: '100px',
-        padding: '5px',
-        paddingRight: '0px',
-    },
-    logoContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '0',
-        transition: 'opacity 0.2s ease',
-    },
-    logoName: {
-        fontSize: '19px',
-        fontWeight: 'bold',
-        color: '#333',
-        lineHeight: '1.2',
-        textAlign: 'left' as const,
-    },
-    headerContent: {
-        display: 'flex',
-        flexGrow: 1,
-        flexDirection: 'column' as const,
-        marginLeft: '40px',
-    },
-    headerTop: {
-        display: 'flex',
-        justifyContent: 'flex-end',    // ✅ Thay đổi: không dãn cách, căn phải
-        alignItems: 'center',          // ✅ Thêm để căn giữa theo chiều dọc
-        gap: '10px',                   // ✅ Thêm gap giữa các buttons
-        backgroundImage: 'url(/images/backgrounds/headerBg.png)',
-        backgroundSize: 'auto',
-        backgroundPosition: 'left',
-        backgroundRepeat: 'no-repeat',
-        width: '100%',
-        height: '60px',
-        flexGrow: 0,
-        paddingRight: '30px',          // ✅ Thêm padding để cách viền
-    },
-    headerBottom: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        borderLeft: '1px solid #ccc',
-        width: "100%",
-        flexGrow: 1,
-    },
-    buttonContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        background: 'none',             // ✅ Thêm để bỏ background mặc định
-        border: 'none',                 // ✅ Thêm để bỏ border mặc định
-        cursor: 'pointer',              // ✅ Thêm cursor pointer
-        padding: '8px 12px',            // ✅ Giảm padding
-        borderRadius: '4px',            // ✅ Thêm border radius
-        transition: 'background-color 0.2s ease', // ✅ Thêm hover effect
-    },
-    buttonIcon: {
-        width: '24px',
-        height: '24px',
-    },
-    buttonText: {
-        fontSize: '14px',
-        fontWeight: '600',
-        color: '#00417C',
-        lineHeight: '1.2',
-        textAlign: 'left' as const,
-    },
+  headerContainer: {
+    display: 'flex',
+    boxShadow: '0 4px 4px rgba(0, 0, 0, 0.1)',
+    height: '160px',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    position: 'relative' as const,
+    backgroundColor: '#fff',
+    
+  },
+  headerBottom: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: "100%",
+    backgroundColor: '#f3f3f3',
+    padding: '0 8vw',
+    height: '60px',
+    alignItems: 'center',
+  },
 };
 
 export default PageHeader
