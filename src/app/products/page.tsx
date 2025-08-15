@@ -1,9 +1,9 @@
 'use client';
-import PageHeader from "@/component/layout/PageHeader";
-import ProductCard from "@/component/ui/ProductCard";
-import ProductBanner from "@/component/ui/ProductBanner";
-import SortBar, { SortType } from "@/component/ui/SortBar";
-import FilterPanel from "@/component/ui/FilterPanel"; // ✅ Import FilterPanel
+import PageHeader from "@/component/layout/header/PageHeader";
+import ProductCard from "@/component/ui/product/ProductCard";
+import ProductBanner from "@/component/ui/product/ProductBanner";
+import SortBar, { SortType } from "@/component/ui/product/SortBar";
+import FilterPanel from "@/component/ui/product/FilterPanel"; // ✅ Import FilterPanel
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useProductsPage } from '@/hooks/useProductsPage';
 import { Product } from '@/types/Product';

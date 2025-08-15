@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeMode, getTheme } from '@/types/Theme';
 
 interface PasswordInputProps {
   id: string;
@@ -9,6 +10,7 @@ interface PasswordInputProps {
   error?: string;
   required?: boolean;
   showPassword: boolean;
+  mode?: ThemeMode; // ✅ Light hoặc dark
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePassword: () => void;
 }
@@ -22,9 +24,13 @@ export default function PasswordInput({
   error,
   required = false,
   showPassword,
+  mode = 'light', // ✅ Default light
   onChange,
   onTogglePassword
 }: PasswordInputProps) {
+  const theme = getTheme(mode);
+  const styles = getStyles(theme);
+  
   return (
     <div style={styles.formGroup}>
       <label style={styles.label} htmlFor={id}>{label}</label>
@@ -40,6 +46,7 @@ export default function PasswordInput({
             ...styles.input,
             ...(error ? styles.inputError : {})
           }}
+          className={`form-input-${mode}`}
           required={required}
         />
         <button
@@ -57,51 +64,59 @@ export default function PasswordInput({
   );
 }
 
-const styles = {
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '0.25rem', // Giảm từ 0.5rem
-  },
-  label: {
-    fontSize: '0.75rem', // Giảm từ 0.875rem
-    fontWeight: '500',
-    color: '#374151',
-  },
-  inputWrapper: {
-    position: 'relative' as const,
-  },
-  input: {
-    padding: '0.5rem', // Giảm từ 0.75rem
-    paddingRight: '2.5rem', // Giảm từ 3rem để phù hợp với padding mới
-    backgroundColor: '#ffffff',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.5rem',
-    color: '#374151',
-    fontSize: '0.875rem', // Giảm từ 1rem
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    width: '100%',
-  },
-  inputError: {
-    borderColor: '#ef4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-  },
-  toggleButton: {
-    position: 'absolute' as const,
-    right: '0.5rem', // Giảm từ 0.75rem
-    top: '50%',
-    transform: 'translateY(-50%)',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '0.875rem', // Giảm từ 1rem
-    color: '#6b7280',
-    padding: '0.25rem',
-  },
-  fieldError: {
-    fontSize: '0.6875rem', // Giảm từ 0.75rem
-    color: '#dc2626',
-    marginTop: '0.125rem', // Giảm từ 0.25rem
-  },
-};
+function getStyles(theme: any) {
+  const styles = {
+    input: {
+      padding: '0.5rem',
+      paddingRight: '2.5rem',
+      backgroundColor: theme.inputBackground,
+      border: `1px solid ${theme.inputBorder}`,
+      borderRadius: '0.5rem',
+      color: theme.inputText,
+      fontSize: '0.875rem',
+      outline: 'none',
+      transition: 'all 0.2s ease',
+      width: '100%',
+      height: '42px', // Đặt chiều cao cố định
+    },
+  };
+
+  return {
+    formGroup: {
+      display: 'flex',
+      flexDirection: 'column' as const,
+      gap: '0.25rem',
+    },
+    label: {
+      fontSize: '0.75rem',
+      fontWeight: '500',
+      color: theme.labelText,
+    },
+    inputWrapper: {
+      position: 'relative' as const,
+    },
+    input: styles.input,
+    inputError: {
+      borderColor: theme.errorBorder,
+      backgroundColor: theme.errorBackground,
+    },
+    toggleButton: {
+      position: 'absolute' as const,
+      right: '0.5rem',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      color: theme.inputText,
+      padding: '0.25rem',
+      opacity: 0.7,
+    },
+    fieldError: {
+      fontSize: '0.6875rem',
+      color: theme.errorText,
+      marginTop: '0.125rem',
+    },
+  };
+}

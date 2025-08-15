@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import PageHeader from '@/component/layout/PageHeader';
+import PageHeader from '@/component/layout/header/PageHeader';
 import { AuthService } from '@/services/AuthService';
 import { Account } from '@/types/Account';
 

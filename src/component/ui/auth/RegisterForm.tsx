@@ -5,6 +5,7 @@ import PasswordInput from '@/component/ui/form/PasswordInput';
 import SubmitButton from '@/component/ui/form/SubmitButton';
 import ErrorMessage from '@/component/ui/ErrorMessage';
 import { RegisterRequest } from '@/types/Account';
+import { ThemeMode } from '@/types/Theme'; // ✅ Import ThemeMode
 
 interface RegisterFormProps {
   data: RegisterRequest;
@@ -12,6 +13,7 @@ interface RegisterFormProps {
   error: string;
   validationErrors: { [key: string]: string };
   showPassword: boolean;
+  mode?: ThemeMode; // ✅ Thêm mode prop
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   onTogglePassword: () => void;
@@ -20,7 +22,6 @@ interface RegisterFormProps {
 const genderOptions = [
   { value: 'male', label: 'Nam' },
   { value: 'female', label: 'Nữ' },
-  { value: 'other', label: 'Khác' }
 ];
 
 export default function RegisterForm({
@@ -29,6 +30,7 @@ export default function RegisterForm({
   error,
   validationErrors,
   showPassword,
+  mode = 'light', // ✅ Default light
   onInputChange,
   onSubmit,
   onTogglePassword
@@ -97,6 +99,7 @@ export default function RegisterForm({
         value={data.username || ''}
         placeholder="Nhập tên đăng nhập"
         error={validationErrors.username}
+        mode={mode} // ✅ Pass mode
         onChange={onInputChange}
         required
       />
@@ -110,6 +113,7 @@ export default function RegisterForm({
         value={data.email}
         placeholder="abc@gmail.com"
         error={validationErrors.email}
+        mode={mode} // ✅ Pass mode
         onChange={onInputChange}
         required
       />
@@ -125,6 +129,7 @@ export default function RegisterForm({
             value={data.verificationCode || ''}
             placeholder="Nhập mã 6 số"
             error={validationErrors.verificationCode}
+            mode={mode} // ✅ Pass mode
             onChange={onInputChange}
             required
           />
@@ -150,6 +155,7 @@ export default function RegisterForm({
         value={data.gender}
         error={validationErrors.gender}
         options={genderOptions}
+        mode={mode} // ✅ Pass mode
         onChange={onInputChange}
         required
       />
@@ -162,6 +168,7 @@ export default function RegisterForm({
         value={data.password}
         error={validationErrors.password}
         showPassword={showPassword}
+        mode={mode} // ✅ Pass mode
         onChange={onInputChange}
         onTogglePassword={onTogglePassword}
         required
@@ -191,7 +198,10 @@ export default function RegisterForm({
 
       <ErrorMessage message={error} />
 
-      <SubmitButton isLoading={isLoading}>
+      <SubmitButton 
+        isLoading={isLoading}
+        mode={mode} // ✅ Pass mode
+      >
         Đăng ký
       </SubmitButton>
     </form>
@@ -244,7 +254,7 @@ const styles = {
   },
   termsLabel: {
     fontSize: '0.75rem',
-    color: '#6b7280',
+    color: 'rgb(147, 158, 180)',
     lineHeight: '1.3',
   },
   termsLink: {

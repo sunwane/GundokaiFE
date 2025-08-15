@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeMode, getTheme } from '@/types/Theme';
 
 interface FormSelectProps {
   id: string;
@@ -7,6 +8,7 @@ interface FormSelectProps {
   value: string;
   error?: string;
   required?: boolean;
+  mode?: ThemeMode; // ✅ Thêm mode prop
   options: { value: string; label: string }[];
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
@@ -18,9 +20,13 @@ export default function FormSelect({
   value,
   error,
   required = false,
+  mode = 'light', // ✅ Default light
   options,
   onChange
 }: FormSelectProps) {
+  const theme = getTheme(mode);
+  const styles = getStyles(theme);
+  
   return (
     <div style={styles.formGroup}>
       <label style={styles.label} htmlFor={id}>{label}</label>
@@ -33,6 +39,7 @@ export default function FormSelect({
           ...styles.select,
           ...(error ? styles.inputError : {})
         }}
+        className={`form-select-${mode}`}
         required={required}
       >
         {options.map((option) => (
@@ -48,40 +55,62 @@ export default function FormSelect({
   );
 }
 
-const styles = {
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '0.25rem', // Giảm từ 0.5rem
-  },
-  label: {
-    fontSize: '0.75rem', // Giảm từ 0.875rem
-    fontWeight: '500',
-    color: '#374151',
-  },
-  select: {
-    padding: '0.5rem', // Giảm từ 0.75rem
-    backgroundColor: '#ffffff',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.5rem',
-    color: '#374151',
-    fontSize: '0.875rem', // Giảm từ 1rem
-    outline: 'none',
-    cursor: 'pointer',
-    appearance: 'none' as const,
-    backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%23374151\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")',
-    backgroundPosition: 'right 0.5rem center', // Điều chỉnh position cho padding mới
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: '1rem',
-    transition: 'all 0.2s ease',
-  },
-  inputError: {
-    borderColor: '#ef4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-  },
-  fieldError: {
-    fontSize: '0.6875rem', // Giảm từ 0.75rem
-    color: '#dc2626',
-    marginTop: '0.125rem', // Giảm từ 0.25rem
-  },
-};
+// ✅ Generate styles based on theme
+function getStyles(theme: any) {
+  return {
+    formGroup: {
+      display: 'flex',
+      flexDirection: 'column' as const,
+      gap: '0.25rem',
+    },
+    label: {
+      fontSize: '0.75rem',
+      fontWeight: '500',
+      color: theme.labelText,
+    },
+    select: {
+      padding: '0.5rem',
+      backgroundColor: theme.inputBackground,
+      border: `1px solid ${theme.inputBorder}`,
+      borderRadius: '0.5rem',
+      color: theme.inputText,
+      fontSize: '0.875rem',
+      outline: 'none',
+      cursor: 'pointer',
+      appearance: 'none' as const,
+      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23${theme.inputText.replace('#', '')}' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+      backgroundPosition: 'right 0.5rem center',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: '1rem',
+      transition: 'all 0.2s ease',
+    },
+    inputError: {
+      borderColor: theme.errorBorder,
+      backgroundColor: theme.errorBackground,
+    },
+    fieldError: {
+      fontSize: '0.6875rem',
+      color: theme.errorText,
+      marginTop: '0.125rem',
+    },
+  };
+}
+
+// ✅ CSS cho focus states
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Light mode styles */
+    .form-select-light:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    /* Dark mode styles */
+    .form-select-dark:focus {
+      border-color: #60a5fa !important;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
+    }
+  `;
+  document.head.appendChild(style);
+}

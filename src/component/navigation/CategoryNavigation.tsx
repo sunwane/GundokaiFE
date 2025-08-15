@@ -1,5 +1,5 @@
 'use client';
-import CategoryNavBtn from '@/component/ui/CategoryNavBtn';
+import CategoryNavBtn from '@/component/ui/header/CategoryNavBtn';
 import SubCategoryDropdown from '@/component/navigation/SubCategoryDropDown';
 import { useCategories } from '@/hooks/useCategories';
 import { Category } from '@/types/Category';

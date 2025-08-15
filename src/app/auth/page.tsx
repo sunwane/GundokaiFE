@@ -7,37 +7,27 @@ export default function AuthPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
-    // Function để check screen size
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 1100);
     };
 
-    // Check initial size
     checkScreenSize();
-
-    // Add event listener
     window.addEventListener('resize', checkScreenSize);
-
-    // Cleanup
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
-
-  // ✅ Chỉ khóa scroll cho page này
+ 
   useEffect(() => {
-    // Lưu trữ overflow style gốc
     const originalOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
     
-    // Khóa scroll khi vào page này
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Cleanup - khôi phục scroll khi rời khỏi page
     return () => {
       document.body.style.overflow = originalOverflow;
       document.documentElement.style.overflow = originalHtmlOverflow;
     };
-  }, []); // Chạy 1 lần khi component mount/unmount
+  }, []);
 
   return (
     <main style={styles.container}>
@@ -100,11 +90,12 @@ const styles = {
   content: {
     display: 'flex',
     flexDirection: 'column' as const,
-    padding: '0rem 1.5rem',
+    // ✅ Fix padding để không bị mất phần bên phải
+    padding: '1rem',
     height: '100%',
     overflow: 'hidden',
     maxWidth: '1400px',
-    margin: 'auto',
+    margin: '0 auto',
     width: '100%',
     boxSizing: 'border-box' as const,
     position: 'relative' as const,
@@ -120,12 +111,15 @@ const styles = {
     minHeight: 0,
     pointerEvents: 'none' as const,
     alignItems: 'center',
+    // ✅ Đảm bảo full width
+    width: '100%',
   },
-  // ✅ Style cho màn hình nhỏ - center hoàn toàn
   mainGridCentered: {
     justifyContent: 'center',
     alignItems: 'center',
     gap: 0,
+    // ✅ Centered nhưng vẫn full width
+    width: '100%',
   },
   leftSection: {
     flex: '0 0 auto',
@@ -139,12 +133,13 @@ const styles = {
     zIndex: 20,
     pointerEvents: 'auto' as const,
   },
-  // ✅ Style cho leftSection khi màn hình nhỏ
   leftSectionCentered: {
+    // ✅ Center nhưng không bị cut off
     width: '100%',
-    maxWidth: '450px', // Giới hạn max width cho form
+    maxWidth: '600px',
     justifyContent: 'center',
     alignItems: 'center',
+    margin: '0 auto', // ✅ Center horizontal
   },
   authFormWrapper: {
     width: '100%',
@@ -152,6 +147,8 @@ const styles = {
     position: 'relative' as const,
     zIndex: 20,
     pointerEvents: 'auto' as const,
+    // ✅ Đảm bảo không bị overflow
+    maxWidth: '100%',
   },
   rightSection: {
     flex: 1,
@@ -164,25 +161,3 @@ const styles = {
     background: 'transparent',
   },
 };
-
-// ✅ Chỉ thêm responsive styles, không khóa scroll global
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = `
-    /* ✅ Chỉ responsive styles, không có overflow hidden global */
-    @media (max-width: 1100px) {
-      .auth-form-mobile {
-        max-width: 90vw !important;
-        margin: 0 auto;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .auth-form-mobile {
-        max-width: 95vw !important;
-        padding: 1rem !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-}

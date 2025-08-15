@@ -1,15 +1,17 @@
 export interface Account {
   id: string;
   username: string;
-  password: string;
-  gender: string;
   email: string;
+  password: string;
+  gender: 'male' | 'female' | 'other';
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
   token: string;
   user: Omit<Account, 'password'>;
-  message?: string;
+  message: string;
 }
 
 export interface LoginRequest {
@@ -21,10 +23,40 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  gender: string;
-  verificationCode: string;
+  gender: 'male' | 'female' | 'other';
+  verificationCode?: string; // Optional for registration
 }
 
 export interface ResetPasswordRequest {
   email: string;
+}
+
+export interface VerifyResetCodeRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResetPasswordWithCodeRequest {
+  email: string;
+  code: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ResendCodeRequest {
+  email: string;
+}
+
+export interface VerifyCodeResponse {
+  message: string;
+  isValid: boolean;
+}
+
+export interface PasswordResetResponse {
+  message: string;
 }
