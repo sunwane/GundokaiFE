@@ -3,9 +3,7 @@ export interface Account {
   username: string;
   email: string;
   password: string;
-  gender: 'male' | 'female' | 'other';
-  createdAt?: string;
-  updatedAt?: string;
+  gender: string;
 }
 
 export interface AuthResponse {
@@ -23,7 +21,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  gender: 'male' | 'female' | 'other';
+  gender: string;
   verificationCode?: string; // Optional for registration
 }
 

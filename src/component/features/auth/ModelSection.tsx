@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import GundamScene3D from '@/component/ui/auth/GundamScene3D';
+import GundamScene3D from '@/component/features/auth/GundamScene3D';
 
 export default function ModelSection() {
   return (

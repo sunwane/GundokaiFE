@@ -1,9 +1,10 @@
 'use client';
 import PageHeader from "@/component/layout/header/PageHeader";
-import ProductCard from "@/component/ui/product/ProductCard";
-import ProductBanner from "@/component/ui/product/ProductBanner";
-import SortBar, { SortType } from "@/component/ui/product/SortBar";
-import FilterPanel from "@/component/ui/product/FilterPanel"; // ✅ Import FilterPanel
+import ProductCard from "@/component/features/product/ProductCard";
+import ProductBanner from "@/component/features/product/ProductBanner";
+import SortBar, { SortType } from "@/component/features/product/SortBar";
+import FilterPanel from "@/component/features/product/FilterPanel";
+import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useProductsPage } from '@/hooks/useProductsPage';
 import { Product } from '@/types/Product';
@@ -14,16 +15,16 @@ export default function ProductsPage() {
   const router = useRouter();
   
   const { 
-    filteredAndSortedProducts = [], // ✅ Cung cấp giá trị mặc định
+    filteredAndSortedProducts = [],
     subcategoryInfo, 
     loading, 
     error,
     refetch,
     sortType,         
     sortProducts,
-    stockFilter = 'all',      // ✅ Giá trị mặc định
+    stockFilter = 'all',
     filterByStock,
-    priceRange = { min: 0, max: 10000000 }, // ✅ Giá trị mặc định
+    priceRange = { min: 0, max: 10000000 },
     filterByPriceRange,
   } = useProductsPage(subcategoryId);
 
@@ -31,7 +32,19 @@ export default function ProductsPage() {
     router.push(`/products/${product.id}`);
   };
 
-  if (loading) return <div style={styles.loading}>Loading products...</div>;
+  if (loading) {
+    return (
+      <div>
+        <PageHeader />
+        <div style={styles.loadingContainer}>
+          <LoadingSpinner 
+            text="ĐANG TẢI SẢN PHẨM..." 
+            size="large"
+          />
+        </div>
+      </div>
+    );
+  }
   
   if (error) {
     return (
@@ -48,18 +61,10 @@ export default function ProductsPage() {
     <div>
       <PageHeader />
       
-      {/* ✅ Banner Component */}
       <ProductBanner subcategoryInfo={subcategoryInfo} />
+      <SortBar sortType={sortType} onSortChange={sortProducts} />
 
-      {/* ✅ Sort Bar Component */}
-      <SortBar 
-        sortType={sortType} 
-        onSortChange={sortProducts} 
-      />
-
-      {/* ✅ Main Content với Filter Panel */}
       <div style={styles.mainContent}>
-        {/* ✅ Filter Panel bên trái */}
         <FilterPanel
           stockFilter={stockFilter}
           onStockFilterChange={filterByStock}
@@ -67,7 +72,6 @@ export default function ProductsPage() {
           onPriceRangeChange={({ min, max }) => filterByPriceRange(min, max)}
         />
 
-        {/* ✅ Products Content bên phải */}
         <div style={styles.productsContent}>
           <div style={styles.productGrid}>
             {filteredAndSortedProducts.map((product) => (
@@ -91,14 +95,11 @@ export default function ProductsPage() {
 }
 
 const styles = {
-  loading: {
+  loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     height: '50vh',
-    fontSize: '18px',
-    color: '#1a1aff',
-    fontWeight: 'bold',
   },
   errorContainer: {
     display: 'flex',
@@ -122,8 +123,6 @@ const styles = {
     transition: 'all 0.3s ease',
     clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
   },
-  
-  // ✅ New Layout Styles
   mainContent: {
     display: 'flex',
     gap: '30px',
@@ -134,11 +133,11 @@ const styles = {
   },
   productsContent: {
     flex: 1,
-    minWidth: 0, // Prevent flex item from overflowing
+    minWidth: 0,
   },
   productGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)', // ✅ 4 cột thay vì 5
+    gridTemplateColumns: 'repeat(4, 1fr)',
     gap: '24px',
     justifyItems: 'center',
   },

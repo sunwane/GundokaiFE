@@ -1,116 +1,71 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/component/layout/header/PageHeader';
-import { AuthService } from '@/services/AuthService';
-import { Account } from '@/types/Account';
+import AccountSidebar from '@/component/features/account/AccountSidebar';
+import AccountInfo from '@/component/features/account/info/AccountInfo';
+import OrderHistory from '@/component/features/account/order/OrderHistory';
+import NotificationList from '@/component/features/account/noti/NotificationList';
+import ChangePassword from '@/component/features/account/ChangePassword';
+import LoadingSpinner from '@/component/ui/LoadingSpinner';
+import { useAccount } from '@/hooks/useAccount';
 
 export default function AccountPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<Omit<Account, 'password'> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    username: '',
-    email: '',
-    gender: 'male' as 'male' | 'female' | 'other'
-  });
-  const [updateLoading, setUpdateLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') || 'account';
+  
+  const {
+    user,
+    isLoading,
+    orders,
+    notifications,
+    ordersLoading,
+    notificationsLoading,
+    loadOrders,
+    loadNotifications,
+    handleLogout,
+    setUser
+  } = useAccount();
 
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect screen size
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      const userSession = localStorage.getItem('userSession');
-
-      if (!token || !userSession) {
-        router.push('/auth');
-        return;
-      }
-
-      try {
-        const currentUser = await AuthService.getCurrentUser(token);
-        setUser(currentUser);
-        setEditData({
-          username: currentUser.username,
-          email: currentUser.email,
-          gender: currentUser.gender
-        });
-      } catch (err) {
-        console.error('Auth check failed:', err);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userSession');
-        router.push('/auth');
-      } finally {
-        setIsLoading(false);
-      }
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 750);
     };
 
-    checkAuth();
-  }, [router]);
+    // Check on mount
+    checkScreenSize();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setEditData(prev => ({ ...prev, [name]: value }));
-    if (error) setError('');
-    if (success) setSuccess('');
-  };
+    // Add event listener
+    window.addEventListener('resize', checkScreenSize);
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
-    setUpdateLoading(true);
-    setError('');
-    setSuccess('');
+  // Update tab when URL changes
+  useEffect(() => {
+    setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
 
-    try {
-      const updatedUser = await AuthService.updateProfile(user.id, editData);
-      setUser(updatedUser);
-      localStorage.setItem('userSession', JSON.stringify(updatedUser));
-      setSuccess('Cập nhật thông tin thành công!');
-      setIsEditing(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra');
-    } finally {
-      setUpdateLoading(false);
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    
+    if (tab === 'orders' && orders.length === 0) {
+      loadOrders();
+    } else if (tab === 'notifications' && notifications.length === 0) {
+      loadNotifications();
     }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await AuthService.logout();
-      router.push('/');
-    } catch (err) {
-      console.error('Logout error:', err);
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userSession');
-      router.push('/');
-    }
-  };
-
-  const handleCancel = () => {
-    if (user) {
-      setEditData({
-        username: user.username,
-        email: user.email,
-        gender: user.gender
-      });
-    }
-    setIsEditing(false);
-    setError('');
-    setSuccess('');
   };
 
   if (isLoading) {
     return (
       <div>
         <PageHeader />
-        <div style={styles.loadingContainer}>
-          <div style={styles.loadingSpinner}></div>
-          <p style={styles.loadingText}>Đang tải thông tin tài khoản...</p>
-        </div>
+        <LoadingSpinner text="Đang tải thông tin tài khoản..." size="large" />
       </div>
     );
   }
@@ -119,160 +74,81 @@ export default function AccountPage() {
     return null;
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'account':
+        return (
+          <AccountInfo 
+            user={user} 
+            onUserUpdate={setUser}
+          />
+        );
+      case 'orders':
+        return (
+          <OrderHistory 
+            orders={orders}
+            isLoading={ordersLoading}
+            onRefresh={loadOrders}
+          />
+        );
+      case 'notifications':
+        return (
+          <NotificationList 
+            notifications={notifications}
+            isLoading={notificationsLoading}
+            onRefresh={loadNotifications}
+          />
+        );
+      case 'password':
+        return <ChangePassword userId={user.id} />;
+      default:
+        return (
+          <AccountInfo 
+            user={user} 
+            onUserUpdate={setUser}
+          />
+        );
+    }
+  };
+
   return (
     <div>
       <PageHeader />
       
-      <div style={styles.pageContainer}>
-        <div style={styles.accountContainer}>
-          {/* Header */}
-          <div style={styles.accountHeader}>
-            <div style={styles.avatarSection}>
-              <div style={styles.avatar}>
-                <div style={styles.avatarPlaceholder}>
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <div style={styles.userInfo}>
-                <h1 style={styles.username}>{user.username}</h1>
-                <p style={styles.email}>{user.email}</p>
-                <div style={styles.userStats}>
-                  <span style={styles.stat}>
-                    ID: {user.id}
-                  </span>
-                </div>
+      {/* Welcome Banner */}
+      <div style={styles.welcomeBanner}>
+        <div style={styles.bannerContent}>
+          <div style={styles.welcomeInfo}>
+            <div style={styles.avatar}>
+              <div style={styles.avatarPlaceholder}>
+                {user.username.charAt(0).toUpperCase()}
               </div>
             </div>
-            <div style={styles.headerActions}>
-              {!isEditing ? (
-                <>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    style={styles.editButton}
-                  >
-                    ✏️ Chỉnh sửa
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    style={styles.logoutButton}
-                  >
-                    🚪 Đăng xuất
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleCancel}
-                  style={styles.cancelButton}
-                >
-                  ❌ Hủy
-                </button>
-              )}
+            <div>
+              <h2 style={styles.welcomeTitle}>Xin chào, {user.username}!</h2>
+              <p style={styles.welcomeSubtitle}>Chào mừng bạn quay trở lại</p>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Content */}
-          <div style={styles.accountContent}>
-            {!isEditing ? (
-              // View Mode
-              <div style={styles.profileView}>
-                <h2 style={styles.sectionTitle}>THÔNG TIN TÀI KHOẢN</h2>
-                
-                <div style={styles.infoGrid}>
-                  <div style={styles.infoItem}>
-                    <label style={styles.infoLabel}>ID</label>
-                    <div style={styles.infoValue}>{user.id}</div>
-                  </div>
-                  
-                  <div style={styles.infoItem}>
-                    <label style={styles.infoLabel}>Tên đăng nhập</label>
-                    <div style={styles.infoValue}>{user.username}</div>
-                  </div>
-                  
-                  <div style={styles.infoItem}>
-                    <label style={styles.infoLabel}>Email</label>
-                    <div style={styles.infoValue}>{user.email}</div>
-                  </div>
-                  
-                  <div style={styles.infoItem}>
-                    <label style={styles.infoLabel}>Giới tính</label>
-                    <div style={styles.infoValue}>
-                      {user.gender === 'male' ? 'Nam' : user.gender === 'female' ? 'Nữ' : 'Khác'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              // Edit Mode
-              <form onSubmit={handleUpdateProfile} style={styles.editForm}>
-                <h2 style={styles.sectionTitle}>CHỈNH SỬA THÔNG TIN</h2>
-                
-                <div style={styles.formGrid}>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Tên đăng nhập</label>
-                    <input
-                      type="text"
-                      name="username"
-                      value={editData.username}
-                      onChange={handleInputChange}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label}>Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={editData.email}
-                      onChange={handleInputChange}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  
-                  <div style={styles.inputGroupFull}>
-                    <label style={styles.label}>Giới tính</label>
-                    <select
-                      name="gender"
-                      value={editData.gender}
-                      onChange={handleInputChange}
-                      style={styles.select}
-                      required
-                    >
-                      <option value="male">Nam</option>
-                      <option value="female">Nữ</option>
-                      <option value="other">Khác</option>
-                    </select>
-                  </div>
-                </div>
+      <div style={styles.pageContainer}>
 
-                {error && (
-                  <div style={styles.errorMessage}>
-                    ⚠️ {error}
-                  </div>
-                )}
+        <div style={isMobile ? styles.contentGridMobile : styles.contentGrid}>
+          {/* Sidebar - hidden on mobile */}
+          {!isMobile && (
+            <div style={styles.sidebarContainer}>
+              <AccountSidebar
+                user={user}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+                onLogout={handleLogout}
+              />
+            </div>
+          )}
 
-                {success && (
-                  <div style={styles.successMessage}>
-                    ✅ {success}
-                  </div>
-                )}
-
-                <div style={styles.formActions}>
-                  <button
-                    type="submit"
-                    disabled={updateLoading}
-                    style={{
-                      ...styles.saveButton,
-                      ...(updateLoading ? styles.saveButtonDisabled : {})
-                    }}
-                  >
-                    {updateLoading ? 'ĐANG CẬP NHẬT...' : '💾 LƯU THAY ĐỔI'}
-                  </button>
-                </div>
-              </form>
-            )}
+          <div style={styles.mainContent}>
+            {renderContent()}
           </div>
         </div>
       </div>
@@ -281,59 +157,25 @@ export default function AccountPage() {
 }
 
 const styles = {
-  loadingContainer: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '50vh',
-    gap: '20px',
-  },
-  loadingSpinner: {
-    width: '40px',
-    height: '40px',
-    border: '3px solid rgba(26, 26, 255, 0.3)',
-    borderTop: '3px solid #1a1aff',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-  },
-  loadingText: {
-    fontSize: '16px',
-    color: '#1a1aff',
-    fontWeight: '500',
-  },
-  pageContainer: {
-    minHeight: 'calc(100vh - 160px)',
-    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-    padding: '40px 5vw',
-  },
-  accountContainer: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    backgroundColor: '#ffffff',
-    border: '3px solid #1a1aff',
-    clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
-    boxShadow: '0 20px 40px rgba(26,26,255,0.2)',
-    overflow: 'hidden',
-  },
-  accountHeader: {
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
+  welcomeBanner: {
+    background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
     color: 'white',
-    padding: '40px',
+    padding: '20px 0',
+  },
+  bannerContent: {
+    padding: '0 5vw',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap' as const,
-    gap: '20px',
   },
-  avatarSection: {
+  welcomeInfo: {
     display: 'flex',
     alignItems: 'center',
-    gap: '24px',
+    gap: '16px',
   },
   avatar: {
-    width: '80px',
-    height: '80px',
+    width: '60px',
+    height: '60px',
     borderRadius: '50%',
     overflow: 'hidden',
     border: '3px solid rgba(255, 255, 255, 0.3)',
@@ -345,279 +187,43 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '32px',
+    fontSize: '24px',
     fontWeight: 'bold',
   },
-  userInfo: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  username: {
-    overflow: 'hidden',
-  },
-  accountHeader: {
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
-    color: 'white',
-    padding: '40px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap' as const,
-    gap: '20px',
-  },
-  avatarSection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px',
-  },
-  avatar: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    border: '3px solid rgba(255, 255, 255, 0.3)',
-  },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover' as const,
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '32px',
+  welcomeTitle: {
+    fontSize: '20px',
     fontWeight: 'bold',
+    margin: '0 0 4px 0',
   },
-  userInfo: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  username: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    margin: 0,
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-  },
-  email: {
-    fontSize: '16px',
+  welcomeSubtitle: {
+    fontSize: '14px',
     margin: 0,
     opacity: 0.9,
   },
-  userStats: {
-    display: 'flex',
-    gap: '20px',
-    fontSize: '14px',
-    opacity: 0.8,
+  pageContainer: {
+    minHeight: 'calc(100vh - 200px)',
+    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    padding: '32px 5vw',
   },
-  stat: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-  },
-  headerActions: {
-    display: 'flex',
-    gap: '12px',
-    flexWrap: 'wrap' as const,
-  },
-  editButton: {
-    padding: '12px 20px',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    color: 'white',
-    border: '2px solid rgba(255, 255, 255, 0.3)',
-    borderRadius: '0',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
-  },
-  logoutButton: {
-    padding: '12px 20px',
-    backgroundColor: 'rgba(220, 53, 69, 0.8)',
-    color: 'white',
-    border: '2px solid rgba(220, 53, 69, 0.8)',
-    borderRadius: '0',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
-  },
-  cancelButton: {
-    padding: '12px 20px',
-    backgroundColor: 'rgba(108, 117, 125, 0.8)',
-    color: 'white',
-    border: '2px solid rgba(108, 117, 125, 0.8)',
-    borderRadius: '0',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
-  },
-  accountContent: {
-    padding: '40px',
-  },
-  sectionTitle: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#1a1aff',
-    margin: '0 0 30px 0',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-  },
-  profileView: {
-    width: '100%',
-  },
-  infoGrid: {
+  // Desktop grid - có sidebar
+  contentGrid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
+    gridTemplateColumns: '300px 1fr',
+    gap: '32px',
+    alignItems: 'start',
   },
-  infoItem: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  infoItemFull: {
-    gridColumn: '1 / -1',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  infoLabel: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#666',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-  },
-  infoValue: {
-    padding: '12px 16px',
-    backgroundColor: '#f8f9fa',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    fontSize: '16px',
-    color: '#495057',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-  },
-  editForm: {
-    width: '100%',
-  },
-  formGrid: {
+  // Mobile grid - không có sidebar, mainContent full width
+  contentGridMobile: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
-    marginBottom: '24px',
+    gridTemplateColumns: '1fr',
+    gap: '0',
+    alignItems: 'start',
   },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
+  sidebarContainer: {
+    position: 'sticky' as const,
+    top: '32px',
   },
-  inputGroupFull: {
-    gridColumn: '1 / -1',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  label: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#333',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-  },
-  input: {
-    padding: '12px 16px',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    fontSize: '16px',
-    color: '#495057',
-    backgroundColor: '#f8f9fa',
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-  },
-  select: {
-    padding: '12px 16px',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    fontSize: '16px',
-    color: '#495057',
-    backgroundColor: '#f8f9fa',
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-  },
-  textarea: {
-    padding: '12px 16px',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    fontSize: '16px',
-    color: '#495057',
-    backgroundColor: '#f8f9fa',
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-    resize: 'vertical' as const,
-    minHeight: '80px',
-  },
-  errorMessage: {
-    backgroundColor: '#ffebee',
-    color: '#c62828',
-    padding: '12px 16px',
-    border: '2px solid #ffcdd2',
-    fontSize: '14px',
-    fontWeight: '500',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-    marginBottom: '16px',
-  },
-  successMessage: {
-    backgroundColor: '#e8f5e8',
-    color: '#2e7d32',
-    padding: '12px 16px',
-    border: '2px solid #c8e6c9',
-    fontSize: '14px',
-    fontWeight: '500',
-    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-    marginBottom: '16px',
-  },
-  formActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '12px',
-  },
-  saveButton: {
-    padding: '16px 24px',
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
-    color: 'white',
-    border: '2px solid #1a1aff',
-    borderRadius: '0',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-    transition: 'all 0.3s ease',
-    clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-    transform: 'none',
+  mainContent: {
+    minHeight: '600px',
   },
 };

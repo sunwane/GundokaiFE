@@ -201,48 +201,21 @@ export class AuthService {
     }
   }
 
-  // ✅ Change Password - Đổi mật khẩu (khi đã đăng nhập)
-  static async changePassword(data: { 
-    userId: string;
-    currentPassword: string; 
-    newPassword: string 
-  }): Promise<{ message: string }> {
-    await new Promise(resolve => setTimeout(resolve, 800));
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    try {
-      const user = mockAccounts.find(account => account.id === data.userId);
-      
-      if (!user) {
-        throw new Error('Người dùng không tồn tại');
-      }
-
-      // Verify current password
-      if (user.password !== data.currentPassword) {
-        throw new Error('Mật khẩu hiện tại không đúng');
-      }
-
-      // Validate new password
-      if (data.newPassword.length < 6) {
-        throw new Error('Mật khẩu mới phải có ít nhất 6 ký tự');
-      }
-
-      if (data.currentPassword === data.newPassword) {
-        throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại');
-      }
-
-      // Update password
-      const userIndex = mockAccounts.findIndex(account => account.id === data.userId);
-      if (userIndex !== -1) {
-        mockAccounts[userIndex].password = data.newPassword;
-      }
-
-      return {
-        message: 'Đổi mật khẩu thành công!'
-      };
-    } catch (error) {
-      console.error('Change password error:', error);
-      throw error;
+    // Simulate password validation
+    if (currentPassword !== 'password123') {
+      throw new Error('Mật khẩu hiện tại không đúng');
     }
+    
+    if (newPassword === currentPassword) {
+      throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại');
+    }
+    
+    // Simulate successful password change
+    console.log('Password changed successfully for user:', userId);
   }
 
   // ✅ Resend Verification Code - Gửi lại mã xác thực
