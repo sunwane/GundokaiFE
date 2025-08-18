@@ -1,8 +1,8 @@
 import React from 'react';
 import { Account } from '@/types/Account';
-import UserInfoDisplay from '@/component/features/account/UserInfoDisplay';
 import AccountMenuList from '@/component/features/account/AccountMenuList';
 import LogoutButton from '@/component/features/account/LogoutButton';
+import UserInfoHeader from '@/component/features/account/UserInfoHeader';
 
 interface AccountSidebarProps {
   user: Omit<Account, 'password'>;
@@ -21,7 +21,7 @@ export default function AccountSidebar({ user, activeTab, onTabChange, onLogout 
   return (
     <div style={styles.sidebar}>
       {/* User Info Header */}
-      <UserInfoDisplay 
+      <UserInfoHeader
         user={user} 
         variant="full" 
         showBadge={true} 

@@ -9,6 +9,7 @@ import NotificationList from '@/component/features/account/noti/NotificationList
 import ChangePassword from '@/component/features/account/ChangePassword';
 import LoadingSpinner from '@/component/ui/LoadingSpinner';
 import { useAccount } from '@/hooks/useAccount';
+import { usePageResponsive } from '@/hooks/usePageResponsive';
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
@@ -28,23 +29,21 @@ export default function AccountPage() {
   } = useAccount();
 
   const [activeTab, setActiveTab] = useState(tabFromUrl);
-  const [isMobile, setIsMobile] = useState(false);
+  
+  // SỬ DỤNG usePageResponsive THAY VÌ useResponsive
+  const { 
+    isMobile, 
+    getResponsivePadding, 
+    getGridColumns,
+    getResponsiveSpacing 
+  } = usePageResponsive({
+    mobileBreakpoint: 750,
+    tabletBreakpoint: 1024,
+    mobilePadding: '20px 4vw',
+    desktopPadding: '32px 5vw',
+  });
 
-  // Detect screen size
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 750);
-    };
-
-    // Check on mount
-    checkScreenSize();
-
-    // Add event listener
-    window.addEventListener('resize', checkScreenSize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  const spacing = getResponsiveSpacing();
 
   // Update tab when URL changes
   useEffect(() => {
@@ -117,24 +116,51 @@ export default function AccountPage() {
       
       {/* Welcome Banner */}
       <div style={styles.welcomeBanner}>
-        <div style={styles.bannerContent}>
+        <div style={{
+          ...styles.bannerContent,
+          padding: getResponsivePadding(),
+        }}>
           <div style={styles.welcomeInfo}>
-            <div style={styles.avatar}>
-              <div style={styles.avatarPlaceholder}>
+            <div style={{
+              ...styles.avatar,
+              width: isMobile ? '50px' : '60px',
+              height: isMobile ? '50px' : '60px',
+            }}>
+              <div style={{
+                ...styles.avatarPlaceholder,
+                fontSize: isMobile ? '20px' : '24px',
+              }}>
                 {user.username.charAt(0).toUpperCase()}
               </div>
             </div>
             <div>
-              <h2 style={styles.welcomeTitle}>Xin chào, {user.username}!</h2>
-              <p style={styles.welcomeSubtitle}>Chào mừng bạn quay trở lại</p>
+              <h2 style={{
+                ...styles.welcomeTitle,
+                fontSize: isMobile ? '18px' : '20px',
+              }}>
+                Xin chào, {user.username}!
+              </h2>
+              <p style={{
+                ...styles.welcomeSubtitle,
+                fontSize: isMobile ? '12px' : '14px',
+              }}>
+                Chào mừng bạn quay trở lại
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div style={styles.pageContainer}>
-
-        <div style={isMobile ? styles.contentGridMobile : styles.contentGrid}>
+      <div style={{
+        ...styles.pageContainer,
+        padding: getResponsivePadding(),
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+          gap: spacing.large,
+          alignItems: 'start',
+        }}>
           {/* Sidebar - hidden on mobile */}
           {!isMobile && (
             <div style={styles.sidebarContainer}>
@@ -144,6 +170,31 @@ export default function AccountPage() {
                 onTabChange={handleTabChange}
                 onLogout={handleLogout}
               />
+            </div>
+          )}
+
+          {/* Mobile Tab Navigation */}
+          {isMobile && (
+            <div style={styles.mobileTabNav}>
+              {[
+                { key: 'account', label: 'Thông tin', icon: '👤' },
+                { key: 'orders', label: 'Đơn hàng', icon: '📦' },
+                { key: 'notifications', label: 'Thông báo', icon: '🔔' },
+                { key: 'password', label: 'Mật khẩu', icon: '🔐' },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  style={{
+                    ...styles.mobileTabButton,
+                    backgroundColor: activeTab === tab.key ? '#3b82f6' : '#ffffff',
+                    color: activeTab === tab.key ? '#ffffff' : '#6b7280',
+                  }}
+                  onClick={() => handleTabChange(tab.key)}
+                >
+                  <span style={styles.mobileTabIcon}>{tab.icon}</span>
+                  <span style={styles.mobileTabLabel}>{tab.label}</span>
+                </button>
+              ))}
             </div>
           )}
 
@@ -160,10 +211,9 @@ const styles = {
   welcomeBanner: {
     background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
     color: 'white',
-    padding: '20px 0',
+    padding: '20px 0px',
   },
   bannerContent: {
-    padding: '0 5vw',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -174,8 +224,6 @@ const styles = {
     gap: '16px',
   },
   avatar: {
-    width: '60px',
-    height: '60px',
     borderRadius: '50%',
     overflow: 'hidden',
     border: '3px solid rgba(255, 255, 255, 0.3)',
@@ -187,41 +235,53 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
     fontWeight: 'bold',
   },
   welcomeTitle: {
-    fontSize: '20px',
     fontWeight: 'bold',
     margin: '0 0 4px 0',
   },
   welcomeSubtitle: {
-    fontSize: '14px',
     margin: 0,
     opacity: 0.9,
   },
   pageContainer: {
     minHeight: 'calc(100vh - 200px)',
     background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-    padding: '32px 5vw',
-  },
-  // Desktop grid - có sidebar
-  contentGrid: {
-    display: 'grid',
-    gridTemplateColumns: '300px 1fr',
-    gap: '32px',
-    alignItems: 'start',
-  },
-  // Mobile grid - không có sidebar, mainContent full width
-  contentGridMobile: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: '0',
-    alignItems: 'start',
   },
   sidebarContainer: {
     position: 'sticky' as const,
     top: '32px',
+  },
+  mobileTabNav: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '8px',
+    marginBottom: '20px',
+    backgroundColor: '#f8fafc',
+    padding: '12px',
+    borderRadius: '12px',
+    border: '1px solid #e5e7eb',
+  },
+  mobileTabButton: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '4px',
+    padding: '12px 8px',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontSize: '12px',
+    fontWeight: '500',
+  },
+  mobileTabIcon: {
+    fontSize: '16px',
+  },
+  mobileTabLabel: {
+    fontSize: '10px',
+    textAlign: 'center' as const,
   },
   mainContent: {
     minHeight: '600px',

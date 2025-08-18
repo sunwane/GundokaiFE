@@ -69,7 +69,7 @@ function getStyles(theme: any) {
       color: theme.labelText,
     },
     select: {
-      padding: '0.5rem',
+      padding: '0.5rem 2rem 0.5rem 0.5rem', // tăng padding phải để tránh che border
       backgroundColor: theme.inputBackground,
       border: `1px solid ${theme.inputBorder}`,
       borderRadius: '0.5rem',
@@ -79,10 +79,11 @@ function getStyles(theme: any) {
       cursor: 'pointer',
       appearance: 'none' as const,
       backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23${theme.inputText.replace('#', '')}' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-      backgroundPosition: 'right 0.5rem center',
+      backgroundPosition: 'right 1rem center', // dịch icon ra xa border hơn
       backgroundRepeat: 'no-repeat',
       backgroundSize: '1rem',
       transition: 'all 0.2s ease',
+      minHeight: '2.5rem', // đảm bảo chiều cao tối thiểu
     },
     inputError: {
       borderColor: theme.errorBorder,

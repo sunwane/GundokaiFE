@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useSubCategories } from '@/hooks/useSubCategories';
+import { useSubCategories } from '@/hooks/categories/useSubCategories';
 import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
 
 interface CategoryMenuItemProps {

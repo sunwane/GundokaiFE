@@ -3,8 +3,8 @@ import React from 'react';
 interface UserStatsProps {
   stats: {
     orders: number;
-    points: number;
-    favorites: number;
+    ordered: number;
+    shipping: number;
   };
 }
 
@@ -13,15 +13,15 @@ export default function UserStats({ stats }: UserStatsProps) {
     <div style={styles.statsGrid}>
       <div style={styles.statCard}>
         <div style={styles.statNumber}>{stats.orders}</div>
-        <div style={styles.statLabel}>Đơn hàng</div>
+        <div style={styles.statLabel}>Tổng số đơn hàng</div>
       </div>
       <div style={styles.statCard}>
-        <div style={styles.statNumber}>{stats.points}</div>
-        <div style={styles.statLabel}>Điểm tích lũy</div>
+        <div style={styles.statNumber}>{stats.ordered}</div>
+        <div style={styles.statLabel}>Đơn hàng đã đặt</div>
       </div>
       <div style={styles.statCard}>
-        <div style={styles.statNumber}>{stats.favorites}</div>
-        <div style={styles.statLabel}>Yêu thích</div>
+        <div style={styles.statNumber}>{stats.shipping}</div>
+        <div style={styles.statLabel}>Đơn hàng đang giao</div>
       </div>
     </div>
   );

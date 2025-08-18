@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ForgotPasswordForm from '@/component/ui/auth/ForgotPasswordForm';
-import ModelSection from '@/component/ui/auth/ModelSection';
+import ForgotPasswordForm from '@/component/features/auth/ForgotPasswordForm';
+import ModelSection from '@/component/features/auth/ModelSection';
 
 export default function ForgotPasswordPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);

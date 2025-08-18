@@ -10,30 +10,25 @@ export default function UserInfoDisplay({ user }: UserInfoDisplayProps) {
     switch (gender) {
       case 'male': return 'Nam';
       case 'female': return 'Nữ';
-      default: return 'Khác';
+      default: return 'Nam';
     }
   };
 
   return (
-    <div style={styles.infoGrid}>
-      <div style={styles.infoItem}>
-        <label style={styles.infoLabel}>ID</label>
-        <div style={styles.infoValue}>{user.id}</div>
-      </div>
-      
+    <div style={styles.infoGrid}>      
       <div style={styles.infoItem}>
         <label style={styles.infoLabel}>Tên đăng nhập</label>
         <div style={styles.infoValue}>{user.username}</div>
       </div>
       
       <div style={styles.infoItem}>
-        <label style={styles.infoLabel}>Email</label>
-        <div style={styles.infoValue}>{user.email}</div>
-      </div>
-      
-      <div style={styles.infoItem}>
         <label style={styles.infoLabel}>Giới tính</label>
         <div style={styles.infoValue}>{getGenderText(user.gender)}</div>
+      </div>
+
+      <div style={{ ...styles.infoItem, ...styles.fullWidth }}>
+        <label style={styles.infoLabel}>Email</label>
+        <div style={styles.infoValue}>{user.email}</div>
       </div>
     </div>
   );
@@ -65,5 +60,8 @@ const styles = {
     fontSize: '16px',
     color: '#1f2937',
     fontWeight: '500',
+  },
+  fullWidth: {
+    gridColumn: '1 / -1',
   },
 };

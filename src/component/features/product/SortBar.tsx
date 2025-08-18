@@ -1,5 +1,4 @@
 'use client';
-import { maxHeaderSize } from 'http';
 import React from 'react';
 
 export type SortType = 'default' | 'price-asc' | 'price-desc' | 'newest' | 'bestseller';
@@ -7,111 +6,101 @@ export type SortType = 'default' | 'price-asc' | 'price-desc' | 'newest' | 'best
 interface SortBarProps {
   sortType: SortType;
   onSortChange: (type: SortType) => void;
+  children?: React.ReactNode; // Cho phép các page tự style phần bên trái
 }
 
-export default function SortBar({ sortType, onSortChange }: SortBarProps) {
+export default function SortBar({ 
+  sortType, 
+  onSortChange, 
+  children 
+}: SortBarProps) {
   const sortOptions = [
     { key: 'default' as SortType, label: 'Mặc định' },
-    { key: 'price-asc' as SortType, label: 'Giá', icon: '↑' },
-    { key: 'price-desc' as SortType, label: 'Giá', icon: '↓' },
+    { key: 'price-asc' as SortType, label: 'Giá thấp đến cao' },
+    { key: 'price-desc' as SortType, label: 'Giá cao đến thấp' },
     { key: 'newest' as SortType, label: 'Mới nhất' },
     { key: 'bestseller' as SortType, label: 'Bán chạy' },
   ];
 
   return (
-    <div style={styles.sortContainer}>
-      <div style={styles.sortLabel}>
-        <span style={styles.sortText}>Sắp xếp theo</span>
+    <div style={styles.container}>
+      {/* Left side - Optional content from children */}
+      <div style={styles.leftContent}>
+        {children}
       </div>
-      
-      <div style={styles.sortButtons}>
-        {sortOptions.map((option) => (
-          <button 
-            key={option.key}
-            onClick={() => onSortChange(option.key)}
-            style={{
-              ...styles.sortButton,
-              ...(sortType === option.key ? styles.sortButtonActive : {})
-            }}
+
+      {/* Right side - Sort controls */}
+      <div style={styles.sortSection}>
+        <span style={styles.sortLabel}>Sắp xếp theo:</span>
+        <div style={styles.sortWrapper}>
+          <select
+            value={sortType}
+            onChange={(e) => onSortChange(e.target.value as SortType)}
+            style={styles.sortSelect}
           >
-            <span style={styles.sortButtonText}>{option.label}</span>
-            {option.icon && (
-              <span style={styles.sortArrow}>{option.icon}</span>
-            )}
-          </button>
-        ))}
+            {sortOptions.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span style={styles.sortArrow}>▼</span>
+        </div>
       </div>
     </div>
   );
 }
 
 const styles = {
-  // ✅ Gundam-style Sort Container
-  sortContainer: {
+  container: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 0',
+    borderBottom: '1px solid #e5e7eb',
+    marginBottom: '24px',
+  },
+  leftContent: {
+    flex: 1,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    background: 'linear-gradient(90deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%)',
-    gap: '20px',
-    flexWrap: 'wrap' as const,
-    position: 'relative' as const,
-    width: '100%',
-    maxWidth: '1400px',
-    padding: '20px 5vw',
-    margin: '0 auto',
+  },
+  sortSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
   },
   sortLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    background: '#1a1aff',
-    color: 'white',
-    padding: '8px 16px',
-    clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%)',
-    fontWeight: 'bold',
-    letterSpacing: '1px',
-  },
-  sortText: {
     fontSize: '14px',
-    fontWeight: '700',
-    textTransform: 'uppercase' as const,
+    color: '#374151',
+    fontWeight: '500',
+    whiteSpace: 'nowrap' as const,
   },
-  sortButtons: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap' as const,
-  },
-  sortButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '10px 16px',
-    backgroundColor: '#ffffff',
-    border: '2px solid #333',
-    borderRadius: '0', // ✅ Sharp edges
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    fontSize: '13px',
-    fontWeight: '600',
-    color: '#333',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-    clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))',
+  sortWrapper: {
     position: 'relative' as const,
+    display: 'inline-block',
   },
-  sortButtonActive: {
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
-    borderColor: '#1a1aff',
-    color: '#ffffff',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 4px 8px rgba(26,26,255,0.3)',
-  },
-  sortButtonText: {
-    fontSize: '13px',
-    fontWeight: '600',
+  sortSelect: {
+    appearance: 'none' as const,
+    padding: '8px 32px 8px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    fontSize: '14px',
+    color: '#374151',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    outline: 'none',
+    minWidth: '160px',
+    fontWeight: '500',
+    transition: 'border-color 0.2s ease',
   },
   sortArrow: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#ff6b35', // ✅ Orange accent for active state
+    position: 'absolute' as const,
+    right: '10px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    fontSize: '10px',
+    color: '#6b7280',
+    pointerEvents: 'none' as const,
   },
 };

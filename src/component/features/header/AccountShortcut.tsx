@@ -1,7 +1,9 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import UserInfoDisplay from '@/component/features/account/UserInfoDisplay';
+import { useClickOutside } from '@/hooks/useClickOutside';
+import { useToggle } from '@/hooks/useToggle';
+import UserInfoDisplay from '@/component/features/account/UserInfoHeader';
 import AccountMenuList from '@/component/features/account/AccountMenuList';
 import LogoutButton from '@/component/features/account/LogoutButton';
 
@@ -13,52 +15,45 @@ interface AccountShortcutProps {
   } | null;
   onLogout: () => void;
   isDesktop?: boolean;
-  children: React.ReactNode; // Trigger element passed from parent
+  children: React.ReactNode;
 }
 
-export default function AccountShortcut({ user, onLogout, isDesktop = true, children }: AccountShortcutProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+export default function AccountShortcut({ 
+  user, 
+  onLogout, 
+  isDesktop = true, 
+  children 
+}: AccountShortcutProps) {
+  const [isOpen, toggleOpen, setOpen] = useToggle(false);
+  const dropdownRef = useClickOutside<HTMLDivElement>(() => setOpen(false), isOpen);
   const router = useRouter();
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleToggle = () => {
     if (!isDesktop) {
-      setIsOpen(!isOpen);
+      toggleOpen();
     }
   };
 
   const handleMouseEnter = () => {
     if (isDesktop) {
-      setIsOpen(true);
+      setOpen(true);
     }
   };
 
   const handleMouseLeave = () => {
     if (isDesktop) {
-      setIsOpen(false);
+      setOpen(false);
     }
   };
 
   const handleMenuItemClick = (path: string) => {
     router.push(path);
-    setIsOpen(false);
+    setOpen(false);
   };
 
   const handleLogout = () => {
     onLogout();
-    setIsOpen(false);
+    setOpen(false);
   };
 
   if (!user) {
@@ -72,7 +67,7 @@ export default function AccountShortcut({ user, onLogout, isDesktop = true, chil
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Trigger Button - now passed as children */}
+      {/* Trigger Button */}
       <div onClick={handleToggle} style={styles.triggerWrapper}>
         {children}
       </div>
@@ -80,22 +75,14 @@ export default function AccountShortcut({ user, onLogout, isDesktop = true, chil
       {/* Dropdown Menu */}
       {isOpen && (
         <div style={styles.dropdown}>
-          {/* User Info Section */}
           <UserInfoDisplay user={user} variant="compact" />
-
           <div style={styles.divider} />
-
-          {/* Menu Items */}
           <AccountMenuList
             onItemClick={handleMenuItemClick}
             variant="dropdown"
           />
-
           <div style={styles.divider} />
-
-          {/* Action Buttons */}
           <div style={styles.actionSection}>
-            {/* View All Button - Only show on desktop */}
             {isDesktop && (
               <button
                 style={styles.viewAllButton}
@@ -111,8 +98,6 @@ export default function AccountShortcut({ user, onLogout, isDesktop = true, chil
                 <span style={styles.viewAllText}>Xem tất cả</span>
               </button>
             )}
-
-            {/* Logout Button */}
             <LogoutButton onLogout={handleLogout} variant="dropdown" />
           </div>
         </div>
@@ -121,6 +106,7 @@ export default function AccountShortcut({ user, onLogout, isDesktop = true, chil
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   container: {
     position: 'relative' as const,
@@ -140,7 +126,7 @@ const styles = {
     zIndex: 1000,
     minWidth: '280px',
     overflow: 'hidden',
-    marginTop: '8px',
+    marginTop: '3px',
   },
   divider: {
     height: '1px',

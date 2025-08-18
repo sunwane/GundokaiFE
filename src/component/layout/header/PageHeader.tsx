@@ -1,8 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react';
 import CategoryNavigation from '@/component/navigation/CategoryNavigation';
 import { useRouter } from 'next/navigation';
-import { useCategories } from '@/hooks/useCategories';
+import { useCategories } from '@/hooks/categories/useCategories';
+import { useResponsive } from '@/hooks/useResponsive';
+import { useAuthState } from '@/hooks/auth/useAuthState';
+import { useToggle } from '@/hooks/useToggle';
 import CompactHeader from '@/component/layout/header/CompactHeader';
 import DesktopHeader from '@/component/layout/header/DesktopHeader';
 import MobileMenuDropdown from '@/component/navigation/MobileMenuDropdown';
@@ -10,52 +13,18 @@ import AccountShortcut from '@/component/features/header/AccountShortcut';
 
 function PageHeader() {
   const router = useRouter();
-  const [windowWidth, setWindowWidth] = useState(1920);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { isMobile, isSmallScreen } = useResponsive({
+    mobile: 760,
+    tablet: 1000,
+  });
+  
+  // Use toggle hooks instead of individual state
+  const [isMenuOpen, toggleMenu, setMenuOpen] = useToggle(false);
+  const [isSearchOpen, toggleSearch, setSearchOpen] = useToggle(false);
+  
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  
   const { categories, loading, error } = useCategories();
-
-  // Check login status and user data
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('authToken');
-    const userSession = localStorage.getItem('userSession');
-    
-    if (token || userSession) {
-      setIsLoggedIn(true);
-      // Parse user data from localStorage
-      if (userSession) {
-        try {
-          const userData = JSON.parse(userSession);
-          setUser(userData);
-        } catch (error) {
-          console.error('Error parsing user session:', error);
-        }
-      }
-    } else {
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const isSmallScreen = windowWidth <= 1000;
-  const isMobile = windowWidth <= 760;
-  const isDesktop = windowWidth >= 750;
+  const { isLoggedIn, user, logout } = useAuthState();
 
   // Navigation handlers
   const handleLogoClick = () => {
@@ -70,35 +39,28 @@ function PageHeader() {
     if (!isLoggedIn) {
       router.push('/auth');
     }
-    // If logged in, AccountShortcut will handle the dropdown
   };
 
   const handleLogout = () => {
-    // Clear auth data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userSession');
-    setIsLoggedIn(false);
-    setUser(null);
-    
-    // Redirect to home page
+    logout();
     router.push('/');
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const handleToggleMenu = () => {
+    toggleMenu();
     setSelectedCategory(null);
-    if (isSearchOpen) setIsSearchOpen(false);
+    if (isSearchOpen) setSearchOpen(false);
   };
 
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-    if (isMenuOpen) setIsMenuOpen(false);
+  const handleToggleSearch = () => {
+    toggleSearch();
+    if (isMenuOpen) setMenuOpen(false);
   };
 
   const handleCategoryClick = (categoryId: string) => {
     if (categoryId === 'info') {
       router.push('/about');
-      setIsMenuOpen(false);
+      setMenuOpen(false);
     } else {
       setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
     }
@@ -106,11 +68,11 @@ function PageHeader() {
 
   const handleSubCategoryClick = (subCategoryId: string) => {
     router.push(`/products?subcategory=${subCategoryId}`);
-    setIsMenuOpen(false);
+    setMenuOpen(false);
     setSelectedCategory(null);
   };
 
-  // Create AccountShortcut wrapper that preserves original button appearance
+  // Create AccountShortcut wrapper
   const createAccountComponent = () => {
     if (!isLoggedIn || !user) return null;
 
@@ -158,8 +120,8 @@ function PageHeader() {
         <CompactHeader
           isMenuOpen={isMenuOpen}
           isSearchOpen={isSearchOpen}
-          onToggleMenu={toggleMenu}
-          onToggleSearch={toggleSearch}
+          onToggleMenu={handleToggleMenu}
+          onToggleSearch={handleToggleSearch}
           onLogoClick={handleLogoClick}
           onCartClick={handleCartClick}
           onAccountClick={handleAccountClick}
@@ -195,6 +157,7 @@ function PageHeader() {
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   headerContainer: {
     display: 'flex',
@@ -214,7 +177,6 @@ const styles = {
     height: '60px',
     alignItems: 'center',
   },
-  // Desktop account wrapper styles
   desktopAccountWrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -234,7 +196,6 @@ const styles = {
     flexShrink: 0,
     fontWeight: '500',
   },
-  // Mobile account button styles
   mobileAccountButton: {
     display: 'flex',
     alignItems: 'center',
@@ -253,4 +214,4 @@ const styles = {
   },
 };
 
-export default PageHeader
+export default PageHeader;

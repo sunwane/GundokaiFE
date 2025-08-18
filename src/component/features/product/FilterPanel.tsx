@@ -1,246 +1,278 @@
 'use client';
-import React, { useState } from 'react';
-
-export type StockStatus = 'all' | 'in-stock' | 'out-of-stock' | 'coming-soon';
+import React from 'react';
+import CollapsibleSection from '@/component/ui/CollapsibleSection';
+import StockStatusFilter from './StockStatusFilter';
+import PriceRangeSlider from './PriceRangeSlider';
+import CategoryFilter from './CategoryFilter';
+import { StockStatus } from '@/types/Product';
+import { Product } from '@/types/Product';
 
 interface FilterPanelProps {
-  stockFilter: StockStatus;
-  onStockFilterChange: (status: StockStatus) => void;
-  priceRange: { min: number; max: number };
-  onPriceRangeChange: (range: { min: number; max: number }) => void;
+  // Pending filters
+  pendingStockFilter: StockStatus[];
+  pendingPriceRange: { min: number; max: number };
+  pendingCategories?: string[];
+  
+  // Handlers for pending changes
+  onPendingStockChange: (statuses: StockStatus[]) => void;
+  onPendingPriceChange: (range: { min: number; max: number }) => void;
+  onPendingCategoryChange?: (categories: string[]) => void;
+  
+  // Actions
+  onApply: () => void;
+  onReset: () => void;
+  hasChanges: boolean;
+  
+  // Display options
+  showCategories?: boolean;
+  isPopup?: boolean;
+  onClose?: () => void;
+
+  // Additional data
+  products?: Product[]; // Thêm products để tính count
 }
 
 export default function FilterPanel({ 
-  stockFilter, 
-  onStockFilterChange, 
-  priceRange, 
-  onPriceRangeChange 
+  pendingStockFilter,
+  pendingPriceRange,
+  pendingCategories = [],
+  onPendingStockChange,
+  onPendingPriceChange,
+  onPendingCategoryChange,
+  onApply,
+  onReset,
+  hasChanges,
+  products = [], // Thêm products
+  showCategories = false,
+  isPopup = false,
+  onClose
 }: FilterPanelProps) {
-  const [tempPriceRange, setTempPriceRange] = useState(priceRange);
 
-  const stockOptions = [
-    { key: 'all' as StockStatus, label: 'Tất cả', color: '#6c757d' },
-    { key: 'in-stock' as StockStatus, label: 'Còn hàng', color: '#28a745' },
-    { key: 'out-of-stock' as StockStatus, label: 'Hết hàng', color: '#dc3545' },
-    { key: 'coming-soon' as StockStatus, label: 'Hàng sắp về', color: '#ffc107' },
-  ];
-
-  const handlePriceSubmit = () => {
-    onPriceRangeChange(tempPriceRange);
-  };
-
-  const handlePriceReset = () => {
-    const resetRange = { min: 0, max: 10000000 };
-    setTempPriceRange(resetRange);
-    onPriceRangeChange(resetRange);
-  };
+  const containerStyle = isPopup 
+    ? { ...styles.filterPanel, ...styles.popupPanel }
+    : styles.filterPanel;
 
   return (
-    <div style={styles.filterPanel}>
-      {/* ✅ Header */}
-      <div style={styles.filterHeader}>
-        <h3 style={styles.filterTitle}>BỘ LỌC</h3>
-      </div>
-
-      {/* ✅ Stock Status Filter */}
-      <div style={styles.filterSection}>
-        <h4 style={styles.sectionTitle}>Trạng thái hàng</h4>
-        <div style={styles.stockOptions}>
-          {stockOptions.map((option) => (
-            <button
-              key={option.key}
-              onClick={() => onStockFilterChange(option.key)}
-              style={{
-                ...styles.stockButton,
-                ...(stockFilter === option.key ? styles.stockButtonActive : {}),
-                borderLeftColor: option.color,
-              }}
-            >
-              <span 
-                style={{ 
-                  ...styles.stockIndicator, 
-                  backgroundColor: option.color 
-                }}
-              ></span>
-              {option.label}
+    <>
+      {isPopup && <div style={styles.overlay} onClick={onClose} />}
+      <div style={containerStyle}>
+        {/* Header */}
+        <div style={styles.filterHeader}>
+          <div style={styles.headerContent}>
+            <span style={styles.filterIcon}>🔍</span>
+            <h3 style={styles.filterTitle}>BỘ LỌC TÌM KIẾM</h3>
+          </div>
+          {isPopup && (
+            <button onClick={onClose} style={styles.closeButton}>
+              ✕
             </button>
-          ))}
+          )}
         </div>
-      </div>
 
-      {/* ✅ Price Range Filter */}
-      <div style={styles.filterSection}>
-        <h4 style={styles.sectionTitle}>Khoảng giá</h4>
-        <div style={styles.priceInputs}>
-          <div style={styles.priceInputGroup}>
-            <label style={styles.priceLabel}>Từ:</label>
-            <input
-              type="number"
-              value={tempPriceRange.min}
-              onChange={(e) => setTempPriceRange({
-                ...tempPriceRange,
-                min: Number(e.target.value)
-              })}
-              style={styles.priceInput}
-              placeholder="0"
+        <div style={styles.filterContent}>
+          {/* Category Filter - CẬP NHẬT */}
+          {showCategories && onPendingCategoryChange && (
+            <CollapsibleSection title="DANH MỤC SẢN PHẨM">
+              <CategoryFilter
+                selectedCategories={pendingCategories}
+                onCategoryChange={onPendingCategoryChange}
+                products={products}
+              />
+            </CollapsibleSection>
+          )}
+
+          {/* Stock Status Filter */}
+          <CollapsibleSection title="TRẠNG THÁI HÀNG HÓA">
+            <StockStatusFilter
+              selectedStatuses={pendingStockFilter}
+              onStatusChange={onPendingStockChange}
             />
-          </div>
-          <div style={styles.priceInputGroup}>
-            <label style={styles.priceLabel}>Đến:</label>
-            <input
-              type="number"
-              value={tempPriceRange.max}
-              onChange={(e) => setTempPriceRange({
-                ...tempPriceRange,
-                max: Number(e.target.value)
-              })}
-              style={styles.priceInput}
-              placeholder="10,000,000"
+          </CollapsibleSection>
+
+          {/* Price Range Filter */}
+          <CollapsibleSection title="KHOẢNG GIÁ">
+            <PriceRangeSlider
+              priceRange={pendingPriceRange}
+              onPriceRangeChange={onPendingPriceChange}
             />
-          </div>
+          </CollapsibleSection>
         </div>
-        <div style={styles.priceButtons}>
-          <button onClick={handlePriceSubmit} style={styles.applyButton}>
-            Áp dụng
-          </button>
-          <button onClick={handlePriceReset} style={styles.resetButton}>
-            Đặt lại
-          </button>
+
+        {/* Action Section */}
+        <div style={styles.actionSection}>
+          {hasChanges && (
+            <div style={styles.changeIndicator}>
+              <span style={styles.changeIcon}>●</span>
+              <span style={styles.changeText}>Có thay đổi chưa áp dụng</span>
+            </div>
+          )}
+          
+          <div style={styles.actionButtons}>
+            <button onClick={onReset} style={styles.resetButton}>
+              <span style={styles.buttonIcon}>↻</span>
+              ĐẶT LẠI
+            </button>
+            <button 
+              onClick={onApply} 
+              style={{
+                ...styles.applyButton,
+                opacity: hasChanges ? 1 : 0.6,
+                cursor: hasChanges ? 'pointer' : 'not-allowed'
+              }}
+              disabled={!hasChanges}
+            >
+              <span style={styles.buttonIcon}>✓</span>
+              ÁP DỤNG BỘ LỌC
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles = {
   filterPanel: {
-    width: '280px',
+    width: '300px',
     backgroundColor: '#ffffff',
-    border: '3px solid #1a1aff',
-    clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-    padding: '0',
+    border: '1px solid #e0e6ed',
+    borderRadius: '12px',
     position: 'sticky' as const,
     top: '20px',
     height: 'fit-content',
     maxHeight: 'calc(100vh - 40px)',
     overflowY: 'auto' as const,
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+  },
+  popupPanel: {
+    position: 'fixed' as const,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '90vw',
+    maxWidth: '420px',
+    maxHeight: '85vh',
+    zIndex: 1000,
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+  },
+  overlay: {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    zIndex: 999,
+    backdropFilter: 'blur(3px)',
   },
   filterHeader: {
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     color: 'white',
-    padding: '16px 20px',
-    clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)',
-    marginBottom: '0',
+    padding: '20px 24px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: '12px 12px 0 0',
+  },
+  headerContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  filterIcon: {
+    fontSize: '20px',
   },
   filterTitle: {
     margin: 0,
     fontSize: '16px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-  },
-  filterSection: {
-    padding: '20px',
-    borderBottom: '2px solid #e9ecef',
-  },
-  sectionTitle: {
-    margin: '0 0 16px 0',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#333',
-    textTransform: 'uppercase' as const,
+    fontWeight: '700',
     letterSpacing: '0.5px',
   },
-  stockOptions: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  stockButton: {
+  closeButton: {
+    background: 'none',
+    border: 'none',
+    color: 'white',
+    fontSize: '20px',
+    cursor: 'pointer',
+    padding: '4px',
+    width: '32px',
+    height: '32px',
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    padding: '12px 16px',
-    backgroundColor: '#f8f9fa',
-    border: '2px solid #e9ecef',
-    borderLeft: '4px solid #6c757d',
-    borderRadius: '0',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    fontSize: '13px',
-    fontWeight: '500',
-    color: '#495057',
-    textAlign: 'left' as const,
+    justifyContent: 'center',
+    borderRadius: '6px',
+    transition: 'background-color 0.2s ease',
   },
-  stockButtonActive: {
-    backgroundColor: '#e3f2fd',
-    borderColor: '#1a1aff',
-    color: '#1a1aff',
-    fontWeight: '600',
-    transform: 'translateX(4px)',
+  filterContent: {
+    padding: '0',
+    maxHeight: '50vh',
+    overflowY: 'auto' as const,
   },
-  stockIndicator: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    flexShrink: 0,
+  actionSection: {
+    padding: '24px',
+    borderTop: '1px solid #f0f3f7',
+    backgroundColor: '#fafbfc',
+    borderRadius: '0 0 12px 12px',
   },
-  priceInputs: {
+  changeIndicator: {
     display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '12px',
-    marginBottom: '16px',
-  },
-  priceInputGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '4px',
-  },
-  priceLabel: {
-    fontSize: '12px',
-    fontWeight: '500',
-    color: '#666',
-    textTransform: 'uppercase' as const,
-  },
-  priceInput: {
-    padding: '8px 12px',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    fontSize: '14px',
-    color: '#495057',
-    outline: 'none',
-    transition: 'border-color 0.2s ease',
-  },
-  priceButtons: {
-    display: 'flex',
+    alignItems: 'center',
     gap: '8px',
+    marginBottom: '16px',
+    padding: '8px 12px',
+    backgroundColor: '#fff3cd',
+    border: '1px solid #ffeaa7',
+    borderRadius: '6px',
+  },
+  changeIcon: {
+    color: '#e17055',
+    fontSize: '12px',
+  },
+  changeText: {
+    fontSize: '12px',
+    color: '#856404',
+    fontWeight: '500',
+  },
+  actionButtons: {
+    display: 'flex',
+    gap: '12px',
+  },
+  resetButton: {
+    flex: '0 0 auto',
+    padding: '12px 16px',
+    backgroundColor: '#ffffff',
+    border: '2px solid #dee2e6',
+    color: '#6c757d',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '0.5px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'all 0.2s ease',
   },
   applyButton: {
     flex: 1,
-    padding: '10px 16px',
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
+    padding: '12px 20px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    border: 'none',
     color: 'white',
-    border: '2px solid #1a1aff',
-    borderRadius: '0',
     cursor: 'pointer',
     fontSize: '12px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
+    fontWeight: '700',
     letterSpacing: '0.5px',
-    transition: 'all 0.2s ease',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
   },
-  resetButton: {
-    flex: 1,
-    padding: '10px 16px',
-    backgroundColor: '#f8f9fa',
-    color: '#666',
-    border: '2px solid #e9ecef',
-    borderRadius: '0',
-    cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.5px',
-    transition: 'all 0.2s ease',
+  buttonIcon: {
+    fontSize: '14px',
   },
 };

@@ -48,7 +48,7 @@ export default function DesktopHeader({
             <div style={styles.iconWrapper} onClick={onAccountClick}>
               <img src="/images/icons/account.png" alt="Account" style={styles.icon} />
               <span style={styles.iconLabel}>
-                {isLoggedIn ? 'TÀI KHOẢN' : 'ĐĂNG NHẬP'}
+                {isLoggedIn ? 'Tài khoản' : 'Đăng nhập'}
               </span>
             </div>
           )}

@@ -78,7 +78,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 12,
     created_at: "2024-01-20T14:15:00Z",
     description: "Master Grade Strike Freedom với wings of light effect và full armor",
-    thumbnail: "/images/products/mg-strike-freedom.jpg",
+    thumbnail: "https://product.hstatic.net/200000326537/product/10896999a_f18ecd16c3d341319b81414c76e23c0c_grande.jpg",
     status: "Còn hàng"
   },
   {
@@ -89,7 +89,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 8,
     created_at: "2024-03-25T10:00:00Z",
     description: "Master Grade Nu Gundam phiên bản Katoki với fin funnels",
-    thumbnail: "/images/products/mg-nu-verka.jpg",
+    thumbnail: "https://product.hstatic.net/200000326537/product/mg-rx-93-nu-gundam-ver-ka-01_6d373af6eb7b444691ba2c78a93c2790_master.jpg",
     status: "Còn hàng"
   },
   {
@@ -100,7 +100,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 15,
     created_at: "2024-04-01T13:45:00Z",
     description: "Master Grade Barbatos Lupus Rex với full inner frame",
-    thumbnail: "/images/products/mg-barbatos-lupus.jpg",
+    thumbnail: "https://bizweb.dktcdn.net/thumb/grande/100/479/026/products/vn-11134207-7ras8-m4n0av5lv5wgfd-1736068090042.jpg?v=1736068096253",
     status: "Còn hàng"
   },
   {
@@ -111,7 +111,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 6,
     created_at: "2024-04-05T15:20:00Z",
     description: "Master Grade Sazabi Katoki version với LED unit compatible",
-    thumbnail: "/images/products/mg-sazabi-verka.jpg",
+    thumbnail: "https://product.hstatic.net/200000326537/product/mg-sazabi_ver_ka_5cbb84798b8148fe905d02c969be4625_master.jpg",
     status: "Hàng sắp về"
   },
   {
@@ -122,7 +122,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 20,
     created_at: "2024-04-10T09:30:00Z",
     description: "Master Grade RX-78-2 phiên bản 3.0 với core fighter",
-    thumbnail: "/images/products/mg-rx78-3.jpg",
+    thumbnail: "https://product.hstatic.net/200000326537/product/image_1607b2e0-99fe-480d-8fee-fe1b6ad27e2b_900x_83e67070cb9141af954b6a93561ef1c1_master.jpg",
     status: "Còn hàng"
   },
   {
@@ -133,7 +133,7 @@ export const mockProducts: Product[] = [
     stock_quantity: 0,
     created_at: "2024-04-15T12:15:00Z",
     description: "Master Grade Freedom 2.0 với improved articulation",
-    thumbnail: "/images/products/mg-freedom-2.jpg",
+    thumbnail: "https://product.hstatic.net/200000326537/product/10371551a8_f8bced0872904c2eb9af31623cf6a39a_master.jpg",
     status: "Hết hàng"
   },
 

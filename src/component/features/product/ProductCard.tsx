@@ -2,8 +2,10 @@
 import { Product } from '@/types/Product';
 import { useState, useEffect } from 'react';
 import { useImageBackgroundColor } from '@/hooks/useImageBackgroundColor';
-import { useCategory } from '@/hooks/useCategory'; // ✅ Import hook mới
+import { useCategory } from '@/hooks/categories/useCategory';
+import { useProductStatus } from '@/hooks/product/useProductStatus';
 import CardLabel from '@/component/features/product/CardLabel';
+import ProductImage from '@/component/features/product/ProductImage';
 import { SubCategoryService } from '@/services/SubCategoryService';
 
 interface ProductCardProps {
@@ -28,7 +30,7 @@ function useCategoryId(subCategoryId: string) {
 export default function ProductCard({ product, onClick }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   
-  // ✅ Sử dụng useCategory thay vì useCategoryNames
+  // Hooks
   const { 
     categoryName, 
     subCategoryName, 
@@ -37,11 +39,12 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     loading 
   } = useCategory(product.subCategory_id);
   
-  // ✅ Sử dụng custom hook cho background color
   const { backgroundColor, imgRef, handleImageLoad } = useImageBackgroundColor(
     product.subCategory_id,
     'rgba(248, 249, 250, 0.8)'
   );
+
+  const { isOutOfStock } = useProductStatus(product);
 
   const handleClick = () => {
     if (onClick) {
@@ -53,53 +56,65 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
   return (
     <div 
-      style={styles.cardWrapper}
+      style={{
+        ...styles.cardWrapper,
+        // BỎ CURSOR not-allowed - LUÔN CHO PHÉP CLICK
+        cursor: 'pointer',
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      {/* ✅ Gundam Shadow - luôn hiển thị */}
+      {/* Gundam Shadow */}
       <div style={styles.gundamShadow}></div>
       
-      {/* ✅ Main Card với Gundam Frame - di chuyển khi hover */}
+      {/* Main Card với Gundam Frame */}
       <div 
         style={{
           ...styles.mainCard,
-          transform: isHovered ? 'translate(10px, 10px)' : 'translate(0, 0)'
+          // BỎ ĐIỀU KIỆN isOutOfStock - LUÔN CHO PHÉP HOVER EFFECT
+          transform: isHovered ? 'translate(10px, 10px)' : 'translate(0, 0)',
+          // BỎ FILTER saturate - KHÔNG LÀM MỜ CARD
+          // filter: isOutOfStock ? 'saturate(0.3)' : 'none',
         }}
       >
-        {/* ✅ Product Image */}
-        <div 
-          style={{
-            ...styles.productImageContainer,
-            backgroundColor: backgroundColor, // ✅ Từ hook
-            transition: 'background-color 0.5s ease',
-          }}
-        >
-          <img 
-            ref={imgRef} // ✅ Từ hook
-            src={product.thumbnail} 
-            alt={product.product_Name} 
-            style={styles.productImage}
-            onLoad={handleImageLoad} // ✅ Từ hook
-            crossOrigin="anonymous"
-          />
-        </div>
+        {/* Product Image với status handling */}
+        <ProductImage
+          product={product}
+          backgroundColor={backgroundColor}
+          onImageLoad={handleImageLoad}
+          imageRef={imgRef}
+          style={styles.productImageContainer}
+        />
 
-        {/* ✅ Product Info */}
+        {/* Product Info */}
         <div style={styles.productInfo}>
-          {/* ✅ Card Label với tên từ hook mới */}
+          {/* Card Label */}
           {!loading && (
             <CardLabel 
-              subcategoryId={subCategoryName || product.subCategory_id} // ✅ Dùng tên thay vì ID
-              categoryId={categoryName || 'Gundam'} // ✅ Dùng tên thay vì ID
+              subcategoryId={subCategoryName || product.subCategory_id}
+              categoryId={categoryName || 'Gundam'}
               style={styles.cardLabelContainer}
             />
           )}
           
-          <h3 style={styles.productName}>{product.product_Name}</h3>
+          <h3 style={{
+            ...styles.productName,
+            // color: isOutOfStock ? '#999' : '#2c3e50',
+            color: '#2c3e50', // LUÔN GIỮ MÀU BẬT
+          }}>
+            {product.product_Name}
+          </h3>
+          
           <div style={styles.priceContainer}>
-            <span style={styles.price}>{product.price.toLocaleString('vi-VN')} VNĐ</span>
+            {/* BỎ ĐIỀU KIỆN isOutOfStock CHO MÀU GIÁ */}
+            <span style={{
+              ...styles.price,
+              // color: isOutOfStock ? '#999' : '#e74c3c',
+              color: '#e74c3c', // LUÔN GIỮ MÀU ĐỎ
+            }}>
+              {product.price.toLocaleString('vi-VN')} VNĐ
+            </span>
           </div>
         </div>
       </div>
@@ -107,14 +122,14 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   );
 }
 
-// ✅ Updated styles - Removed badge styles, added container
+// Styles giữ nguyên
 const styles = {
   cardWrapper: {
     position: 'relative' as const,
     display: 'inline-block',
-    cursor: 'pointer',
     width: '100%',
     maxWidth: '210px',
+    transition: 'all 0.3s ease',
   },
   gundamShadow: {
     position: 'absolute' as const,
@@ -138,26 +153,14 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
     zIndex: 2,
-    transition: 'transform 0.3s ease',
+    transition: 'all 0.3s ease',
     display: 'flex',
     flexDirection: 'column' as const,
     padding: '7px 8px',
   },
   productImageContainer: {
-    width: '203px',
-    height: '180px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
     marginBottom: '10px',
   },
-  productImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain' as const,
-  },
-  // ✅ Container cho CardLabel component
   cardLabelContainer: {
     marginBottom: '5px',
   },
@@ -173,21 +176,18 @@ const styles = {
     fontSize: '13px',
     fontWeight: 'bold',
     margin: '0 0 10px 0',
-    color: '#2c3e50',
     lineHeight: 1.2,
     textAlign: 'left' as const,
     padding: '0 2px',
-    // ✅ Uppercase text
     textTransform: 'uppercase' as const,
-    // ✅ Giới hạn 2 dòng với ellipsis
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical' as const,
     WebkitLineClamp: 3,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    // ✅ Cố định chiều cao cho 2 dòng
-    minHeight: '48px', // 12.5px * 1.2 * 2 lines ≈ 30px
+    minHeight: '48px',
     maxHeight: '48px',
+    transition: 'color 0.3s ease',
   },
   priceContainer: {
     display: 'flex',
@@ -198,6 +198,6 @@ const styles = {
   price: {
     fontSize: '14px',
     fontWeight: 'bold',
-    color: '#e74c3c',
+    transition: 'color 0.3s ease',
   },
 };

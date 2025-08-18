@@ -68,10 +68,9 @@ export default function AccountInfo({ user, onUserUpdate }: AccountInfoProps) {
   const genderOptions = [
     { value: 'male', label: 'Nam' },
     { value: 'female', label: 'Nữ' },
-    { value: 'other', label: 'Khác' }
   ];
 
-  const userStats = { orders: 12, points: 156, favorites: 8 };
+  const userStats = { orders: 12, ordered: 1, shipping: 8 };
 
   return (
     <Card padding="none">
@@ -107,25 +106,25 @@ export default function AccountInfo({ user, onUserUpdate }: AccountInfoProps) {
                 mode="light"
                 required
               />
-              
-              <FormInput
-                id="email"
-                label="Email"
-                name="email"
-                value={editData.email}
+
+              <FormSelect
+                id="gender"
+                label="Giới tính"
+                name="gender"
+                value={editData.gender}
                 onChange={handleInputChange}
+                options={genderOptions}
                 mode="light"
                 required
               />
               
               <div style={styles.fullWidth}>
-                <FormSelect
-                  id="gender"
-                  label="Giới tính"
-                  name="gender"
-                  value={editData.gender}
+                <FormInput
+                  id="email"
+                  label="Email"
+                  name="email"
+                  value={editData.email}
                   onChange={handleInputChange}
-                  options={genderOptions}
                   mode="light"
                   required
                 />

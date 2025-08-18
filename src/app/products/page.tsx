@@ -1,35 +1,74 @@
 'use client';
+import React, { useState } from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import ProductCard from "@/component/features/product/ProductCard";
 import ProductBanner from "@/component/features/product/ProductBanner";
 import SortBar, { SortType } from "@/component/features/product/SortBar";
 import FilterPanel from "@/component/features/product/FilterPanel";
+import FilterButton from "@/component/features/product/FilterButton";
 import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useProductsPage } from '@/hooks/useProductsPage';
+import { useFilterState } from '@/hooks/useFilterState';
+import { useProductFilter } from '@/hooks/product/useProductFilter';
+import { useResponsive } from '@/hooks/useResponsive';
+import { useToggle } from '@/hooks/useToggle';
 import { Product } from '@/types/Product';
+import { useProductsPage } from '@/hooks/product/useProductsPage';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const subcategoryId = searchParams.get('subcategory');
   const router = useRouter();
   
+  // SỬ DỤNG useResponsive THAY VÌ LOGIC CŨ
+  const { isMobile, isTablet, windowWidth } = useResponsive({
+    mobile: 900,
+    tablet: 1200,
+  });
+  
+  // SỬ DỤNG useToggle CHO MOBILE FILTER
+  const [showMobileFilter, toggleMobileFilter, setShowMobileFilter] = useToggle(false);
+  const [sortType, setSortType] = useState<SortType>('default');
+
+  // Fetch products và subcategory info
   const { 
-    filteredAndSortedProducts = [],
+    products = [], 
     subcategoryInfo, 
     loading, 
-    error,
-    refetch,
-    sortType,         
-    sortProducts,
-    stockFilter = 'all',
-    filterByStock,
-    priceRange = { min: 0, max: 10000000 },
-    filterByPriceRange,
+    error, 
+    refetch 
   } = useProductsPage(subcategoryId);
 
+  // Filter state management với hook đã cập nhật
+  const {
+    currentFilters,
+    pendingFilters,
+    setPendingStockFilter,
+    setPendingPriceRanges,
+    setPendingCategories,
+    applyFilters,
+    resetFilters,
+    hasChanges,
+  } = useFilterState();
+
+  // Apply filtering và sorting với hook đã cập nhật
+  const { sortedAndFilteredProducts, filterCount } = useProductFilter(
+    products,
+    currentFilters,
+    sortType
+  );
+
   const handleProductClick = (product: Product) => {
-    router.push(`/products/${product.id}`);
+    router.push(`/productDetail?id=${product.id}`);
+  };
+
+  // TÍNH TOÁN COLUMNS DỰA TRÊN WINDOW WIDTH
+  const getGridColumns = () => {
+    if (windowWidth <= 600) return 1;
+    if (windowWidth <= 900) return 2;
+    if (windowWidth <= 1200) return 3;
+    if (windowWidth <= 1600) return 4;
+    return 5;
   };
 
   if (loading) {
@@ -48,11 +87,14 @@ export default function ProductsPage() {
   
   if (error) {
     return (
-      <div style={styles.errorContainer}>
-        <p>Error: {error}</p>
-        <button onClick={refetch} style={styles.retryButton}>
-          Thử lại
-        </button>
+      <div>
+        <PageHeader />
+        <div style={styles.errorContainer}>
+          <p>Error: {error}</p>
+          <button onClick={refetch} style={styles.retryButton}>
+            Thử lại
+          </button>
+        </div>
       </div>
     );
   }
@@ -61,20 +103,59 @@ export default function ProductsPage() {
     <div>
       <PageHeader />
       
+      {/* BANNER VÀ TIÊU ĐỀ THỂ LOẠI */}
       <ProductBanner subcategoryInfo={subcategoryInfo} />
-      <SortBar sortType={sortType} onSortChange={sortProducts} />
 
-      <div style={styles.mainContent}>
-        <FilterPanel
-          stockFilter={stockFilter}
-          onStockFilterChange={filterByStock}
-          priceRange={priceRange}
-          onPriceRangeChange={({ min, max }) => filterByPriceRange(min, max)}
-        />
+      <div style={{
+        ...styles.mainContent,
+        // RESPONSIVE PADDING VÀ GAP
+        padding: isMobile ? '16px 4vw' : '20px 5vw',
+        gap: isMobile ? '20px' : '30px',
+        flexDirection: isMobile ? 'column' : 'row',
+      }}>
+        {/* Desktop Filter Panel */}
+        {!isMobile && (
+          <FilterPanel
+            pendingStockFilter={pendingFilters.stockFilter}
+            pendingPriceRanges={pendingFilters.priceRanges}
+            pendingCategories={pendingFilters.categories}
+            onPendingStockChange={setPendingStockFilter}
+            onPendingPriceChange={setPendingPriceRanges}
+            onPendingCategoryChange={setPendingCategories}
+            onApply={applyFilters}
+            onReset={resetFilters}
+            hasChanges={hasChanges()}
+            showCategories={true}
+            products={products} 
+          />
+        )}
 
+        {/* Products Content */}
         <div style={styles.productsContent}>
-          <div style={styles.productGrid}>
-            {filteredAndSortedProducts.map((product) => (
+          <SortBar 
+            sortType={sortType} 
+            onSortChange={setSortType}
+          >
+            {/* Custom left content for products page */}
+            <div style={styles.productInfo}>
+              <span style={styles.productCount}>
+                {sortedAndFilteredProducts.length} sản phẩm
+              </span>
+              {subcategoryInfo && (
+                <span style={styles.categoryName}>
+                  trong {subcategoryInfo.name}
+                </span>
+              )}
+            </div>
+          </SortBar>
+
+          <div style={{
+            ...styles.productGrid,
+            // RESPONSIVE GRID COLUMNS
+            gridTemplateColumns: `repeat(${getGridColumns()}, 1fr)`,
+            gap: isMobile ? '16px' : '24px',
+          }}>
+            {sortedAndFilteredProducts.map((product) => (
               <ProductCard 
                 key={product.id} 
                 product={product} 
@@ -83,16 +164,66 @@ export default function ProductsPage() {
             ))}
           </div>
           
-          {filteredAndSortedProducts.length === 0 && (
-            <div style={styles.emptyState}>
+          {sortedAndFilteredProducts.length === 0 && (
+            <div style={{
+              ...styles.emptyState,
+              padding: isMobile ? '40px 16px' : '60px 20px',
+              fontSize: isMobile ? '16px' : '18px',
+            }}>
               <p>Không tìm thấy sản phẩm nào phù hợp với bộ lọc</p>
             </div>
           )}
         </div>
       </div>
+
+      {/* Mobile Filter Button */}
+      {isMobile && (
+        <FilterButton 
+          onClick={() => setShowMobileFilter(true)}
+          filterCount={filterCount}
+        />
+      )}
+
+      {/* Mobile Filter Popup */}
+      {isMobile && showMobileFilter && (
+        <FilterPanel
+          pendingStockFilter={pendingFilters.stockFilter}
+          pendingPriceRanges={pendingFilters.priceRanges}
+          pendingCategories={pendingFilters.categories}
+          onPendingStockChange={setPendingStockFilter}
+          onPendingPriceChange={setPendingPriceRanges}
+          onPendingCategoryChange={setPendingCategories}
+          onApply={() => {
+            applyFilters();
+            setShowMobileFilter(false);
+          }}
+          onReset={resetFilters}
+          hasChanges={hasChanges()}
+          showCategories={true} 
+          isPopup={true}
+          onClose={() => setShowMobileFilter(false)}
+        />
+      )}
     </div>
   );
 }
+
+const additionalStyles = {
+  productInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  productCount: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#374151',
+  },
+  categoryName: {
+    fontSize: '14px',
+    color: '#6b7280',
+  },
+};
 
 const styles = {
   loadingContainer: {
@@ -111,23 +242,16 @@ const styles = {
   },
   retryButton: {
     padding: '12px 24px',
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
+    backgroundColor: '#6c5ce7',
     color: 'white',
-    border: '2px solid #333',
-    borderRadius: '0',
+    border: 'none',
+    borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-    transition: 'all 0.3s ease',
-    clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
   },
   mainContent: {
     display: 'flex',
-    gap: '30px',
-    padding: '40px 5vw',
-    maxWidth: '1400px',
     margin: '0 auto',
     alignItems: 'flex-start',
   },
@@ -137,17 +261,14 @@ const styles = {
   },
   productGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '24px',
     justifyItems: 'center',
   },
   emptyState: {
     textAlign: 'center' as const,
-    padding: '60px 20px',
     color: '#666',
-    fontSize: '18px',
-    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-    border: '2px dashed #1a1aff',
-    clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
+    backgroundColor: '#f8f9fa',
+    border: '2px dashed #ddd',
+    borderRadius: '8px',
   },
+  ...additionalStyles,
 };

@@ -2,7 +2,7 @@
 import CategoryNavBtn from '@/component/features/header/CategoryNavBtn';
 import SubCategoryDropdown from '@/component/navigation/SubCategoryDropDown';
 import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
-import { useCategories } from '@/hooks/useCategories';
+import { useCategories } from '@/hooks/categories/useCategories';
 import { Category } from '@/types/Category';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';

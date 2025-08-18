@@ -16,13 +16,13 @@ export default function CardLabel({
 }: CardLabelProps) {
 
   // ✅ Hàm xử lý lấy text trong ngoặc (nếu có)
-  const getDisplayText = (text: string): string => {
-    // Tìm text trong ngoặc đơn ()
+  const getDisplayText = (text: string | null | undefined): string => {
+    if (!text) return ''; // Trả về chuỗi rỗng nếu không có text
     const match = text.match(/\(([^)]+)\)/);
     if (match && match[1]) {
-      return match[1]; // Trả về text trong ngoặc
+      return match[1];
     }
-    return text; // Trả về text gốc nếu không có ngoặc
+    return text;
   };
 
   return (
