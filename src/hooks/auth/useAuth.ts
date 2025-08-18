@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/AuthService';
 import { LoginRequest, RegisterRequest } from '@/types/Account';
+import { UserService } from '@/services/UserService';
 
 export type AuthMode = 'login' | 'register';
 
@@ -38,12 +39,13 @@ export const useAuth = (): UseAuthReturn => {
     password: ''
   });
 
+  // Cập nhật để match với UserCreationRequest.java
   const [registerData, setRegisterData] = useState<RegisterRequest>({
     username: '',
     email: '',
     password: '',
-    gender: 'Nam',
-    verificationCode: ''
+    gender: 'MALE', // Sử dụng giá trị phù hợp với backend
+    code: '' // Đổi từ verificationCode thành code
   });
 
   // Handlers
@@ -65,10 +67,11 @@ export const useAuth = (): UseAuthReturn => {
     setError('');
 
     try {
-      const response = await AuthService.login(loginData);
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('userSession', JSON.stringify(response.user));
-      router.push('/account');
+      await AuthService.login(loginData);
+      console.log('Đăng nhập thành công, chuyển hướng đến trang chủ');
+      
+      // Thay đổi từ '/account' thành '/' (trang chủ)
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {
@@ -82,10 +85,8 @@ export const useAuth = (): UseAuthReturn => {
     setError('');
 
     try {
-      const response = await AuthService.register(registerData);
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('userSession', JSON.stringify(response.user));
-      router.push('/account');
+      await AuthService.register(registerData);
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng ký thất bại');
     } finally {

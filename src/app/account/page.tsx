@@ -21,25 +21,52 @@ export default function AccountPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      const userSession = localStorage.getItem('userSession');
-
-      if (!token || !userSession) {
-        router.push('/auth');
-        return;
-      }
-
+      setIsLoading(true);
       try {
-        const currentUser = await AuthService.getCurrentUser(token);
-        setUser(currentUser);
-        setEditData({
-          username: currentUser.username,
-          email: currentUser.email,
-          gender: currentUser.gender
-        });
+        // First try to get user from localStorage for faster rendering
+        const userFromStorage = AuthService.getCurrentUser();
+        
+        if (userFromStorage) {
+          // Đảm bảo có username
+          if (!userFromStorage.username && userFromStorage.email) {
+            userFromStorage.username = userFromStorage.email.split('@')[0];
+          }
+          
+          setUser(userFromStorage);
+          setEditData({
+            username: userFromStorage.username || '',
+            email: userFromStorage.email || '',
+            gender: userFromStorage.gender || 'male'
+          });
+        } else {
+          throw new Error('Không tìm thấy thông tin người dùng');
+        }
+        
+        // Then fetch fresh data from API
+        try {
+          const currentUser = await AuthService.getCurrentUser();
+          // Đảm bảo có username
+          if (!currentUser.username && currentUser.email) {
+            currentUser.username = currentUser.email.split('@')[0];
+          }
+          
+          setUser(currentUser);
+          setEditData({
+            username: currentUser.username || '',
+            email: currentUser.email || '',
+            gender: currentUser.gender || 'male'
+          });
+          
+          // Update localStorage with fresh data
+          localStorage.setItem('userSession', JSON.stringify(currentUser));
+        } catch (apiError) {
+          console.error('Không thể lấy dữ liệu mới từ API:', apiError);
+          // Tiếp tục sử dụng dữ liệu từ localStorage
+        }
       } catch (err) {
         console.error('Auth check failed:', err);
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('userSession');
         router.push('/auth');
       } finally {
@@ -130,7 +157,8 @@ export default function AccountPage() {
             <div style={styles.avatarSection}>
               <div style={styles.avatar}>
                 <div style={styles.avatarPlaceholder}>
-                  {user.username.charAt(0).toUpperCase()}
+                  {/* Add null check before accessing charAt */}
+                  {user && user.username ? user.username.charAt(0).toUpperCase() : '?'}
                 </div>
               </div>
               <div style={styles.userInfo}>
@@ -314,46 +342,6 @@ const styles = {
     border: '3px solid #1a1aff',
     clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
     boxShadow: '0 20px 40px rgba(26,26,255,0.2)',
-    overflow: 'hidden',
-  },
-  accountHeader: {
-    background: 'linear-gradient(135deg, #1a1aff 0%, #ff6b35 100%)',
-    color: 'white',
-    padding: '40px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap' as const,
-    gap: '20px',
-  },
-  avatarSection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px',
-  },
-  avatar: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    border: '3px solid rgba(255, 255, 255, 0.3)',
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '32px',
-    fontWeight: 'bold',
-  },
-  userInfo: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  username: {
     overflow: 'hidden',
   },
   accountHeader: {

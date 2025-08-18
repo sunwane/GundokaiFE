@@ -1,17 +1,10 @@
 export interface Account {
   id: string;
-  username: string;
+  username: string; // Đảm bảo sử dụng username thay vì name
   email: string;
-  password: string;
-  gender: 'male' | 'female' | 'other';
+  password?: string;
+  gender: string;
   createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: Omit<Account, 'password'>;
-  message: string;
 }
 
 export interface LoginRequest {
@@ -20,20 +13,21 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  username: string;
+  username: string; // Cập nhật từ name sang username
   email: string;
   password: string;
-  gender: 'male' | 'female' | 'other';
-  verificationCode?: string; // Optional for registration
+  gender: string;
+  code: string; // Cập nhật từ verificationCode sang code
+}
+
+export interface AuthResponse {
+  token: string;
+  user: Omit<Account, 'password'>;
+  message: string;
 }
 
 export interface ResetPasswordRequest {
   email: string;
-}
-
-export interface VerifyResetCodeRequest {
-  email: string;
-  code: string;
 }
 
 export interface ResetPasswordWithCodeRequest {
@@ -42,21 +36,10 @@ export interface ResetPasswordWithCodeRequest {
   newPassword: string;
 }
 
-export interface ChangePasswordRequest {
-  userId: string;
-  currentPassword: string;
-  newPassword: string;
-}
+export interface UserUpdateRequest {
+  username?: string;
+  gender?: string;
+  // Các trường khác nếu cần
 
-export interface ResendCodeRequest {
-  email: string;
-}
-
-export interface VerifyCodeResponse {
-  message: string;
-  isValid: boolean;
-}
-
-export interface PasswordResetResponse {
-  message: string;
+  
 }
