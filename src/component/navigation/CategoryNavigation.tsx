@@ -1,7 +1,8 @@
 'use client';
-import CategoryNavBtn from '@/component/ui/header/CategoryNavBtn';
+import CategoryNavBtn from '@/component/features/header/CategoryNavBtn';
 import SubCategoryDropdown from '@/component/navigation/SubCategoryDropDown';
-import { useCategories } from '@/hooks/useCategories';
+import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
+import { useCategories } from '@/hooks/categories/useCategories';
 import { Category } from '@/types/Category';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -20,22 +21,18 @@ function CategoryNavigation() {
   const allCategories = [...categories, infoCategory];
 
   const handleCategoryClick = (categoryId: string) => {
-    // ✅ CHỈ xử lý click cho category "info"
     if (categoryId === 'info') {
       console.log('Navigate to info page');
       router.push('/about');
     }
-    // ❌ Các category khác không làm gì cả
   };
 
   const handleSubCategoryClick = (subCategoryId: string) => {
-    // ✅ Chuyển hướng đến /products với query parameter
     router.push(`/products?subcategory=${subCategoryId}`);
-    setHoveredCategory(null); // Đóng dropdown sau khi click
+    setHoveredCategory(null);
   };
 
   const handleCategoryHover = (categoryId: string) => {
-    // ✅ Chỉ show subcategories cho product categories
     if (categoryId !== 'info') {
       setHoveredCategory(categoryId);
     }
@@ -45,7 +42,17 @@ function CategoryNavigation() {
     setHoveredCategory(null);
   };
 
-  if (loading) return <div style={styles.loading}>Loading categories...</div>;
+  // ✅ Sử dụng LoadingSpinner component
+  if (loading) {
+    return (
+      <LoadingSpinner 
+        text="ĐANG TẢI DANH MỤC..." 
+        size="medium" 
+        spinner={false} 
+      />
+    );
+  }
+
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -60,7 +67,6 @@ function CategoryNavigation() {
           >
             <CategoryNavBtn category={category} onClick={handleCategoryClick} />
 
-            {/* Dropdown cho từng category riêng biệt */}
             {hoveredCategory === category.id && category.id !== 'info' && (
               <SubCategoryDropdown
                 categoryId={hoveredCategory}
@@ -93,13 +99,6 @@ const styles = {
   categoryWrapper: {
     flex: 1,
     position: 'relative' as const,
-  },
-  loading: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: '18px',
-    color: '#1a1aff',
-    fontWeight: 'bold',
   },
 };
 

@@ -1,21 +1,23 @@
 'use client';
 import React from 'react';
-import SearchBar from '../../ui/header/SearchBar';
+import SearchBar from '../../features/header/SearchBar';
 
 interface DesktopHeaderProps {
   isSmallScreen: boolean;
   onLogoClick: () => void;
   onCartClick: () => void;
   onAccountClick: () => void;
-  isLoggedIn?: boolean; // ✅ New prop for login status
+  isLoggedIn: boolean;
+  accountComponent?: React.ReactNode;
 }
 
-function DesktopHeader({ 
-  isSmallScreen, 
-  onLogoClick, 
+export default function DesktopHeader({
+  isSmallScreen,
+  onLogoClick,
   onCartClick,
   onAccountClick,
-  isLoggedIn = false // ✅ Default to false
+  isLoggedIn,
+  accountComponent
 }: DesktopHeaderProps) {
   return (
     <div style={styles.headerTop}>
@@ -34,48 +36,28 @@ function DesktopHeader({
           ...styles.buttonPlace,
           gap: isSmallScreen ? '8px' : '10px'
         }}>
-          {/* ✅ Cart Button */}
-          <button 
-            style={{
-              ...styles.buttonContainer,
-              padding: isSmallScreen ? '8px' : '8px 12px'
-            }}
-            onClick={onCartClick}
-            title="Giỏ hàng"
-          >
-            <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
-            {!isSmallScreen && (
-              <div style={styles.buttonText}>Giỏ hàng</div>
-            )}
-          </button>
-          
-          {/* ✅ Account Button với dynamic text */}
-          <button 
-            style={{
-              ...styles.buttonContainer,
-              padding: isSmallScreen ? '8px' : '8px 12px'
-            }}
-            onClick={onAccountClick}
-            title={isLoggedIn ? "Tài khoản" : "Đăng nhập"} // ✅ Dynamic title
-          >
-            <img 
-              src={'/images/icons/account.png'} 
-              alt={isLoggedIn ? "Tài khoản" : "Đăng nhập"} // ✅ Dynamic alt
-              style={styles.buttonIcon} 
-            />
-            {!isSmallScreen && (
-              <div style={styles.buttonText}>
-                {isLoggedIn ? "Tài khoản" : "Đăng nhập"} {/* ✅ Dynamic text */}
-              </div>
-            )}
-          </button>
+          <div style={styles.iconWrapper} onClick={onCartClick}>
+            <img src="/images/icons/cart.png" alt="Cart" style={styles.icon} />
+            <span style={styles.iconLabel}>Giỏ hàng</span>
+          </div>
+
+          {/* Account Section */}
+          {accountComponent ? (
+            accountComponent
+          ) : (
+            <div style={styles.iconWrapper} onClick={onAccountClick}>
+              <img src="/images/icons/account.png" alt="Account" style={styles.icon} />
+              <span style={styles.iconLabel}>
+                {isLoggedIn ? 'Tài khoản' : 'Đăng nhập'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-// ✅ Styles giữ nguyên
 const styles = {
   logo: {
     height: '80px',
@@ -138,6 +120,23 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
+  iconWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
+    padding: '8px',
+    borderRadius: '4px',
+  },
+  icon: {
+    width: '28px',
+    height: '28px',
+  },
+  iconLabel: {
+    fontSize: '14px',
+    color: '#002749',
+    marginLeft: '2px',
+    flexShrink: 0,
+    fontWeight: '500',
+  },
 };
-
-export default DesktopHeader;

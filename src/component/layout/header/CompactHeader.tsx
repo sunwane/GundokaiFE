@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import SearchBar from '@/component/ui/header/SearchBar';
+import SearchBar from '@/component/features/header/SearchBar';
 
 interface CompactHeaderProps {
   isMenuOpen: boolean;
@@ -8,9 +8,10 @@ interface CompactHeaderProps {
   onToggleMenu: () => void;
   onToggleSearch: () => void;
   onLogoClick: () => void;
-  onCartClick: () => void;   // ✅ New prop
-  onAccountClick: () => void; // ✅ New prop
-  isLoggedIn?: boolean; // ✅ New prop for login status
+  onCartClick: () => void;
+  onAccountClick: () => void;
+  isLoggedIn?: boolean;
+  accountComponent?: React.ReactNode;
 }
 
 function CompactHeader({ 
@@ -19,13 +20,14 @@ function CompactHeader({
   onToggleMenu, 
   onToggleSearch, 
   onLogoClick,
-  onCartClick,    // ✅ New prop
-  onAccountClick,  // ✅ New prop
-  isLoggedIn = false // ✅ Default to false
+  onCartClick,
+  onAccountClick,
+  isLoggedIn = false,
+  accountComponent
 }: CompactHeaderProps) {
   return (
     <div style={styles.compactHeader}>
-      {/* ✅ Left side: Menu button + Search button */}
+      {/* Left side: Menu button + Search button */}
       <div style={styles.leftSection}>
         <button 
           style={styles.menuButton}
@@ -37,7 +39,6 @@ function CompactHeader({
           <span style={{...styles.hamburger, transform: isMenuOpen ? 'rotate(-45deg) translate(9px, -1px)' : 'none'}}></span>
         </button>
 
-        {/* ✅ Search button - Hidden when search is open */}
         {!isSearchOpen && (
           <button 
             style={styles.searchButton}
@@ -49,7 +50,7 @@ function CompactHeader({
         )}
       </div>
 
-      {/* ✅ Center: Logo - Hidden when search is open */}
+      {/* Center: Logo - Hidden when search is open */}
       {!isSearchOpen && (
         <div style={styles.centerSection}>
           <button 
@@ -63,7 +64,7 @@ function CompactHeader({
         </div>
       )}
 
-      {/* ✅ Search Bar - Overlays center and right sections when open */}
+      {/* Search Bar - Overlays center and right sections when open */}
       {isSearchOpen && (
         <SearchBar 
           placeholder="Tìm kiếm..." 
@@ -71,9 +72,8 @@ function CompactHeader({
         />
       )}
 
-      {/* ✅ Right side: Cart + Account buttons (+ Close button when search open) */}
+      {/* Right side: Cart + Account buttons (+ Close button when search open) */}
       <div style={styles.rightSection}>
-        {/* ✅ Close button - Only visible when search is open */}
         {isSearchOpen && (
           <button 
             style={styles.closeButton}
@@ -84,7 +84,6 @@ function CompactHeader({
           </button>
         )}
 
-        {/* ✅ Cart and Account buttons với dynamic title */}
         {!isSearchOpen && (
           <>
             <button 
@@ -95,17 +94,22 @@ function CompactHeader({
               <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
             </button>
             
-            <button 
-              style={styles.compactButton}
-              onClick={onAccountClick}
-              title={isLoggedIn ? "Tài khoản" : "Đăng nhập"} // ✅ Dynamic title
-            >
-              <img 
-                src={'/images/icons/account.png'} 
-                alt={isLoggedIn ? "Tài khoản" : "Đăng nhập"} // ✅ Dynamic alt
-                style={styles.buttonIcon} 
-              />
-            </button>
+            {/* Account Section */}
+            {accountComponent ? (
+              accountComponent
+            ) : (
+              <button 
+                style={styles.compactButton}
+                onClick={onAccountClick}
+                title={isLoggedIn ? "Tài khoản" : "Đăng nhập"}
+              >
+                <img 
+                  src={'/images/icons/account.png'} 
+                  alt={isLoggedIn ? "Tài khoản" : "Đăng nhập"}
+                  style={styles.buttonIcon} 
+                />
+              </button>
+            )}
           </>
         )}
       </div>
@@ -113,6 +117,7 @@ function CompactHeader({
   );
 }
 
+// Styles giữ nguyên
 const styles = {
   compactHeader: {
     display: 'flex',
@@ -122,31 +127,25 @@ const styles = {
     height: '70px',
     padding: '0 15px',
     backgroundColor: '#fff',
-    position: 'relative' as const, // ✅ For search overlay positioning
+    position: 'relative' as const,
     gap: '8px',
   },
-  
-  // ✅ Left section: Menu + Search button
   leftSection: {
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
     flexShrink: 0,
   },
-  
-  // ✅ Center section: Logo
   centerSection: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1, // ✅ Takes remaining space
+    flex: 1,
     position: 'absolute' as const,
     left: '50%',
-    transform: 'translateX(-50%)', // ✅ Perfect center alignment
+    transform: 'translateX(-50%)',
     zIndex: 1,
   },
-  
-  // ✅ Right section: Cart + Account (or Close button)
   rightSection: {
     display: 'flex',
     alignItems: 'center',
@@ -154,7 +153,6 @@ const styles = {
     flexShrink: 0,
     justifyContent: 'flex-end',
   },
-
   menuButton: {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -168,7 +166,6 @@ const styles = {
     gap: '5px',
     padding: '0',
   },
-  
   hamburger: {
     width: '20px',
     height: '1.5px',
@@ -177,7 +174,6 @@ const styles = {
     transition: 'all 0.3s ease',
     transformOrigin: 'center',
   },
-  
   compactLogoContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -185,20 +181,17 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
   },
-  
   compactLogo: {
-    height: '50px', // ✅ Slightly smaller for center positioning
+    height: '50px',
   },
-  
   compactLogoName: {
     textAlign: 'left' as const,
-    fontSize: '14px', // ✅ Smaller text
+    fontSize: '14px',
     fontWeight: 'bold',
     color: '#333',
     lineHeight: '1.2',
     whiteSpace: 'nowrap' as const,
   },
-  
   searchButton: {
     display: 'flex',
     alignItems: 'center',
@@ -211,7 +204,6 @@ const styles = {
     borderRadius: '4px',
     transition: 'background-color 0.2s ease',
   },
-  
   closeButton: {
     display: 'flex',
     alignItems: 'center',
@@ -224,7 +216,6 @@ const styles = {
     borderRadius: '4px',
     transition: 'background-color 0.2s ease',
   },
-  
   compactButton: {
     display: 'flex',
     alignItems: 'center',
@@ -237,9 +228,8 @@ const styles = {
     borderRadius: '4px',
     transition: 'background-color 0.2s ease',
   },
-  
   buttonIcon: {
-    width: '22px', // ✅ Slightly smaller icons
+    width: '22px',
     height: '22px',
   },
 };

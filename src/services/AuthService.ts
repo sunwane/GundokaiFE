@@ -95,41 +95,21 @@ export class AuthService {
     }
   }
 
-  // Refresh token
-  static async refreshToken(): Promise<string> {
-    try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        throw new Error('Không tìm thấy refresh token');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken }), // Match backend RefreshRequest
-      });
-      
-      if (!response.ok) {
-        throw new Error('Làm mới token thất bại');
-      }
-      
-      const data = await response.json();
-      
-      // Update tokens
-      localStorage.setItem('accessToken', data.result.accessToken);
-      localStorage.setItem('refreshToken', data.result.refreshToken);
-      
-      return data.result.accessToken;
-    } catch (error) {
-      console.error('Token refresh error:', error);
-      // Clear auth on refresh failure
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('userSession');
-      throw error;
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Simulate password validation
+    if (currentPassword !== 'password123') {
+      throw new Error('Mật khẩu hiện tại không đúng');
     }
+    
+    if (newPassword === currentPassword) {
+      throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại');
+    }
+    
+    // Simulate successful password change
+    console.log('Password changed successfully for user:', userId);
   }
 
   // Logout - Cập nhật để match với LogoutRequest.java (token thay vì refreshToken)

@@ -1,20 +1,15 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import AuthForm from '@/component/ui/auth/AuthForm';
-import ModelSection from '@/component/ui/auth/ModelSection';
+import React, { useEffect } from 'react';
+import AuthForm from '@/component/features/auth/AuthForm';
+import ModelSection from '@/component/features/auth/ModelSection';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function AuthPage() {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 1100);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  // SỬ DỤNG useResponsive THAY VÌ LOGIC CŨ
+  const { isSmallScreen, isMobile, windowWidth } = useResponsive({
+    mobile: 768,
+    tablet: 1100,
+  });
  
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -33,13 +28,19 @@ export default function AuthPage() {
     <main style={styles.container}>
       {/* Model Section - Ẩn khi màn hình nhỏ */}
       {!isSmallScreen && (
-        <div style={styles.backgroundModelSection}>
+        <div style={{
+          ...styles.backgroundModelSection,
+          width: windowWidth > 1400 ? '60%' : '55%', // RESPONSIVE WIDTH
+        }}>
           <ModelSection />
         </div>
       )}
       
       {/* Content chính */}
-      <div style={styles.content}>
+      <div style={{
+        ...styles.content,
+        padding: isMobile ? '0.5rem' : '1rem', // RESPONSIVE PADDING
+      }}>
         <div style={{
           ...styles.mainGrid,
           ...(isSmallScreen ? styles.mainGridCentered : {})
@@ -47,7 +48,8 @@ export default function AuthPage() {
           {/* Auth Form */}
           <div style={{
             ...styles.leftSection,
-            ...(isSmallScreen ? styles.leftSectionCentered : {})
+            ...(isSmallScreen ? styles.leftSectionCentered : {}),
+            width: isSmallScreen ? '100%' : isMobile ? '50vw' : '40vw', // RESPONSIVE WIDTH
           }}>
             <div style={styles.authFormWrapper}>
               <AuthForm />
@@ -56,7 +58,10 @@ export default function AuthPage() {
           
           {/* Khoảng trống bên phải - Ẩn khi màn hình nhỏ */}
           {!isSmallScreen && (
-            <div style={styles.rightSection}>
+            <div style={{
+              ...styles.rightSection,
+              padding: isMobile ? '1rem' : '1.5rem', // RESPONSIVE PADDING
+            }}>
               {/* Intentionally empty - model is in background */}
             </div>
           )}
@@ -82,7 +87,6 @@ const styles = {
   backgroundModelSection: {
     position: 'absolute' as const,
     right: 0,
-    width: '60%', 
     height: '100%',
     zIndex: 1,
     pointerEvents: 'auto' as const,
@@ -90,8 +94,6 @@ const styles = {
   content: {
     display: 'flex',
     flexDirection: 'column' as const,
-    // ✅ Fix padding để không bị mất phần bên phải
-    padding: '1rem',
     height: '100%',
     overflow: 'hidden',
     maxWidth: '1400px',
@@ -111,14 +113,12 @@ const styles = {
     minHeight: 0,
     pointerEvents: 'none' as const,
     alignItems: 'center',
-    // ✅ Đảm bảo full width
     width: '100%',
   },
   mainGridCentered: {
     justifyContent: 'center',
     alignItems: 'center',
     gap: 0,
-    // ✅ Centered nhưng vẫn full width
     width: '100%',
   },
   leftSection: {
@@ -127,19 +127,17 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: '600px',
-    width: "40vw",
     height: 'auto',
     overflow: 'visible',
     zIndex: 20,
     pointerEvents: 'auto' as const,
   },
   leftSectionCentered: {
-    // ✅ Center nhưng không bị cut off
     width: '100%',
     maxWidth: '600px',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: '0 auto', // ✅ Center horizontal
+    margin: '0 auto',
   },
   authFormWrapper: {
     width: '100%',
@@ -147,7 +145,6 @@ const styles = {
     position: 'relative' as const,
     zIndex: 20,
     pointerEvents: 'auto' as const,
-    // ✅ Đảm bảo không bị overflow
     maxWidth: '100%',
   },
   rightSection: {
@@ -155,7 +152,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '1.5rem',
     overflow: 'hidden',
     pointerEvents: 'none' as const,
     background: 'transparent',

@@ -2,9 +2,14 @@ export interface Account {
   id: string;
   username: string; // Đảm bảo sử dụng username thay vì name
   email: string;
-  password?: string;
+  password: string;
   gender: string;
-  createdAt?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: Omit<Account, 'password'>;
+  message: string;
 }
 
 export interface LoginRequest {
@@ -17,13 +22,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   gender: string;
-  code: string; // Cập nhật từ verificationCode sang code
-}
-
-export interface AuthResponse {
-  token: string;
-  user: Omit<Account, 'password'>;
-  message: string;
+  verificationCode?: string; // Optional for registration
 }
 
 export interface ResetPasswordRequest {
