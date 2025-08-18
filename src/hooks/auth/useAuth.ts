@@ -69,7 +69,7 @@ export const useAuth = (): UseAuthReturn => {
     try {
       await AuthService.login(loginData);
       console.log('Đăng nhập thành công, chuyển hướng đến trang chủ');
-      
+      git 
       // Thay đổi từ '/account' thành '/' (trang chủ)
       router.push('/');
     } catch (err) {
