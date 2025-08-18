@@ -1,17 +1,18 @@
 'use client';
 import React from 'react';
 import { useSubCategories } from '@/hooks/useSubCategories';
+import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
 
 interface SubCategoryDropdownProps {
   categoryId: string;
-  onSubCategoryClick: (subCategoryId: string) => void; // ✅ Thêm prop mới
+  onSubCategoryClick: (subCategoryId: string) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 function SubCategoryDropdown({ 
   categoryId, 
-  onSubCategoryClick, // ✅ Nhận prop từ parent
+  onSubCategoryClick,
   onMouseEnter, 
   onMouseLeave 
 }: SubCategoryDropdownProps) {
@@ -19,13 +20,16 @@ function SubCategoryDropdown({
 
   const handleSubCategoryClick = (subCategoryId: string, subCategoryName: string) => {
     console.log(`Navigate to subcategory: ${subCategoryId} - ${subCategoryName}`);
-    onSubCategoryClick(subCategoryId); // ✅ Gọi function từ parent
+    onSubCategoryClick(subCategoryId);
   };
 
   if (loading) {
     return (
       <div style={styles.dropdown} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <div style={styles.loading}>Loading...</div>
+        <LoadingSpinner 
+          text="TẢI DANH MỤC..." 
+          size="small" 
+        />
       </div>
     );
   }
@@ -63,14 +67,14 @@ const styles = {
   dropdown: {
     position: 'absolute' as const,
     top: '100%',
-    left: '0',                      // ✅ Căn theo button
+    left: '0',
     backgroundColor: '#fff',
     border: '1px solid #e0e0e0',
     borderRadius: '4px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
     zIndex: 1000,
     maxHeight: '300px',
-    width: '280px',                 // ✅ Width cố định nhỏ hơn
+    width: '280px',
     overflowY: 'auto' as const,
   },
   listContainer: {
@@ -84,15 +88,8 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.2s ease, color 0.2s ease',
     borderBottom: '1px solid #f5f5f5',
-    whiteSpace: 'nowrap' as const,   // ✅ Không wrap text
+    whiteSpace: 'nowrap' as const,
   },
-  loading: {
-    padding: '20px',
-    textAlign: 'center' as const,
-    fontSize: '14px',
-    color: '#1a1aff',
-    fontWeight: 'bold',
-  }
 };
 
 export default SubCategoryDropdown;

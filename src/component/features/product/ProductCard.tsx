@@ -3,7 +3,7 @@ import { Product } from '@/types/Product';
 import { useState, useEffect } from 'react';
 import { useImageBackgroundColor } from '@/hooks/useImageBackgroundColor';
 import { useCategory } from '@/hooks/useCategory'; // ✅ Import hook mới
-import CardLabel from '@/component/ui/product/CardLabel'; // ✅ Import CardLabel component
+import CardLabel from '@/component/features/product/CardLabel';
 import { SubCategoryService } from '@/services/SubCategoryService';
 
 interface ProductCardProps {

@@ -6,6 +6,7 @@ import { useCategories } from '@/hooks/useCategories';
 import CompactHeader from '@/component/layout/header/CompactHeader';
 import DesktopHeader from '@/component/layout/header/DesktopHeader';
 import MobileMenuDropdown from '@/component/navigation/MobileMenuDropdown';
+import AccountShortcut from '@/component/features/header/AccountShortcut';
 
 function PageHeader() {
   const router = useRouter();
@@ -16,16 +17,30 @@ function PageHeader() {
   
   const { categories, loading, error } = useCategories();
 
-  // ✅ Check login status (replace with your actual auth logic)
+  // Check login status and user data
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   useEffect(() => {
-    // ✅ Check if user is logged in
-    // Replace this with your actual authentication check
+    // Check if user is logged in
     const token = localStorage.getItem('authToken');
     const userSession = localStorage.getItem('userSession');
     
-    setIsLoggedIn(!!(token || userSession));
+    if (token || userSession) {
+      setIsLoggedIn(true);
+      // Parse user data from localStorage
+      if (userSession) {
+        try {
+          const userData = JSON.parse(userSession);
+          setUser(userData);
+        } catch (error) {
+          console.error('Error parsing user session:', error);
+        }
+      }
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -40,8 +55,9 @@ function PageHeader() {
 
   const isSmallScreen = windowWidth <= 1000;
   const isMobile = windowWidth <= 760;
+  const isDesktop = windowWidth >= 750;
 
-  // ✅ Navigation handlers
+  // Navigation handlers
   const handleLogoClick = () => {
     router.push('/');
   };
@@ -51,11 +67,21 @@ function PageHeader() {
   };
 
   const handleAccountClick = () => {
-    if (isLoggedIn) {
-      router.push('/account'); // ✅ Go to account page if logged in
-    } else {
-      router.push('/auth');   // ✅ Go to login page if not logged in
+    if (!isLoggedIn) {
+      router.push('/auth');
     }
+    // If logged in, AccountShortcut will handle the dropdown
+  };
+
+  const handleLogout = () => {
+    // Clear auth data
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userSession');
+    setIsLoggedIn(false);
+    setUser(null);
+    
+    // Redirect to home page
+    router.push('/');
   };
 
   const toggleMenu = () => {
@@ -84,8 +110,46 @@ function PageHeader() {
     setSelectedCategory(null);
   };
 
+  // Create AccountShortcut wrapper that preserves original button appearance
+  const createAccountComponent = () => {
+    if (!isLoggedIn || !user) return null;
+
+    if (isMobile) {
+      return (
+        <AccountShortcut 
+          user={user} 
+          onLogout={handleLogout}
+          isDesktop={false}
+        >
+          <button 
+            style={styles.mobileAccountButton}
+            title="Tài khoản"
+          >
+            <img 
+              src={'/images/icons/account.png'} 
+              alt="Tài khoản"
+              style={styles.mobileButtonIcon} 
+            />
+          </button>
+        </AccountShortcut>
+      );
+    }
+
+    return (
+      <AccountShortcut 
+        user={user} 
+        onLogout={handleLogout}
+        isDesktop={true}
+      >
+        <div style={styles.desktopAccountWrapper}>
+          <img src="/images/icons/account.png" alt="Account" style={styles.desktopIcon} />
+          <span style={styles.desktopIconLabel}>Tài khoản</span>
+        </div>
+      </AccountShortcut>
+    );
+  };
+
   if (isMobile) {
-    // ✅ Mobile Layout
     return (
       <div style={{
         ...styles.headerContainer,
@@ -99,7 +163,8 @@ function PageHeader() {
           onLogoClick={handleLogoClick}
           onCartClick={handleCartClick}
           onAccountClick={handleAccountClick}
-          isLoggedIn={isLoggedIn} // ✅ Pass login status
+          isLoggedIn={isLoggedIn}
+          accountComponent={createAccountComponent()}
         />
 
         <MobileMenuDropdown
@@ -113,7 +178,6 @@ function PageHeader() {
     );
   }
 
-  // ✅ Desktop Layout
   return (
     <div style={styles.headerContainer}>
       <DesktopHeader
@@ -121,7 +185,8 @@ function PageHeader() {
         onLogoClick={handleLogoClick}
         onCartClick={handleCartClick}
         onAccountClick={handleAccountClick}
-        isLoggedIn={isLoggedIn} // ✅ Pass login status
+        isLoggedIn={isLoggedIn}
+        accountComponent={createAccountComponent()}
       />
       <div style={styles.headerBottom}>
         <CategoryNavigation />
@@ -139,7 +204,6 @@ const styles = {
     alignItems: 'center',
     position: 'relative' as const,
     backgroundColor: '#fff',
-    
   },
   headerBottom: {
     display: 'flex',
@@ -149,6 +213,43 @@ const styles = {
     padding: '0 8vw',
     height: '60px',
     alignItems: 'center',
+  },
+  // Desktop account wrapper styles
+  desktopAccountWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
+    padding: '8px',
+    borderRadius: '4px',
+  },
+  desktopIcon: {
+    width: '28px',
+    height: '28px',
+  },
+  desktopIconLabel: {
+    fontSize: '14px',
+    color: '#002749',
+    marginLeft: '2px',
+    flexShrink: 0,
+    fontWeight: '500',
+  },
+  // Mobile account button styles
+  mobileAccountButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '36px',
+    height: '36px',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '4px',
+    transition: 'background-color 0.2s ease',
+  },
+  mobileButtonIcon: {
+    width: '22px',
+    height: '22px',
   },
 };
 

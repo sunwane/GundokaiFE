@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useSubCategories } from '@/hooks/useSubCategories';
+import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
 
 interface CategoryMenuItemProps {
   category: any;
@@ -14,7 +15,6 @@ function CategoryMenuItem({ category, isSelected, onClick, onSubCategoryClick }:
 
   return (
     <div style={styles.categoryMenuSection}>
-      {/* ✅ Main Category Button */}
       <button
         style={styles.menuItem}
         onClick={() => onClick(category.id)}
@@ -24,11 +24,13 @@ function CategoryMenuItem({ category, isSelected, onClick, onSubCategoryClick }:
         <span style={styles.menuArrow}>›</span>
       </button>
 
-      {/* ✅ Subcategories - Show when selected */}
       {isSelected && (
         <div style={styles.subMenuContainer}>
           {loading ? (
-            <div style={styles.subMenuLoading}>Loading...</div>
+            <LoadingSpinner 
+              text="TẢI DANH MỤC CON..." 
+              size="small" 
+            />
           ) : (
             subCategories.map((subCategory) => (
               <button
@@ -96,12 +98,6 @@ const styles = {
     fontSize: '14px',
     color: '#666',
     fontWeight: '400',
-  },
-  subMenuLoading: {
-    padding: '10px 20px',
-    fontSize: '14px',
-    color: '#999',
-    textAlign: 'center' as const,
   },
 };
 

@@ -1,6 +1,6 @@
 'use client';
 import React, { ReactNode } from 'react';
-import '@/component/ui/auth/styles/authform.css';
+import '@/component/features/auth/styles/authform.css';
 
 interface BaseAuthCardProps {
   children: ReactNode;

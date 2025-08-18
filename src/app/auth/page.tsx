@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import AuthForm from '@/component/ui/auth/AuthForm';
-import ModelSection from '@/component/ui/auth/ModelSection';
+import AuthForm from '@/component/features/auth/AuthForm';
+import ModelSection from '@/component/features/auth/ModelSection';
 
 export default function AuthPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
