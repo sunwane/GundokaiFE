@@ -19,7 +19,12 @@ export class AuthService {
       
       console.log('Status code:', response.status);
       
-      const data = await response.json();
+      // Parse response with error handling
+      const data = await response.json().catch(err => {
+        console.error('Failed to parse response as JSON:', err);
+        throw new Error('Lỗi định dạng phản hồi từ server');
+      });
+
       console.log('Response data:', JSON.stringify(data, null, 2));
       
       if (!response.ok) {
@@ -83,7 +88,7 @@ export class AuthService {
             user: userData || {},
             message: 'Đăng nhập thành công'
           };
-        }
+        } 
       }
       
       // Nếu không tìm thấy token theo cách trên, log response chi tiết
@@ -190,14 +195,44 @@ export class AuthService {
     // Import inline để tránh circular dependency
     const { UserService } = await import('./UserService');
     
-    // Register user
-    await UserService.register(userData);
-    
-    // After registration, login the user
-    return this.login({
-      email: userData.email,
-      password: userData.password
-    });
+    try {
+      // Register user
+      await UserService.register(userData);
+      
+      // Add a small delay before attempting login to ensure backend has processed registration
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // After registration, login the user with improved error handling
+      try {
+        return await this.login({
+          email: userData.email,
+          password: userData.password
+        });
+      } catch (loginError) {
+        console.error('Auto-login after registration failed:', loginError);
+        
+        // Create a basic user object to return without requiring login
+        const basicUser = {
+          id: '',
+          username: userData.username,
+          email: userData.email,
+          gender: userData.gender
+        };
+        
+        // Store basic user info so the UI can show something
+        localStorage.setItem('userSession', JSON.stringify(basicUser));
+        
+        // Return a partial success response
+        return {
+          token: '', // Empty token since login failed
+          user: basicUser,
+          message: 'Đăng ký thành công! Vui lòng đăng nhập thủ công.'
+        };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   }
 
   // Thêm phương thức này vào cuối class AuthService
