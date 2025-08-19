@@ -64,7 +64,7 @@ export function useAuthState(): AuthState & {
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('userSession');
     setAuthState({
       isLoggedIn: false,

@@ -9,7 +9,6 @@ import NotificationList from '@/component/features/account/noti/NotificationList
 import ChangePassword from '@/component/features/account/ChangePassword';
 import LoadingSpinner from '@/component/ui/LoadingSpinner';
 import { useAccount } from '@/hooks/useAccount';
-import { usePageResponsive } from '@/hooks/usePageResponsive';
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
@@ -29,26 +28,37 @@ export default function AccountPage() {
   } = useAccount();
 
   const [activeTab, setActiveTab] = useState(tabFromUrl);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(1200); // Default desktop width
+
+  useEffect(() => {
+    setIsHydrated(true);
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Computed responsive values
+  const isMobile = isHydrated ? windowWidth < 768 : false;
   
-  // SỬ DỤNG usePageResponsive THAY VÌ useResponsive
-  const { 
-    isMobile, 
-    getResponsivePadding, 
-    getGridColumns,
-    getResponsiveSpacing 
-  } = usePageResponsive({
-    mobileBreakpoint: 750,
-    tabletBreakpoint: 1024,
-    mobilePadding: '20px 4vw',
-    desktopPadding: '32px 5vw',
-  });
+  const getResponsivePadding = () => {
+    return isHydrated && isMobile ? '20px 4vw' : '32px 5vw';
+  };
+
+  const getResponsiveSpacing = () => {
+    const small = isHydrated && isMobile ? '8px' : '12px';
+    const medium = isHydrated && isMobile ? '16px' : '24px';
+    const large = isHydrated && isMobile ? '24px' : '40px';
+    
+    return { small, medium, large };
+  };
 
   const spacing = getResponsiveSpacing();
-
-  // Update tab when URL changes
-  useEffect(() => {
-    setActiveTab(tabFromUrl);
-  }, [tabFromUrl]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -60,11 +70,17 @@ export default function AccountPage() {
     }
   };
 
+  useEffect(() => {
+    setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
+
   if (isLoading) {
     return (
       <div>
         <PageHeader />
-        <LoadingSpinner text="Đang tải thông tin tài khoản..." size="large" />
+        <div style={styles.loadingContainer}>
+          <LoadingSpinner text="Đang tải thông tin tài khoản..." size="large" />
+        </div>
       </div>
     );
   }
@@ -72,6 +88,12 @@ export default function AccountPage() {
   if (!user) {
     return null;
   }
+
+  // ✅ Hàm tạo avatar từ username
+  const getAvatarText = (username: string) => {
+    if (!username) return 'U';
+    return username.charAt(0).toUpperCase();
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -114,37 +136,24 @@ export default function AccountPage() {
     <div>
       <PageHeader />
       
-      {/* Welcome Banner */}
+      {/* ✅ Welcome Banner - Cập nhật màu xanh biển */}
       <div style={styles.welcomeBanner}>
         <div style={{
           ...styles.bannerContent,
           padding: getResponsivePadding(),
         }}>
-          <div style={styles.welcomeInfo}>
-            <div style={{
-              ...styles.avatar,
-              width: isMobile ? '50px' : '60px',
-              height: isMobile ? '50px' : '60px',
-            }}>
-              <div style={{
-                ...styles.avatarPlaceholder,
-                fontSize: isMobile ? '20px' : '24px',
-              }}>
-                {user.username.charAt(0).toUpperCase()}
-              </div>
+          <div style={styles.welcomeContainer}>
+            {/* ✅ Avatar tròn giống sidebar */}
+            <div style={styles.bannerAvatar}>
+              {getAvatarText(user.username)}
             </div>
-            <div>
-              <h2 style={{
-                ...styles.welcomeTitle,
-                fontSize: isMobile ? '18px' : '20px',
-              }}>
-                Xin chào, {user.username}!
-              </h2>
-              <p style={{
-                ...styles.welcomeSubtitle,
-                fontSize: isMobile ? '12px' : '14px',
-              }}>
-                Chào mừng bạn quay trở lại
+            
+            <div style={styles.welcomeText}>
+              <h1 style={styles.welcomeTitle}>
+                Chào mừng trở lại, {user.username}! 
+              </h1>
+              <p style={styles.welcomeSubtitle}>
+                Quản lý thông tin tài khoản và đơn hàng của bạn
               </p>
             </div>
           </div>
@@ -157,12 +166,12 @@ export default function AccountPage() {
       }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : '300px 1fr',
+          gridTemplateColumns: isHydrated && isMobile ? '1fr' : '300px 1fr',
           gap: spacing.large,
           alignItems: 'start',
         }}>
-          {/* Sidebar - hidden on mobile */}
-          {!isMobile && (
+          {/* Sidebar - hidden on mobile when not hydrated or is mobile */}
+          {(!isHydrated || !isMobile) && (
             <div style={styles.sidebarContainer}>
               <AccountSidebar
                 user={user}
@@ -174,27 +183,18 @@ export default function AccountPage() {
           )}
 
           {/* Mobile Tab Navigation */}
-          {isMobile && (
+          {isHydrated && isMobile && (
             <div style={styles.mobileTabNav}>
-              {[
-                { key: 'account', label: 'Thông tin', icon: '👤' },
-                { key: 'orders', label: 'Đơn hàng', icon: '📦' },
-                { key: 'notifications', label: 'Thông báo', icon: '🔔' },
-                { key: 'password', label: 'Mật khẩu', icon: '🔐' },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  style={{
-                    ...styles.mobileTabButton,
-                    backgroundColor: activeTab === tab.key ? '#3b82f6' : '#ffffff',
-                    color: activeTab === tab.key ? '#ffffff' : '#6b7280',
-                  }}
-                  onClick={() => handleTabChange(tab.key)}
-                >
-                  <span style={styles.mobileTabIcon}>{tab.icon}</span>
-                  <span style={styles.mobileTabLabel}>{tab.label}</span>
-                </button>
-              ))}
+              <select 
+                value={activeTab} 
+                onChange={(e) => handleTabChange(e.target.value)}
+                style={styles.mobileSelect}
+              >
+                <option value="account">Thông tin tài khoản</option>
+                <option value="orders">Lịch sử đơn hàng</option>
+                <option value="notifications">Thông báo</option>
+                <option value="password">Đổi mật khẩu</option>
+              </select>
             </div>
           )}
 
@@ -208,82 +208,79 @@ export default function AccountPage() {
 }
 
 const styles = {
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '50vh',
+  },
+  // ✅ SỬA: Banner màu xanh biển thay vì gradient tím
   welcomeBanner: {
-    background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+    background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)', // Màu xanh biển như ảnh 2
     color: 'white',
-    padding: '20px 0px',
+    marginBottom: '32px',
   },
   bannerContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '32px 5vw',
   },
-  welcomeInfo: {
+  // ✅ THÊM: Container cho avatar và text
+  welcomeContainer: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '20px',
   },
-  avatar: {
+  // ✅ THÊM: Avatar tròn giống sidebar
+  bannerAvatar: {
+    width: '80px',
+    height: '80px',
     borderRadius: '50%',
-    overflow: 'hidden',
-    border: '3px solid rgba(255, 255, 255, 0.3)',
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    border: '3px solid rgba(255, 255, 255, 0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    fontSize: '32px',
     fontWeight: 'bold',
+    color: 'white',
+    flexShrink: 0,
+  },
+  welcomeText: {
+    textAlign: 'left' as const,
+    flex: 1,
   },
   welcomeTitle: {
+    fontSize: '28px',
     fontWeight: 'bold',
-    margin: '0 0 4px 0',
+    margin: '0 0 8px 0',
   },
   welcomeSubtitle: {
-    margin: 0,
+    fontSize: '16px',
     opacity: 0.9,
+    margin: 0,
   },
   pageContainer: {
-    minHeight: 'calc(100vh - 200px)',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '32px 5vw',
   },
   sidebarContainer: {
     position: 'sticky' as const,
     top: '32px',
   },
   mobileTabNav: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '8px',
-    marginBottom: '20px',
-    backgroundColor: '#f8fafc',
+    marginBottom: '24px',
+  },
+  mobileSelect: {
+    width: '100%',
     padding: '12px',
-    borderRadius: '12px',
-    border: '1px solid #e5e7eb',
-  },
-  mobileTabButton: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    gap: '4px',
-    padding: '12px 8px',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    fontSize: '12px',
-    fontWeight: '500',
-  },
-  mobileTabIcon: {
     fontSize: '16px',
-  },
-  mobileTabLabel: {
-    fontSize: '10px',
-    textAlign: 'center' as const,
+    border: '1px solid #d1d5db',
+    borderRadius: '8px',
+    backgroundColor: 'white',
   },
   mainContent: {
-    minHeight: '600px',
+    minHeight: '500px',
   },
 };

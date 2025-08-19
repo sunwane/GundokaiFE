@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FormInput from '@/component/ui/form/FormInput';
+import PasswordInput from '@/component/ui/form/PasswordInput';
 import SubmitButton from '@/component/ui/form/SubmitButton';
 import Card from '@/component/ui/CardCotainer';
 import CardHeader from '@/component/ui/CardHeader';
@@ -19,12 +19,27 @@ export default function ChangePassword({ userId }: ChangePasswordProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // ✅ THÊM: State cho việc hiển thị password
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (error) setError('');
     if (success) setSuccess('');
+  };
+
+  // ✅ THÊM: Handlers cho toggle password visibility
+  const handleTogglePassword = (field: 'current' | 'new' | 'confirm') => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,6 +67,12 @@ export default function ChangePassword({ userId }: ChangePasswordProps) {
         newPassword: '',
         confirmPassword: ''
       });
+      // ✅ Reset password visibility states
+      setShowPasswords({
+        current: false,
+        new: false,
+        confirm: false
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đổi mật khẩu');
     } finally {
@@ -78,37 +99,40 @@ export default function ChangePassword({ userId }: ChangePasswordProps) {
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.formGrid}>
-            <FormInput
+            <PasswordInput
               id="currentPassword"
               label="Mật khẩu hiện tại"
-              type="password"
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleInputChange}
+              showPassword={showPasswords.current}
+              onTogglePassword={() => handleTogglePassword('current')}
               mode="light"
               required
               placeholder="Nhập mật khẩu hiện tại"
             />
 
-            <FormInput
+            <PasswordInput
               id="newPassword"
               label="Mật khẩu mới"
-              type="password"
               name="newPassword"
               value={formData.newPassword}
               onChange={handleInputChange}
+              showPassword={showPasswords.new}
+              onTogglePassword={() => handleTogglePassword('new')}
               mode="light"
               required
               placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
             />
 
-            <FormInput
+            <PasswordInput
               id="confirmPassword"
               label="Xác nhận mật khẩu mới"
-              type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
+              showPassword={showPasswords.confirm}
+              onTogglePassword={() => handleTogglePassword('confirm')}
               mode="light"
               required
               placeholder="Nhập lại mật khẩu mới"

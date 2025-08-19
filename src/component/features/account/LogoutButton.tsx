@@ -1,4 +1,6 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import {AuthService} from '@/services/AuthService';
 
 interface LogoutButtonProps {
   onLogout: () => void;
@@ -11,6 +13,25 @@ export default function LogoutButton({
   variant = 'dropdown',
   showInSection = false 
 }: LogoutButtonProps) {
+  const router = useRouter();
+  
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+      
+      // Gọi callback từ parent
+      onLogout();
+      
+      // Redirect về trang chủ
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Vẫn logout local dù API lỗi
+      onLogout();
+      router.push('/');
+    }
+  };
+
   const isSidebar = variant === 'sidebar';
 
   const containerStyle = isSidebar && showInSection ? styles.sidebarSection : {};
@@ -19,7 +40,7 @@ export default function LogoutButton({
   return (
     <div style={containerStyle}>
       <button
-        onClick={onLogout}
+        onClick={handleLogout} // ✅ Sử dụng handleLogout thay vì onLogout trực tiếp
         style={buttonStyle}
         onMouseEnter={(e) => {
           if (!isSidebar) {

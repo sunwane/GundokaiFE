@@ -6,13 +6,11 @@ import { useToggle } from '@/hooks/useToggle';
 import UserInfoDisplay from '@/component/features/account/UserInfoHeader';
 import AccountMenuList from '@/component/features/account/AccountMenuList';
 import LogoutButton from '@/component/features/account/LogoutButton';
+// ✅ SỬA: Import với destructuring thay vì default import
+import { AuthService } from '@/services/AuthService';
 
 interface AccountShortcutProps {
-  user: {
-    id: number;
-    username: string;
-    email: string;
-  } | null;
+  user: any;
   onLogout: () => void;
   isDesktop?: boolean;
   children: React.ReactNode;
@@ -51,9 +49,19 @@ export default function AccountShortcut({
     setOpen(false);
   };
 
-  const handleLogout = () => {
-    onLogout();
-    setOpen(false);
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+      onLogout();
+      
+      // Redirect về trang chủ
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Vẫn logout local dù API lỗi
+      onLogout();
+      router.push('/');
+    }
   };
 
   if (!user) {
