@@ -38,7 +38,6 @@ export default function ProductsPage() {
     error, 
     refetch 
   } = useProductsPage(subcategoryId);
-
   // Filter state management với hook đã cập nhật
   const {
     currentFilters,
@@ -89,7 +88,6 @@ export default function ProductsPage() {
       </div>
     );
   }
-
   return (
     <div>
       <PageHeader />

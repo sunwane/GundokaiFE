@@ -49,7 +49,7 @@ export function useProductDetail(productId: string | null): UseProductDetailRetu
       setProductDetail(detailData);
 
       // Fetch related products
-      const relatedData = await ProductDetailService.getRelatedProducts(productData.subCategory_id, 5);
+      const relatedData = await ProductDetailService.getRelatedProducts(productData.subCategoryId, 5);
       // Filter out current product from related products
       setRelatedProducts(relatedData.filter(p => p.id !== productId));
 

@@ -28,7 +28,7 @@ function CategoryNavigation() {
   };
 
   const handleSubCategoryClick = (subCategoryId: string) => {
-    router.push(`/products?subcategory=${subCategoryId}`);
+    router.push(`/products?subcategory=${subCategoryId}`); // chuyển thành subCategoryName
     setHoveredCategory(null);
   };
 

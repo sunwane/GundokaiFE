@@ -23,6 +23,7 @@ export function useProductsPage(subcategoryId?: string | null) {
     error: subcategoryError,      
     ...subcategoryMethods         
   } = useSubCategory(subcategoryId);
+  // console.log("check2", subcategoryInfo)
 
   // 🔄 SORT & FILTER STATES
   const [sortType, setSortType] = useState<SortType>('default');

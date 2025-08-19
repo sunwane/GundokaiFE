@@ -30,7 +30,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
     category, 
     subCategory, 
     loading 
-  } = useCategory(item.product.subCategory_id);
+  } = useCategory(item.product.subCategory.id);
 
   return (
     <div style={styles.container}>

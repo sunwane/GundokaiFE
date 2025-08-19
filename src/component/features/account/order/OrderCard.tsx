@@ -60,7 +60,7 @@ export default function OrderCard({ order }: OrderCardProps) {
           {order.details.map((detail) => (
             <div key={detail.id} style={styles.orderItem}>
               <span style={styles.itemInfo}>
-                Sản phẩm #{detail.product_id} × {detail.quantity}
+                Sản phẩm #{detail.productId} × {detail.quantity}
               </span>
               <span style={styles.itemPrice}>
                 {formatPrice(detail.price)}

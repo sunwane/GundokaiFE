@@ -1,6 +1,6 @@
 export interface ProductDetail {
   id: string;
-  product_id: string;
+  productId: string;
   manufacturer: string;
   material: string;
   ratio: string;

@@ -37,8 +37,8 @@ export function useCategoryFilter(products: Product[] = []): UseCategoryFilterRe
         .filter(sub => sub.category_id === category.id)
         .map(sub => ({
           id: sub.id,
-          name: sub.subCategory_Name,
-          count: products.filter(p => p.subCategory_id === sub.id).length
+          name: sub.subCategoryName,
+          count: products.filter(p => p.subCategory.id === sub.id).length
         }));
 
       return {

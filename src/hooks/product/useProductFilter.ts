@@ -47,7 +47,7 @@ export function useProductFilter(
 
       // Category filter
       const categoryMatch = filters.categories.length === 0 || 
-        filters.categories.includes(product.subCategory_id);
+        filters.categories.includes(product.subCategory.id);
 
       return stockMatch && priceMatch && categoryMatch;
     });

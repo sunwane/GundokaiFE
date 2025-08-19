@@ -12,7 +12,7 @@ export interface Order {
 export interface OrderDetail {
   id: string;
   order_id: string;
-  product_id: string;
+  productId: string;
   quantity: number;
   price: number;
 }

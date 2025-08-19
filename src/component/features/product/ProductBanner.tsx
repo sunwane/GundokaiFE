@@ -3,8 +3,8 @@ import React from 'react';
 
 interface ProductBannerProps {
   subcategoryInfo?: {
-    subCategory_img?: string;
-    subCategory_Name?: string;
+    subCategoryImg?: string;
+    subCategoryName?: string;
     description?: string;
   } | null;
 }
@@ -12,15 +12,15 @@ interface ProductBannerProps {
 export default function ProductBanner({ subcategoryInfo }: ProductBannerProps) {
   return (
     <>
-      {subcategoryInfo?.subCategory_img ? (
+      {subcategoryInfo?.subCategoryImg ? (
         <div style={styles.bannerContainer}>
-          <img 
-            src={subcategoryInfo.subCategory_img} 
-            alt={`${subcategoryInfo.subCategory_Name} Banner`}
+          <img
+            src={subcategoryInfo.subCategoryImg}
+            alt={`${subcategoryInfo.subCategoryName} Banner`}
             style={styles.bannerImage}
           />
           <div style={styles.bannerOverlay}>
-            <h1 style={styles.bannerTitle}>{subcategoryInfo.subCategory_Name}</h1>
+            <h1 style={styles.bannerTitle}>{subcategoryInfo.subCategoryName}</h1>
             <p style={styles.bannerDescription}>{subcategoryInfo.description}</p>
           </div>
         </div>

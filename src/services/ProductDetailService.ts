@@ -1,39 +1,77 @@
 import { Product } from '@/types/Product';
 import { ProductImg } from '@/types/Product';
 import { ProductDetail } from '@/types/ProductDetail';
-import { mockProducts } from '@/data/mockProducts';
-import { mockProductImages } from '@/data/mockProductImg';
-import { mockProductDetails } from '@/data/mockProductDetails';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
 export class ProductDetailService {
   static async getProductById(productId: string): Promise<Product | null> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const product = mockProducts.find(p => p.id === productId);
-    return product || null;
+    try {
+      const response = await fetch(`${API_BASE_URL}/product/getByProductId/${productId}`);
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.result || data;
+    } catch (error) {
+      console.error('Error fetching product by ID:', error);
+      throw error;
+    }
   }
 
   static async getProductImgs(productId: string): Promise<ProductImg[]> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    return mockProductImages.filter(img => img.product_id === productId);
+    try {
+      const response = await fetch(`${API_BASE_URL}/productImg/getAllImg/${productId}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      return data.result || data;
+    } catch (error) {
+      console.error('Error fetching product images:', error);
+      throw error;
+    }
   }
 
+  // ✅ CẬP NHẬT HÀM NÀY THEO API ENDPOINT CỦA BẠN
   static async getProductDetail(productId: string): Promise<ProductDetail | null> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 150));
-    
-    const detail = mockProductDetails.find(detail => detail.product_id === productId);
-    return detail || null;
+    try {
+      const response = await fetch(`${API_BASE_URL}/get/${productId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Product detail response:', data);
+      return data.result || null;
+    } catch (error) {
+      console.error('Error fetching product detail:', error);
+      throw error;
+    }
   }
 
   static async getRelatedProducts(categoryId: string, limit: number = 5): Promise<Product[]> {
-
-    await new Promise(resolve => setTimeout(resolve, 250));
-    return mockProducts
-      .filter(p => p.subCategory_id === categoryId)
-      .slice(0, limit);
+    try {
+      // ✅ SỬ DỤNG API LẤY PRODUCTS THEO SUBCATEGORY
+      const response = await fetch(`${API_BASE_URL}/getProductBySubCategory/${categoryId}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+      const data = await response.json();
+      const products = data.result || data;
+      
+      // ✅ GIỚI HẠN SỐ LƯỢNG SẢN PHẨM LIÊN QUAN
+      return Array.isArray(products) ? products.slice(0, limit) : [];
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+      return [];
+    }
   }
 }

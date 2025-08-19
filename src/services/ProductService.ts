@@ -93,16 +93,6 @@ export class ProductService {
    * 🌐 Tương lai: GET /api/products?subcategory=:id
    */
   static async getProductsBySubCategory(subCategoryId: string): Promise<ProductResponse> {
-    // ❌ HIỆN TẠI
-    // await new Promise(resolve => setTimeout(resolve, 400));
-    // const filteredProducts = mockProducts.filter(p => p.subCategory_id === subCategoryId);
-    // return {
-    //   data: filteredProducts,
-    //   total: filteredProducts.length,
-    //   message: `Products filtered by subcategory: ${subCategoryId}`
-    // };
-
-    // ✅ TƯƠNG LAI: Real API với query params
     
     try {
       // const response = await fetch(`/api/products?subcategory=${subCategoryId}`);
@@ -110,7 +100,8 @@ export class ProductService {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      return data;
+      console.log("check 4:",data)
+      return data.result;
     } catch (error) {
       console.error('Error fetching products by subcategory:', error);
       throw error;

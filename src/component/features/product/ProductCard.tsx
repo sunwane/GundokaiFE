@@ -36,10 +36,10 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     subCategoryName, 
 
     loading 
-  } = useCategory(product.subCategory_id);
+  } = useCategory(product.subcategory.id);
   
   const { backgroundColor, imgRef, handleImageLoad } = useImageBackgroundColor(
-    product.subCategory_id,
+    product.subcategory.id,
     'rgba(248, 249, 250, 0.8)'
   );
 
@@ -51,7 +51,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     }
   };
 
-  const categoryId = useCategoryId(product.subCategory_id);
+  const categoryId = useCategoryId(product.subcategory.id);
 
   return (
     <div 
@@ -91,7 +91,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           {/* Card Label */}
           {!loading && (
             <CardLabel 
-              subcategoryId={subCategoryName || product.subCategory_id}
+              subcategoryId={subCategoryName || product.subcategory.id}
               categoryId={categoryName || 'Gundam'}
               style={styles.cardLabelContainer}
             />
@@ -102,7 +102,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
             // color: isOutOfStock ? '#999' : '#2c3e50',
             color: '#2c3e50', // LUÔN GIỮ MÀU BẬT
           }}>
-            {product.product_Name}
+            {product.productName}
           </h3>
           
           <div style={styles.priceContainer}>

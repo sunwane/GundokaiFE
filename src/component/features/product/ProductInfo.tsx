@@ -24,7 +24,7 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
   const { 
     categoryName,
     subCategoryName,
-  } = useCategory(product.subCategory_id ?? '');
+  } = useCategory(product.subCategory.id ?? '');
 
   const handleAddToCart = () => {
     try {

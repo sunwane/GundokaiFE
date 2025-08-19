@@ -54,8 +54,8 @@ export class SubCategoryService {
     
     try {
       // TODO: Real API call
-      // const response = await fetch(`${API_BASE_URL}/subcategories/${subCategoryId}`);
-      // return await response.json();
+      const response = await fetch(`${API_BASE_URL}/getSubCategoryById/${subCategoryId}`);
+      return await response.json();
 
       // Mock response for now
       const subCategory = mockSubCategories.find(sub => sub.id === subCategoryId);
