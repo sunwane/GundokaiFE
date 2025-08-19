@@ -19,8 +19,8 @@ function CategoryMenuItem({ category, isSelected, onClick, onSubCategoryClick }:
         style={styles.menuItem}
         onClick={() => onClick(category.id)}
       >
-        <img src={category.icon_img} alt={category.category_Name} style={styles.menuIcon} />
-        <span style={styles.menuText}>{category.category_Name}</span>
+        <img src={category.categoryImg} alt={category.categoryName} style={styles.menuIcon} />
+        <span style={styles.menuText}>{category.categoryName}</span>
         <span style={styles.menuArrow}>›</span>
       </button>
 
@@ -38,7 +38,7 @@ function CategoryMenuItem({ category, isSelected, onClick, onSubCategoryClick }:
                 style={styles.subMenuItem}
                 onClick={() => onSubCategoryClick(subCategory.id)}
               >
-                <span style={styles.subMenuText}>{subCategory.subCategory_Name}</span>
+                <span style={styles.subMenuText}>{subCategory.subCategoryName}</span>
               </button>
             ))
           )}

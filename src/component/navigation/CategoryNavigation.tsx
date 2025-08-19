@@ -14,8 +14,8 @@ function CategoryNavigation() {
 
   const infoCategory: Category = {
     id: 'info',
-    category_Name: 'THÔNG TIN',
-    icon_img: '/images/icons/aboutIcon.png',
+    categoryName: 'THÔNG TIN',
+    categoryImg: '/images/icons/aboutIcon.png',
   };
 
   const allCategories = [...categories, infoCategory];

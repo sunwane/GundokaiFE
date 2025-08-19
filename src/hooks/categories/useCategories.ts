@@ -31,10 +31,9 @@ export function useCategories() {
       
       // 🌐 Gọi API thông qua CategoryService
       const response = await CategoryService.getCategories();
-      
       // ✅ Nếu thành công, lưu data vào state
-      setCategories(response.data);
-      
+      setCategories(response.result);
+
     } catch (err) {
       // ❌ Nếu có lỗi, lưu error message
       setError(err instanceof Error ? err.message : 'Unknown error');

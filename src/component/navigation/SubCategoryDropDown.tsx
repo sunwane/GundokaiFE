@@ -45,7 +45,7 @@ function SubCategoryDropdown({
           <div
             key={subCategory.id}
             style={styles.listItem}
-            onClick={() => handleSubCategoryClick(subCategory.id, subCategory.subCategory_Name)}
+            onClick={() => handleSubCategoryClick(subCategory.id, subCategory.subCategoryName)}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#f0f8ff';
               e.currentTarget.style.color = '#007AFF';
@@ -55,7 +55,7 @@ function SubCategoryDropdown({
               e.currentTarget.style.color = '#333';
             }}
           >
-            {subCategory.subCategory_Name}
+            <span>{subCategory.subCategoryName}</span>
           </div>
         ))}
       </div>

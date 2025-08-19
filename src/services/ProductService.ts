@@ -1,6 +1,7 @@
 import { Product, ProductResponse } from '@/types/Product';
 import { mockProducts } from '@/data/mockProducts';
 
+const API_BASE_URL = 'http://localhost:8080/product';
 /**
  * 🎯 ProductService - Service Layer Pattern
  * 
@@ -93,18 +94,19 @@ export class ProductService {
    */
   static async getProductsBySubCategory(subCategoryId: string): Promise<ProductResponse> {
     // ❌ HIỆN TẠI
-    await new Promise(resolve => setTimeout(resolve, 400));
-    const filteredProducts = mockProducts.filter(p => p.subCategory_id === subCategoryId);
-    return {
-      data: filteredProducts,
-      total: filteredProducts.length,
-      message: `Products filtered by subcategory: ${subCategoryId}`
-    };
+    // await new Promise(resolve => setTimeout(resolve, 400));
+    // const filteredProducts = mockProducts.filter(p => p.subCategory_id === subCategoryId);
+    // return {
+    //   data: filteredProducts,
+    //   total: filteredProducts.length,
+    //   message: `Products filtered by subcategory: ${subCategoryId}`
+    // };
 
     // ✅ TƯƠNG LAI: Real API với query params
-    /*
+    
     try {
-      const response = await fetch(`/api/products?subcategory=${subCategoryId}`);
+      // const response = await fetch(`/api/products?subcategory=${subCategoryId}`);
+      const response = await fetch(`${API_BASE_URL}/getProductBySubCategory/${subCategoryId}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
@@ -113,7 +115,7 @@ export class ProductService {
       console.error('Error fetching products by subcategory:', error);
       throw error;
     }
-    */
+
   }
 
   /**

@@ -1,7 +1,7 @@
 import { SubCategory, SubCategoryResponse } from '@/types/SubCategory';
 import { mockSubCategories } from '@/data/mockSubCategories';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/subCategory';
 
 export class SubCategoryService {
   
@@ -11,16 +11,16 @@ export class SubCategoryService {
     
     try {
       // TODO: Real API call
-      // const response = await fetch(`${API_BASE_URL}/subcategories`);
-      // const data = await response.json();
-      // return data;
+      const response = await fetch(`${API_BASE_URL}/getAll`);
+      const data = await response.json();
+      return data;
 
       // Mock response for now
-      return {
-        data: mockSubCategories,
-        total: mockSubCategories.length,
-        message: 'SubCategories fetched successfully'
-      };
+      // return {
+      //   data: mockSubCategories,
+      //   total: mockSubCategories.length,
+      //   message: 'SubCategories fetched successfully'
+      // };
     } catch (error) {
       console.error('Error fetching subcategories:', error);
       throw new Error('Failed to fetch subcategories');
@@ -35,12 +35,13 @@ export class SubCategoryService {
       // TODO: Real API call
       // const response = await fetch(`${API_BASE_URL}/subcategories?category_id=${categoryId}`);
       // return await response.json();
-
+      const response = await fetch(`${API_BASE_URL}/getAllByCategory/${categoryId}`);
+      return await response.json();
       // Mock response
-      const filteredSubCategories = mockSubCategories.filter(
-        subCat => subCat.category_id === categoryId
-      );
-      return filteredSubCategories;
+      // const filteredSubCategories = mockSubCategories.filter(
+      //   subCat => subCat.category_id === categoryId
+      // );
+      // return filteredSubCategories;
     } catch (error) {
       console.error('Error fetching subcategories by category:', error);
       throw new Error('Failed to fetch subcategories by category');

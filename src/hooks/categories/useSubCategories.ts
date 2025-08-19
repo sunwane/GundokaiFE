@@ -15,10 +15,12 @@ export function useSubCategories(categoryId?: string) {
       
       let data: SubCategory[];
       if (categoryId) {
-        data = await SubCategoryService.getSubCategoriesByCategoryId(categoryId);
+       const response = await SubCategoryService.getSubCategoriesByCategoryId(categoryId);
+        data = response.result;
+                console.log('Fetched subcategories:', data);
       } else {
         const response = await SubCategoryService.getSubCategories();
-        data = response.data;
+        data = response.result;
       }
       
       setSubCategories(data);

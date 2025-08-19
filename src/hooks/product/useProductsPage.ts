@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useProducts } from './useProducts';
 import { useSubCategory } from '@/hooks/categories/useSubCategory';
 import { Product } from '@/types/Product';
@@ -28,7 +28,6 @@ export function useProductsPage(subcategoryId?: string | null) {
   const [sortType, setSortType] = useState<SortType>('default');
   const [stockFilter, setStockFilter] = useState<StockStatus[]>(['Tất cả']);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 10000000 });
-  const [filteredAndSortedProducts, setFilteredAndSortedProducts] = useState<Product[]>([]);
 
   // 🔍 FILTER FUNCTION
   const applyFilters = (productList: Product[]) => {
@@ -84,17 +83,13 @@ export function useProductsPage(subcategoryId?: string | null) {
     return sorted;
   };
 
-  // 🔄 COMBINED FILTER AND SORT
-  const updateFilteredAndSortedProducts = () => {
+  const filteredAndSortedProducts = useMemo(() => {
     const filtered = applyFilters(products);
-    const sorted = applySorting(filtered);
-    setFilteredAndSortedProducts(sorted);
-  };
+    return applySorting(filtered);
+  }, [products, sortType, stockFilter, priceRange]); // ✅ useMemo tự động tính toán khi dependencies thay đổi
 
-  // 🔄 UPDATE khi products hoặc filters thay đổi
-  useEffect(() => {
-    updateFilteredAndSortedProducts();
-  }, [products, sortType, stockFilter, priceRange]);
+  const loading = productsLoading || subcategoryLoading;
+  const error = productsError || subcategoryError;
 
   // 🎯 HANDLER FUNCTIONS
   const sortProducts = (type: SortType) => {
@@ -108,9 +103,6 @@ export function useProductsPage(subcategoryId?: string | null) {
   const filterByPriceRange = (range: { min: number; max: number }) => {
     setPriceRange(range);
   };
-
-  const loading = productsLoading || subcategoryLoading;
-  const error = productsError || subcategoryError;
 
   return {
     // 📊 Data

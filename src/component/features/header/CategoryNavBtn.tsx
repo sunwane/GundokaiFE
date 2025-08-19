@@ -43,13 +43,13 @@ function CategoryNavBtn({
     >
       <div style={styles.iconContainer}>
         <img 
-          src={category.icon_img} 
-          alt={`${category.category_Name} icon`} 
+          src={category.categoryImg} 
+          alt={`${category.categoryName} icon`} 
           style={styles.icon}
         />
       </div>
       <span style={styles.text}>
-        {category.category_Name}
+        {category.categoryName}
       </span>
     </button>
   );

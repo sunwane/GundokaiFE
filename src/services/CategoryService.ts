@@ -1,7 +1,7 @@
 import { Category, CategoryResponse } from '@/types/Category';
 import { mockCategories } from '@/data/mockCategories';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/mainCategory';
 
 export class CategoryService {
   
@@ -11,16 +11,16 @@ export class CategoryService {
     
     try {
       // TODO: Real API call
-      // const response = await fetch(`${API_BASE_URL}/categories`);
-      // const data = await response.json();
-      // return data;
+      const response = await fetch(`${API_BASE_URL}/getAll`);
+      const data = await response.json();
+      return data;
 
       // Mock response for now
-      return {
-        data: mockCategories,
-        total: mockCategories.length,
-        message: 'Categories fetched successfully'
-      };
+      // return {
+      //   data: mockCategories,
+      //   total: mockCategories.length,
+      //   message: 'Categories fetched successfully'
+      // };
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw new Error('Failed to fetch categories');

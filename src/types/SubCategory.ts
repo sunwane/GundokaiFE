@@ -1,13 +1,17 @@
 export interface SubCategory {
   id: string;
-  category_id: string;
-  subCategory_Name: string;
-  subCategory_img: string;
+  subCategoryName: string;   
+  subCategoryImg: string;    
   description: string;
+  mainCategory: {             
+    id: string;
+    categoryName: string;
+    categoryImg: string;
+  };
 }
 
 export interface SubCategoryResponse {
-  data: SubCategory[];
-  total: number;
+  result: SubCategory[];      // ✅ Đổi từ data thành result nếu cần
+  total?: number;
   message?: string;
 }
