@@ -20,8 +20,7 @@ export default function SearchDiv({ results, onSelect, visible }: SearchDivProps
     return null;
   }
 
-  // Giới hạn hiển thị tối đa 5 kết quả
-  const displayResults = results.slice(0, 10);
+  const displayResults = results.slice(0, 5);
 
   return (
     <div style={styles.container}>
@@ -65,10 +64,10 @@ export default function SearchDiv({ results, onSelect, visible }: SearchDivProps
         ))}
         
         {/* Show more indicator if there are more results */}
-        {results.length > 10 && (
+        {results.length > 5 && (
           <div style={styles.moreResultsIndicator}>
             <span style={styles.moreResultsText}>
-              Và {results.length - 10} sản phẩm khác...
+              Và {results.length - 5} sản phẩm khác...
             </span>
           </div>
         )}
@@ -92,7 +91,7 @@ const styles = {
     boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
     marginTop: '4px',
     overflow: 'hidden',
-    maxHeight: '400px', // Chiều cao cho phép hiển thị khoảng 5 kết quả
+    maxHeight: '420px', // Chiều cao cho phép hiển thị khoảng 5 kết quả
     overflowY: 'auto' as const,
   },
   resultItem: {

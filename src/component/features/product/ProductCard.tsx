@@ -34,8 +34,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   const { 
     categoryName, 
     subCategoryName, 
-    category, 
-    subCategory, 
+
     loading 
   } = useCategory(product.subCategory_id);
   

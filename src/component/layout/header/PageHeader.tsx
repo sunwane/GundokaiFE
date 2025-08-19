@@ -13,9 +13,9 @@ import AccountShortcut from '@/component/features/header/AccountShortcut';
 
 function PageHeader() {
   const router = useRouter();
-  const { isMobile, isSmallScreen } = useResponsive({
+  const { isMobile, isSmallScreen, isTablet } = useResponsive({
     mobile: 760,
-    tablet: 1000,
+    tablet: 1000, // Breakpoint cho tablet
   });
   
   // Use toggle hooks instead of individual state
@@ -101,11 +101,15 @@ function PageHeader() {
       <AccountShortcut 
         user={user} 
         onLogout={handleLogout}
-        isDesktop={true}
+        isDesktop={!isTablet} // Không phải desktop nếu là tablet
+        isTablet={isTablet} // Truyền isTablet prop
       >
         <div style={styles.desktopAccountWrapper}>
           <img src="/images/icons/account.png" alt="Account" style={styles.desktopIcon} />
-          <span style={styles.desktopIconLabel}>Tài khoản</span>
+          {/* Ẩn text trên tablet */}
+          {!isTablet && (
+            <span style={styles.desktopIconLabel}>Tài khoản</span>
+          )}
         </div>
       </AccountShortcut>
     );
@@ -144,6 +148,7 @@ function PageHeader() {
     <div style={styles.headerContainer}>
       <DesktopHeader
         isSmallScreen={isSmallScreen}
+        isTablet={isTablet} // Truyền isTablet prop
         onLogoClick={handleLogoClick}
         onCartClick={handleCartClick}
         onAccountClick={handleAccountClick}

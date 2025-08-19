@@ -3,38 +3,23 @@ import React from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import CartItem from "@/component/features/cart/CartItem";
 import LoadingSpinner from "@/component/ui/LoadingSpinner";
-import { useCart } from "@/hooks/cart/useCart";
-import { useRouter } from 'next/navigation';
-import { useResponsive } from '@/hooks/useResponsive';
+import PopupMessage from "@/component/ui/PopupMessage";
+import { useCartPage } from "@/hooks/cart/useCartPage";
+import { CartItem as CartItemType } from '@/types/Cart';
 
 export default function CartPage() {
-  const { cart, loading, updateQuantity, removeFromCart, clearCart } = useCart();
-  const router = useRouter();
-  const { isMobile } = useResponsive();
-
-  const handleQuantityChange = (productId: string, quantity: number) => {
-    updateQuantity(productId, quantity);
-  };
-
-  const handleRemoveItem = (productId: string) => {
-    removeFromCart(productId);
-  };
-
-  const handleClearCart = () => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?')) {
-      clearCart();
-    }
-  };
-
-  const handleCheckout = () => {
-    // TODO: Implement checkout logic
-    console.log('Proceeding to checkout with cart:', cart);
-    alert('Chức năng thanh toán sẽ được triển khai sau!');
-  };
-
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('vi-VN') + ' VNĐ';
-  };
+  const {
+    cart,
+    loading,
+    isMobile,
+    router,
+    handleQuantityChange,
+    handleRemoveItem,
+    handleClearCart,
+    handleCheckout,
+    formatPrice,
+    popupMessage,
+  } = useCartPage();
 
   if (loading) {
     return (
@@ -74,9 +59,8 @@ export default function CartPage() {
           )}
         </div>
 
-        {/* Cart Content */}
+        {/* Cart Content - giữ nguyên phần render */}
         {cart.items.length === 0 ? (
-          // Empty Cart
           <div style={styles.emptyCart}>
             <div style={styles.emptyCartIcon}>🛒</div>
             <h2 style={styles.emptyCartTitle}>Giỏ hàng trống</h2>
@@ -97,7 +81,6 @@ export default function CartPage() {
             </button>
           </div>
         ) : (
-          // Cart with Items
           <div style={{
             ...styles.cartContent,
             flexDirection: isMobile ? 'column' : 'row',
@@ -112,7 +95,7 @@ export default function CartPage() {
               </div>
               
               <div style={styles.itemsList}>
-                {cart.items.map((item) => (
+                {cart.items.map((item: CartItemType) => (
                   <CartItem
                     key={item.id}
                     item={item}
@@ -181,10 +164,17 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Popup Message */}
+      <PopupMessage 
+        popup={popupMessage.popup} 
+        onClose={popupMessage.hidePopup} 
+      />
     </div>
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   container: {
     maxWidth: '1400px',

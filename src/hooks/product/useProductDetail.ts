@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Product } from '@/types/Product';
-import { ProductImage } from '@/types/ProductImage';
+import { ProductImg } from '@/types/Product';
 import { ProductDetail } from '@/types/ProductDetail';
 import { ProductDetailService } from '@/services/ProductDetailService';
 
+
 export interface UseProductDetailReturn {
   product: Product | null;
-  images: ProductImage[];
+  images: ProductImg[];
   productDetail: ProductDetail | null;
   relatedProducts: Product[];
   loading: boolean;
@@ -16,12 +17,12 @@ export interface UseProductDetailReturn {
 
 export function useProductDetail(productId: string | null): UseProductDetailReturn {
   const [product, setProduct] = useState<Product | null>(null);
-  const [images, setImages] = useState<ProductImage[]>([]);
+  const [images, setImages] = useState<ProductImg[]>([]);
   const [productDetail, setProductDetail] = useState<ProductDetail | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
   const fetchData = async () => {
     if (!productId) {
       setLoading(false);
@@ -35,7 +36,7 @@ export function useProductDetail(productId: string | null): UseProductDetailRetu
       // Fetch all data in parallel
       const [productData, imageData, detailData] = await Promise.all([
         ProductDetailService.getProductById(productId),
-        ProductDetailService.getProductImages(productId),
+        ProductDetailService.getProductImgs(productId),
         ProductDetailService.getProductDetail(productId),
       ]);
 
@@ -48,7 +49,7 @@ export function useProductDetail(productId: string | null): UseProductDetailRetu
       setProductDetail(detailData);
 
       // Fetch related products
-      const relatedData = await ProductDetailService.getRelatedProducts(productData.category_id, 5);
+      const relatedData = await ProductDetailService.getRelatedProducts(productData.subCategory_id, 5);
       // Filter out current product from related products
       setRelatedProducts(relatedData.filter(p => p.id !== productId));
 

@@ -1,5 +1,5 @@
 import { Product } from '@/types/Product';
-import { ProductImage } from '@/types/ProductImage';
+import { ProductImg } from '@/types/Product';
 import { ProductDetail } from '@/types/ProductDetail';
 import { mockProducts } from '@/data/mockProducts';
 import { mockProductImages } from '@/data/mockProductImg';
@@ -14,7 +14,7 @@ export class ProductDetailService {
     return product || null;
   }
 
-  static async getProductImages(productId: string): Promise<ProductImage[]> {
+  static async getProductImgs(productId: string): Promise<ProductImg[]> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 200));
     
@@ -30,11 +30,10 @@ export class ProductDetailService {
   }
 
   static async getRelatedProducts(categoryId: string, limit: number = 5): Promise<Product[]> {
-    // Simulate API delay
+
     await new Promise(resolve => setTimeout(resolve, 250));
-    
     return mockProducts
-      .filter(p => p.category_id === categoryId)
+      .filter(p => p.subCategory_id === categoryId)
       .slice(0, limit);
   }
 }

@@ -71,7 +71,7 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '16px',
+    gap: '8px',
   },
   checkboxLabel: {
     display: 'flex',
@@ -105,7 +105,7 @@ const styles = {
   },
   statusLabel: {
     fontSize: '14px',
-    color: '#495057',
+    color: '#081945',
     fontWeight: '500',
     flex: 1,
   },

@@ -17,7 +17,9 @@ export default function ProductDetailPage() {
 
   // Updated hook now returns productDetail
   const { product, images, productDetail, relatedProducts, loading, error, refetch } = useProductDetail(productId);
-  const { isMobile } = useResponsive();
+  const { isMobile } = useResponsive(
+    { mobile: 900 }
+  );
 
   const handleAddToCart = (productId: string, quantity: number) => {
     // TODO: Implement add to cart logic
@@ -64,59 +66,69 @@ export default function ProductDetailPage() {
   return (
     <div>
       <PageHeader />
-
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={breadcrumbs} />
-
-      {/* Main Product Section */}
       <div style={{
-        ...styles.detailContainer,
-        padding: isMobile ? '16px 4vw' : '24px 5vw',
-        flexDirection: isMobile ? 'column' : 'row',
-        gap: isMobile ? '24px' : '40px',
+        ...styles.mainContainer,
+        padding: isMobile ? '16px 3vw' : '24px 5vw',
       }}>
-        {/* Product Images */}
-        <ProductImageGallery
-          images={images}
-          fallbackImage={product.thumbnail}
-          productName={product.product_Name}
-        />
+        <Breadcrumbs items={breadcrumbs} />
+        {/* Main Product Section */}
+        <div style={{
+          ...styles.detailContainer,
+          gap: isMobile ? '24px' : '40px',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile? "center" : 'flex-start',
+        }}>
+          {/* Product Images */}
+          <ProductImageGallery
+            images={images}
+            fallbackImage={product.thumbnail}
+            productName={product.product_Name}
+          />
 
-        {/* Product Info - Now includes productDetail */}
-        <ProductInfo
-          product={product}
-          productDetail={productDetail}
-          onAddToCart={handleAddToCart}
-        />
-      </div>
-
-      {/* Related Products Section */}
-      {relatedProducts.length > 0 && (
-        <div style={styles.relatedSection}>
-          <div style={styles.relatedTitle}>Có thể bạn sẽ thích</div>
-          <div style={{
-            ...styles.relatedGrid,
-            gridTemplateColumns: isMobile 
-              ? 'repeat(2, 1fr)' 
-              : 'repeat(5, 1fr)',
-            gap: isMobile ? '16px' : '20px',
-          }}>
-            {relatedProducts.map((relatedProduct) => (
-              <ProductCard 
-                key={relatedProduct.id} 
-                product={relatedProduct} 
-                onClick={handleProductClick}
-              />
-            ))}
-          </div>
+          {/* Product Info - Now includes productDetail */}
+          <ProductInfo
+            product={product}
+            productDetail={productDetail}
+            onAddToCart={handleAddToCart}
+          />
         </div>
-      )}
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div style={styles.relatedSection}>
+            <div style={styles.relatedTitle}>Có thể bạn sẽ thích</div>
+            <div style={{
+              ...styles.relatedGrid,
+              gridTemplateColumns: isMobile 
+                ? 'repeat(2, 1fr)' 
+                : 'repeat(5, 1fr)',
+              gap: isMobile ? '16px' : '20px',
+            }}>
+              {relatedProducts.map((relatedProduct) => (
+                <ProductCard 
+                  key={relatedProduct.id} 
+                  product={relatedProduct} 
+                  onClick={handleProductClick}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 // Styles giữ nguyên...
 const styles = {
+  mainContainer: {
+    display: "flex",
+    flexDirection: 'column' as const,
+    gap: '10px',
+    width: '100%',
+    maxWidth: '1400px',
+    margin: '0 auto',
+  },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -146,15 +158,9 @@ const styles = {
   },
   detailContainer: {
     display: 'flex',
-    alignItems: 'flex-start',
-    maxWidth: '1400px',
-    margin: '0 auto',
   },
   relatedSection: {
-    marginTop: '64px',
-    padding: '0 5vw 48px 5vw',
-    maxWidth: '1400px',
-    margin: '64px auto 0',
+    marginTop: '60px',
   },
   relatedTitle: {
     fontSize: '24px',

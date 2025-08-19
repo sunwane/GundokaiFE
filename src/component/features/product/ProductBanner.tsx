@@ -27,7 +27,7 @@ export default function ProductBanner({ subcategoryInfo }: ProductBannerProps) {
       ) : (
         <div style={styles.bannerContainer}>
           <img 
-            src="/images/default-products-banner.jpg" 
+            src="/images/banners/default.jpg" 
             alt="All Products Banner"
             style={styles.bannerImage}
           />
@@ -45,13 +45,14 @@ const styles = {
   bannerContainer: {
     position: 'relative' as const,
     width: '100%',
-    height: '300px',
+    height: '320px',
     overflow: 'hidden',
   },
   bannerImage: {
     width: '100%',
     height: '100%',
     objectFit: 'cover' as const,
+    objectPosition: 'center 30%' as const, // Thêm dòng này
   },
   bannerOverlay: {
     position: 'absolute' as const,
@@ -66,11 +67,12 @@ const styles = {
     alignItems: 'center',
     color: 'white',
     textAlign: 'center' as const,
+    padding: '1rem',
   },
   bannerTitle: {
     fontSize: '36px',
     fontWeight: 'bold',
-    margin: '0 0 12px 0',
+    margin: '0 0px 12px 0px',
     textShadow: '2px 2px 4px rgba(0,0,0,0.7)',
   },
   bannerDescription: {

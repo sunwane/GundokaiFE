@@ -36,7 +36,7 @@ export class CartService {
   }
 
   // Thêm sản phẩm vào giỏ hàng
-  static addToCart(product: Product, quantity: number = 1): Cart {
+  static addToCart(product: Product, quantity: number = 1): void {
     const cart = this.getCart();
     const existingItemIndex = cart.items.findIndex(
       item => item.product && item.product.id === product.id
@@ -61,11 +61,11 @@ export class CartService {
 
     const updatedCart = this.calculateCartTotals(cart);
     this.saveCart(updatedCart);
-    return updatedCart;
+    this.triggerCartUpdate();
   }
 
   // Cập nhật số lượng sản phẩm trong giỏ
-  static updateQuantity(productId: string, quantity: number): Cart {
+  static updateQuantity(productId: string, quantity: number): void {
     const cart = this.getCart();
     const itemIndex = cart.items.findIndex(item => item.product.id === productId);
 
@@ -80,24 +80,24 @@ export class CartService {
 
     const updatedCart = this.calculateCartTotals(cart);
     this.saveCart(updatedCart);
-    return updatedCart;
+    this.triggerCartUpdate();
   }
 
   // Xóa sản phẩm khỏi giỏ hàng
-  static removeFromCart(productId: string): Cart {
+  static removeFromCart(productId: string): void {
     const cart = this.getCart();
     cart.items = cart.items.filter(item => item.product.id !== productId);
 
     const updatedCart = this.calculateCartTotals(cart);
     this.saveCart(updatedCart);
-    return updatedCart;
+    this.triggerCartUpdate();
   }
 
   // Xóa toàn bộ giỏ hàng
-  static clearCart(): Cart {
+  static clearCart(): void {
     const emptyCart: Cart = { items: [], total_quantity: 0, total_amount: 0, subtotal: 0 };
     this.saveCart(emptyCart);
-    return emptyCart;
+    this.triggerCartUpdate();
   }
 
   // Tính toán tổng tiền
@@ -111,5 +111,11 @@ export class CartService {
       subtotal: subtotal,
       total_amount: subtotal, // Không có shipping, tax, discount
     };
+  }
+
+  // Thêm method để trigger cart update event
+  private static triggerCartUpdate() {
+    // Dispatch custom event để notify các component khác
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
   }
 }

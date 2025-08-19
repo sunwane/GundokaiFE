@@ -1,9 +1,11 @@
 'use client';
 import React from 'react';
 import SearchBar from '../../features/header/SearchBar';
+import CartBadge from '@/component/features/header/CartBadge';
 
 interface DesktopHeaderProps {
   isSmallScreen: boolean;
+  isTablet?: boolean; // Thêm prop cho tablet
   onLogoClick: () => void;
   onCartClick: () => void;
   onAccountClick: () => void;
@@ -13,6 +15,7 @@ interface DesktopHeaderProps {
 
 export default function DesktopHeader({
   isSmallScreen,
+  isTablet = false, // Default false
   onLogoClick,
   onCartClick,
   onAccountClick,
@@ -21,6 +24,7 @@ export default function DesktopHeader({
 }: DesktopHeaderProps) {
   return (
     <div style={styles.headerTop}>
+      {/* Logo */}
       <button 
         style={styles.logoContainer}
         onClick={onLogoClick}
@@ -36,20 +40,40 @@ export default function DesktopHeader({
           ...styles.buttonPlace,
           gap: isSmallScreen ? '8px' : '10px'
         }}>
-          <div style={styles.iconWrapper} onClick={onCartClick}>
-            <img src="/images/icons/cart.png" alt="Cart" style={styles.icon} />
-            <span style={styles.iconLabel}>Giỏ hàng</span>
+          {/* Cart Icon với Badge */}
+          <div style={styles.cartWrapper}>
+            <div style={styles.iconWrapper} onClick={onCartClick}>
+              <img src="/images/icons/cart.png" alt="Cart" style={styles.icon} />
+              {/* Ẩn text trên tablet */}
+              {!isTablet && (
+                <span style={styles.iconLabel}>Giỏ hàng</span>
+              )}
+            </div>
+            {/* Truyền isTablet prop cho CartBadge */}
+            <CartBadge 
+              isMobile={false} 
+              isTablet={isTablet} 
+            />
           </div>
 
           {/* Account Section */}
           {accountComponent ? (
-            accountComponent
+            isTablet ? (
+              <div style={styles.tabletAccountWrapper}>
+                {accountComponent}
+              </div>
+            ) : (
+              accountComponent
+            )
           ) : (
             <div style={styles.iconWrapper} onClick={onAccountClick}>
               <img src="/images/icons/account.png" alt="Account" style={styles.icon} />
-              <span style={styles.iconLabel}>
-                {isLoggedIn ? 'Tài khoản' : 'Đăng nhập'}
-              </span>
+              {/* Ẩn text trên tablet */}
+              {!isTablet && (
+                <span style={styles.iconLabel}>
+                  {isLoggedIn ? 'Tài khoản' : 'Đăng nhập'}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -138,5 +162,17 @@ const styles = {
     marginLeft: '2px',
     flexShrink: 0,
     fontWeight: '500',
+  },
+  cartWrapper: {
+    position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Style cho tablet account wrapper
+  tabletAccountWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 };

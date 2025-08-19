@@ -9,19 +9,21 @@ import LogoutButton from '@/component/features/account/LogoutButton';
 
 interface AccountShortcutProps {
   user: {
-    id: number;
+    id: string;
     username: string;
     email: string;
   } | null;
   onLogout: () => void;
   isDesktop?: boolean;
+  isTablet?: boolean; // Thêm prop này
   children: React.ReactNode;
 }
 
 export default function AccountShortcut({ 
   user, 
   onLogout, 
-  isDesktop = true, 
+  isDesktop = false,
+  isTablet = false, // Default false
   children 
 }: AccountShortcutProps) {
   const [isOpen, toggleOpen, setOpen] = useToggle(false);
@@ -67,14 +69,27 @@ export default function AccountShortcut({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Trigger Button */}
-      <div onClick={handleToggle} style={styles.triggerWrapper}>
-        {children}
+      {/* Wrapper để ẩn text trên tablet */}
+      <div 
+        style={styles.triggerWrapper} 
+        onClick={handleToggle}
+        title={isTablet ? 'Tài khoản' : undefined} // Thêm tooltip cho tablet
+      >
+        {isTablet ? (
+          // Chỉ hiển thị icon trên tablet
+          <div style={styles.tabletTrigger}>
+            <img src="/images/icons/account.png" alt="Account" style={styles.tabletIcon} />
+          </div>
+        ) : (
+          children
+        )}
       </div>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div style={styles.dropdown}>
+        <div style={{
+          ...styles.dropdown,
+        }}>
           <UserInfoDisplay user={user} variant="compact" />
           <div style={styles.divider} />
           <AccountMenuList
@@ -157,5 +172,17 @@ const styles = {
     fontSize: '13px',
     color: '#1e40af',
     fontWeight: '600',
+  },
+  tabletTrigger: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
+    padding: '8px',
+    borderRadius: '4px',
+  },
+  tabletIcon: {
+    width: '28px',
+    height: '28px',
   },
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { color } from 'three/tsl';
 
 interface PriceRangeSliderProps {
   priceRange: { min: number; max: number };
@@ -146,7 +147,7 @@ const styles = {
   sliderRange: {
     position: 'absolute' as const,
     height: '100%',
-    backgroundColor: '#6c5ce7',
+    backgroundColor: 'rgb(0, 123, 255)',
     borderRadius: '2px',
   },
   slider: {
@@ -163,7 +164,7 @@ const styles = {
   },
   priceDisplay: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     gap: '8px',
     padding: '8px',
@@ -173,7 +174,7 @@ const styles = {
   priceValue: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#6c5ce7',
+    color: '#294CA6',
   },
   separator: {
     fontSize: '14px',

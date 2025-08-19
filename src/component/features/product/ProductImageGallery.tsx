@@ -1,41 +1,34 @@
-import React, { useState } from 'react';
-import { ProductImage } from '@/types/ProductImage';
+import React from 'react';
+import { ProductImg } from '@/types/Product';
+import { useProductGalleryImages } from '@/hooks/product/useProductGalleryImages';
 
-interface ProductImageGalleryProps {
-  images: ProductImage[];
+interface ProductImgGalleryProps {
+  images: ProductImg[];
   fallbackImage?: string;
   productName: string;
+  thumbnail?: string; // Thêm prop thumbnail
 }
 
-export default function ProductImageGallery({ 
+export default function ProductImgGallery({ 
   images, 
   fallbackImage, 
-  productName 
-}: ProductImageGalleryProps) {
-  const allImages = images.length > 0 
-    ? images.map(img => img.img_link) 
-    : fallbackImage 
-    ? [fallbackImage] 
-    : [];
-
-  const [mainImage, setMainImage] = useState(allImages[0] || '');
-  const [thumbIndex, setThumbIndex] = useState(0);
-
-  const maxThumbs = 4;
-  const canScrollLeft = thumbIndex > 0;
-  const canScrollRight = allImages.length > maxThumbs && thumbIndex < allImages.length - maxThumbs;
-
-  const handleThumbClick = (img: string) => {
-    setMainImage(img);
-  };
-
-  const handleScrollLeft = () => {
-    setThumbIndex(prev => Math.max(prev - 1, 0));
-  };
-
-  const handleScrollRight = () => {
-    setThumbIndex(prev => Math.min(prev + 1, allImages.length - maxThumbs));
-  };
+  productName,
+  thumbnail // nhận thumbnail từ props
+}: ProductImgGalleryProps) {
+  // Sử dụng hook xử lý ảnh
+  const {
+    allImages,
+    mainImage,
+    setMainImage,
+    thumbIndex,
+    setThumbIndex,
+    maxThumbs,
+    canScrollLeft,
+    canScrollRight,
+    handleThumbClick,
+    handleScrollLeft,
+    handleScrollRight,
+  } = useProductGalleryImages(images, thumbnail || fallbackImage);
 
   if (allImages.length === 0) {
     return (
@@ -57,7 +50,7 @@ export default function ProductImageGallery({
             alt={productName} 
             style={styles.mainImage}
             onError={(e) => {
-              e.currentTarget.src = '/images/logo.png';
+              e.currentTarget.src = thumbnail || fallbackImage || '/images/logo.png';
             }}
           />
         </div>
@@ -92,7 +85,7 @@ export default function ProductImageGallery({
                   }}
                   onClick={() => handleThumbClick(img)}
                   onError={(e) => {
-                    e.currentTarget.src = '/images/logo.png';
+                    e.currentTarget.src = thumbnail || fallbackImage || '/images/logo.png';
                   }}
                 />
               ))}

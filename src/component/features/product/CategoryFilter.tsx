@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
-import { useSubCategories } from '@/hooks/categories/useSubCategories';
-import { useCategories } from '@/hooks/categories/useCategories';
+import React from 'react';
+import { useCategoryFilter } from '@/hooks/product/useCategoryFilter';
 import { Product } from '@/types/Product';
 
 interface CategoryFilterProps {
@@ -9,60 +8,19 @@ interface CategoryFilterProps {
   products?: Product[]; // Để tính count
 }
 
-interface CategoryGroup {
-  categoryId: string;
-  categoryName: string;
-  subcategories: {
-    id: string;
-    name: string;
-    count: number;
-  }[];
-}
-
 export default function CategoryFilter({ 
   selectedCategories = [], 
   onCategoryChange,
   products = []
 }: CategoryFilterProps) {
-  const { categories, loading: categoriesLoading } = useCategories();
-  const { subCategories, loading: subCategoriesLoading } = useSubCategories();
+  
+  // Sử dụng hook đã tách
+  const { categoryGroups, loading, subCategories, handleSubCategoryChange } = useCategoryFilter(products);
 
-  // Nhóm subcategories theo category và tính count
-  const categoryGroups: CategoryGroup[] = useMemo(() => {
-    if (!categories.length || !subCategories.length) return [];
-
-    return categories.map(category => {
-      const categorySubCategories = subCategories
-        .filter(sub => sub.category_id === category.id)
-        .map(sub => ({
-          id: sub.id,
-          name: sub.subCategory_Name,
-          count: products.filter(p => p.subCategory_id === sub.id).length
-        }));
-
-      return {
-        categoryId: category.id,
-        categoryName: category.category_Name,
-        subcategories: categorySubCategories
-      };
-    }).filter(group => group.subcategories.length > 0); // Chỉ hiển thị category có subcategory
-  }, [categories, subCategories, products]);
-
-  const handleSubCategoryChange = (subCategoryId: string) => {
-    if (!onCategoryChange) return;
-
-    let newCategories = [...selectedCategories];
-    
-    if (newCategories.includes(subCategoryId)) {
-      newCategories = newCategories.filter(id => id !== subCategoryId);
-    } else {
-      newCategories.push(subCategoryId);
-    }
-
-    onCategoryChange(newCategories);
+  // Wrapper function để tương thích với component
+  const handleChange = (subCategoryId: string) => {
+    handleSubCategoryChange(subCategoryId, selectedCategories, onCategoryChange);
   };
-
-  const loading = categoriesLoading || subCategoriesLoading;
 
   if (loading) {
     return (
@@ -92,7 +50,7 @@ export default function CategoryFilter({
                 <input
                   type="checkbox"
                   checked={selectedCategories.includes(subcategory.id)}
-                  onChange={() => handleSubCategoryChange(subcategory.id)}
+                  onChange={() => handleChange(subcategory.id)}
                   style={styles.checkbox}
                 />
                 <span style={{
@@ -128,7 +86,7 @@ export default function CategoryFilter({
                 <div key={subCatId} style={styles.selectedItem}>
                   <span style={styles.selectedItemText}>{subCategory.subCategory_Name}</span>
                   <button 
-                    onClick={() => handleSubCategoryChange(subCatId)}
+                    onClick={() => handleChange(subCatId)}
                     style={styles.removeButton}
                   >
                     ✕
@@ -143,6 +101,7 @@ export default function CategoryFilter({
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   container: {
     display: 'flex',
@@ -181,14 +140,14 @@ const styles = {
     margin: 0,
     fontSize: '14px',
     fontWeight: '700',
-    color: '#495057',
+    color: '#081945',
     flex: 1,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.5px',
   },
   categoryCount: {
     fontSize: '12px',
-    color: '#6c757d',
+    color: '#FB2F38',
     fontWeight: '600',
   },
   subcategoryList: {
@@ -237,12 +196,12 @@ const styles = {
   },
   subcategoryName: {
     fontSize: '13px',
-    color: '#495057',
+    color: 'rgba(8, 25, 69, 0.7)',
     fontWeight: '500',
   },
   subcategoryCount: {
     fontSize: '11px',
-    color: '#6c757d',
+    color: 'rgba(8, 25, 69, 0.7)',
     backgroundColor: '#e9ecef',
     padding: '2px 6px',
     borderRadius: '10px',

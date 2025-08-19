@@ -49,24 +49,27 @@ export default function FilterPanel({
 }: FilterPanelProps) {
 
   const containerStyle = isPopup 
-    ? { ...styles.filterPanel, ...styles.popupPanel }
-    : styles.filterPanel;
+    ? { ...styles.filterPanel, ...styles.popupPanel, padding: '2vw 4vw' }
+    : { ...styles.filterPanel, padding: '0.75vw' };
 
   return (
     <>
       {isPopup && <div style={styles.overlay} onClick={onClose} />}
+      {isPopup && (
+        <button
+          onClick={onClose}
+          style={styles.outsideCloseButton}
+        >
+          ✕
+        </button>
+      )}
       <div style={containerStyle}>
         {/* Header */}
         <div style={styles.filterHeader}>
           <div style={styles.headerContent}>
-            <span style={styles.filterIcon}>🔍</span>
-            <h3 style={styles.filterTitle}>BỘ LỌC TÌM KIẾM</h3>
+            <img src="/images/icons/filter.png" alt="filter" style={styles.filterIcon} />
+            <h3 style={styles.filterTitle}>BỘ LỌC</h3>
           </div>
-          {isPopup && (
-            <button onClick={onClose} style={styles.closeButton}>
-              ✕
-            </button>
-          )}
         </div>
 
         <div style={styles.filterContent}>
@@ -116,7 +119,7 @@ export default function FilterPanel({
               onClick={onApply} 
               style={{
                 ...styles.applyButton,
-                opacity: hasChanges ? 1 : 0.6,
+                opacity: hasChanges ? 1 : 0.5,
                 cursor: hasChanges ? 'pointer' : 'not-allowed'
               }}
               disabled={!hasChanges}
@@ -134,16 +137,15 @@ export default function FilterPanel({
 const styles = {
   filterPanel: {
     width: '300px',
-    backgroundColor: '#ffffff',
-    border: '1px solid #e0e6ed',
-    borderRadius: '12px',
+    backgroundImage: 'url("/images/frames/filter.png")',
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
     position: 'sticky' as const,
-    top: '20px',
+    top: '10px',
     height: 'fit-content',
     maxHeight: 'calc(100vh - 40px)',
     overflowY: 'auto' as const,
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
   },
   popupPanel: {
     position: 'fixed' as const,
@@ -151,10 +153,9 @@ const styles = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '90vw',
-    maxWidth: '420px',
+    maxWidth: '360px',
     maxHeight: '85vh',
     zIndex: 1000,
-    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
   },
   overlay: {
     position: 'fixed' as const,
@@ -162,26 +163,24 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     zIndex: 999,
     backdropFilter: 'blur(3px)',
   },
   filterHeader: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    padding: '20px 24px',
+    padding: '12px 20px 8px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: '12px 12px 0 0',
   },
   headerContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '8px',
   },
   filterIcon: {
-    fontSize: '20px',
+    width: "20px",
+    height: "20px",
   },
   filterTitle: {
     margin: 0,
@@ -189,31 +188,13 @@ const styles = {
     fontWeight: '700',
     letterSpacing: '0.5px',
   },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    color: 'white',
-    fontSize: '20px',
-    cursor: 'pointer',
-    padding: '4px',
-    width: '32px',
-    height: '32px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '6px',
-    transition: 'background-color 0.2s ease',
-  },
   filterContent: {
-    padding: '0',
+    padding: '0px 8px',
     maxHeight: '50vh',
     overflowY: 'auto' as const,
   },
   actionSection: {
-    padding: '24px',
-    borderTop: '1px solid #f0f3f7',
-    backgroundColor: '#fafbfc',
-    borderRadius: '0 0 12px 12px',
+    padding: '28px 16px',
   },
   changeIndicator: {
     display: 'flex',
@@ -221,18 +202,17 @@ const styles = {
     gap: '8px',
     marginBottom: '16px',
     padding: '8px 12px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffeaa7',
-    borderRadius: '6px',
+    backgroundColor: 'rgba(223, 238, 255, 0.8)',
   },
   changeIcon: {
-    color: '#e17055',
     fontSize: '12px',
+    color: '#294CA6',
   },
   changeText: {
     fontSize: '12px',
-    color: '#856404',
     fontWeight: '500',
+    textTransform: 'uppercase' as const,
+    color: '#294CA6',
   },
   actionButtons: {
     display: 'flex',
@@ -240,10 +220,10 @@ const styles = {
   },
   resetButton: {
     flex: '0 0 auto',
-    padding: '12px 16px',
-    backgroundColor: '#ffffff',
-    border: '2px solid #dee2e6',
-    color: '#6c757d',
+    padding: '12px 12px',
+    backgroundColor: 'transparent',
+    border: '1px solid #ccc',
+    color: '#333',
     cursor: 'pointer',
     fontSize: '12px',
     fontWeight: '700',
@@ -257,9 +237,9 @@ const styles = {
   applyButton: {
     flex: 1,
     padding: '12px 20px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    border: 'none',
-    color: 'white',
+    backgroundColor: 'transparent',
+    border: '1px solid #294CA6',
+    color: '#294CA6',
     cursor: 'pointer',
     fontSize: '12px',
     fontWeight: '700',
@@ -270,9 +250,24 @@ const styles = {
     justifyContent: 'center',
     gap: '8px',
     transition: 'all 0.3s ease',
-    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
   },
   buttonIcon: {
     fontSize: '14px',
+  },
+  outsideCloseButton: {
+    position: 'fixed' as const,
+    top: '70px',
+    right: '10px',
+    zIndex: 1100,
+    background: 'white',
+    border: '1px solid #e5e7eb',
+    fontSize: '22px',
+    cursor: 'pointer',
+    padding: '6px 12px',
+    borderRadius: '50%',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 };

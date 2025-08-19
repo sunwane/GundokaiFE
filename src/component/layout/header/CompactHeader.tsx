@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import SearchBar from '@/component/features/header/SearchBar';
+import CartBadge from '@/component/features/header/CartBadge';
 
 interface CompactHeaderProps {
   isMenuOpen: boolean;
@@ -14,7 +15,7 @@ interface CompactHeaderProps {
   accountComponent?: React.ReactNode;
 }
 
-function CompactHeader({ 
+export default function CompactHeader({ 
   isMenuOpen, 
   isSearchOpen, 
   onToggleMenu, 
@@ -86,13 +87,21 @@ function CompactHeader({
 
         {!isSearchOpen && (
           <>
-            <button 
-              style={styles.compactButton}
-              onClick={onCartClick}
-              title="Giỏ hàng"
-            >
-              <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
-            </button>
+            {/* Cart Button với Badge */}
+            <div style={styles.cartWrapper}>
+              <button 
+                style={styles.compactButton}
+                onClick={onCartClick}
+                title="Giỏ hàng"
+              >
+                <img src={'/images/icons/cart.png'} alt="Giỏ hàng" style={styles.buttonIcon} />
+              </button>
+              {/* Mobile mode cho CartBadge */}
+              <CartBadge 
+                isMobile={true} 
+                isTablet={false} 
+              />
+            </div>
             
             {/* Account Section */}
             {accountComponent ? (
@@ -232,6 +241,10 @@ const styles = {
     width: '22px',
     height: '22px',
   },
+  cartWrapper: {
+    position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 };
-
-export default CompactHeader;

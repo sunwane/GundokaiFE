@@ -64,7 +64,6 @@ export default function ProductImage({
       <ProductImageOverlay
         isVisible={isOutOfStock}
         overlayText={statusLabel}
-        overlayType="out-of-stock"
       />
     </div>
   );
@@ -82,7 +81,7 @@ const styles = {
     borderRadius: '4px',
     transition: 'background-color 0.5s ease',
     // ĐẢM BẢO OVERLAY CHỈ HIỂN THỊ TRONG KHUNG ẢNH
-    isolation: 'isolate',
+    isolation: 'isolate' as const,
   },
   image: {
     width: '100%',

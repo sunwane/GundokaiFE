@@ -27,7 +27,7 @@ export const mockSubCategories: SubCategory[] = [
     id: 'pg',
     category_id: 'gundam',
     subCategory_Name: 'Perfect Grade (PG)',
-    subCategory_img: '/images/subcategories/pg-gundam.png',
+    subCategory_img: '/images/banners/PG.webp',
     description: 'Mô hình Gundam tỷ lệ 1/60, cao cấp nhất, có đèn LED'
   },
 

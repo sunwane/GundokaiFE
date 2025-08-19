@@ -22,8 +22,8 @@ export default function ProductsPage() {
   
   // SỬ DỤNG useResponsive THAY VÌ LOGIC CŨ
   const { isMobile, isTablet, windowWidth } = useResponsive({
-    mobile: 900,
-    tablet: 1200,
+    mobile: 720,
+    tablet: 1000,
   });
   
   // SỬ DỤNG useToggle CHO MOBILE FILTER
@@ -44,7 +44,7 @@ export default function ProductsPage() {
     currentFilters,
     pendingFilters,
     setPendingStockFilter,
-    setPendingPriceRanges,
+    setPendingPriceRange,
     setPendingCategories,
     applyFilters,
     resetFilters,
@@ -60,15 +60,6 @@ export default function ProductsPage() {
 
   const handleProductClick = (product: Product) => {
     router.push(`/productDetail?id=${product.id}`);
-  };
-
-  // TÍNH TOÁN COLUMNS DỰA TRÊN WINDOW WIDTH
-  const getGridColumns = () => {
-    if (windowWidth <= 600) return 1;
-    if (windowWidth <= 900) return 2;
-    if (windowWidth <= 1200) return 3;
-    if (windowWidth <= 1600) return 4;
-    return 5;
   };
 
   if (loading) {
@@ -117,10 +108,10 @@ export default function ProductsPage() {
         {!isMobile && (
           <FilterPanel
             pendingStockFilter={pendingFilters.stockFilter}
-            pendingPriceRanges={pendingFilters.priceRanges}
+            pendingPriceRange={pendingFilters.priceRange}
             pendingCategories={pendingFilters.categories}
             onPendingStockChange={setPendingStockFilter}
-            onPendingPriceChange={setPendingPriceRanges}
+            onPendingPriceChange={setPendingPriceRange}
             onPendingCategoryChange={setPendingCategories}
             onApply={applyFilters}
             onReset={resetFilters}
@@ -131,7 +122,13 @@ export default function ProductsPage() {
         )}
 
         {/* Products Content */}
-        <div style={styles.productsContent}>
+        <div
+          style={{
+            ...styles.productsContent,
+            width: isMobile ? '100%' : 'auto',
+            maxWidth: isMobile ? '100%' : 'none',
+          }}
+        >
           <SortBar 
             sortType={sortType} 
             onSortChange={setSortType}
@@ -139,20 +136,17 @@ export default function ProductsPage() {
             {/* Custom left content for products page */}
             <div style={styles.productInfo}>
               <span style={styles.productCount}>
-                {sortedAndFilteredProducts.length} sản phẩm
+                Hiện có {sortedAndFilteredProducts.length} sản phẩm
               </span>
-              {subcategoryInfo && (
-                <span style={styles.categoryName}>
-                  trong {subcategoryInfo.name}
-                </span>
-              )}
             </div>
           </SortBar>
 
           <div style={{
             ...styles.productGrid,
-            // RESPONSIVE GRID COLUMNS
-            gridTemplateColumns: `repeat(${getGridColumns()}, 1fr)`,
+            // SỬ DỤNG LOGIC RESPONSIVE GIỐNG SEARCH RESULT PAGE
+            gridTemplateColumns: isMobile 
+              ? 'repeat(2, 1fr)' 
+              : 'repeat(auto-fit, minmax(230px, 1fr))',
             gap: isMobile ? '16px' : '24px',
           }}>
             {sortedAndFilteredProducts.map((product) => (
@@ -188,10 +182,10 @@ export default function ProductsPage() {
       {isMobile && showMobileFilter && (
         <FilterPanel
           pendingStockFilter={pendingFilters.stockFilter}
-          pendingPriceRanges={pendingFilters.priceRanges}
+          pendingPriceRange={pendingFilters.priceRange}
           pendingCategories={pendingFilters.categories}
           onPendingStockChange={setPendingStockFilter}
-          onPendingPriceChange={setPendingPriceRanges}
+          onPendingPriceChange={setPendingPriceRange}
           onPendingCategoryChange={setPendingCategories}
           onApply={() => {
             applyFilters();
@@ -207,23 +201,6 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-const additionalStyles = {
-  productInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-  },
-  productCount: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#374151',
-  },
-  categoryName: {
-    fontSize: '14px',
-    color: '#6b7280',
-  },
-};
 
 const styles = {
   loadingContainer: {
@@ -270,5 +247,18 @@ const styles = {
     border: '2px dashed #ddd',
     borderRadius: '8px',
   },
-  ...additionalStyles,
+  productInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  productCount: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#374151',
+  },
+  categoryName: {
+    fontSize: '14px',
+    color: '#6b7280',
+  },
 };

@@ -73,6 +73,6 @@ const styles = {
     textTransform: 'uppercase' as const,
     letterSpacing: '1px',
     animation: 'gundamPulse 1.5s ease-in-out infinite',
-    textShadow: '0 0 10px rgba(26, 26, 255, 0.3)',
+    textShadow: '0 0 10px rgba(26, 26, 255, 0.2)',
   },
 };

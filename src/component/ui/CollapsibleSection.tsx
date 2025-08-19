@@ -52,13 +52,13 @@ const styles = {
   title: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#495057',
+    color: '#081945',
     letterSpacing: '0.8px',
     textTransform: 'uppercase' as const,
   },
   icon: {
-    fontSize: '12px',
-    color: '#6c757d',
+    fontSize: '12px', 
+    color: '#081945',
     fontWeight: 'bold',
     transition: 'transform 0.2s ease',
   },

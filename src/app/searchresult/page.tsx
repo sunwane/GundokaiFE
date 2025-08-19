@@ -8,8 +8,17 @@ import FilterPanel from '@/component/features/product/FilterPanel';
 import FilterButton from '@/component/features/product/FilterButton';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useResponsive } from '@/hooks/useResponsive';
-import { mockProducts } from '@/data/mockProducts';
-import { Product, StockStatus } from '@/types/Product';
+import { useToggle } from '@/hooks/useToggle';
+
+// Import các hooks có sẵn
+import { useProducts } from '@/hooks/product/useProducts';
+import { useProductFilter } from '@/hooks/product/useProductFilter';
+
+// Import custom hook mới cho search
+import { useSearchProducts } from '@/hooks/product/useSearchProducts';
+import { useFilterState } from '@/hooks/product/useFilterState';
+
+import { Product } from '@/types/Product';
 
 export default function SearchResultPage() {
   const searchParams = useSearchParams();
@@ -17,122 +26,49 @@ export default function SearchResultPage() {
   const { isMobile } = useResponsive();
   
   const query = searchParams.get('query') || '';
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   
-  // Filter and sort states
+  // Sử dụng custom search hook
+  const { searchResults, loading, searchProducts } = useSearchProducts();
+  
+  // Sử dụng filter state hook
+  const {
+    filters,
+    pendingFilters,
+    updatePendingStockFilter,
+    updatePendingPriceRange,
+    updatePendingCategories,
+    applyFilters,
+    resetFilters,
+    hasChanges
+  } = useFilterState();
+  
+  // Sort state
   const [sortType, setSortType] = useState<SortType>('default');
-  const [showFilterPanel, setShowFilterPanel] = useState(false);
   
-  // Filter states
-  const [pendingStockFilter, setPendingStockFilter] = useState<StockStatus[]>(['Tất cả']);
-  const [pendingPriceRange, setPendingPriceRange] = useState({ min: 0, max: 5000000 });
-  const [pendingCategories, setPendingCategories] = useState<string[]>([]);
+  // Mobile filter toggle
+  const [showFilterPanel, toggleFilterPanel, setShowFilterPanel] = useToggle(false);
   
-  // Applied filters
-  const [appliedStockFilter, setAppliedStockFilter] = useState<StockStatus[]>(['Tất cả']);
-  const [appliedPriceRange, setAppliedPriceRange] = useState({ min: 0, max: 5000000 });
-  const [appliedCategories, setAppliedCategories] = useState<string[]>([]);
-
-  // Search function
-  const searchProducts = (searchTerm: string): Product[] => {
-    if (!searchTerm.trim()) return [];
-    
-    return mockProducts.filter(product => 
-      product.product_Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
-  // Sort function
-  const sortProducts = (products: Product[], type: SortType): Product[] => {
-    const sorted = [...products];
-    
-    switch (type) {
-      case 'price-asc':
-        return sorted.sort((a, b) => a.price - b.price);
-      case 'price-desc':
-        return sorted.sort((a, b) => b.price - a.price);
-      case 'newest':
-        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      case 'bestseller':
-        return sorted.sort((a, b) => a.stock_quantity - b.stock_quantity);
-      default:
-        return sorted;
-    }
-  };
-
-  // Filter function
-  const filterProducts = (products: Product[]): Product[] => {
-    return products.filter(product => {
-      const stockMatch = appliedStockFilter.includes('Tất cả') || 
-        (appliedStockFilter.includes('Còn hàng') && product.stock_quantity > 0) ||
-        (appliedStockFilter.includes('Hết hàng') && product.stock_quantity === 0);
-
-      const priceMatch = product.price >= appliedPriceRange.min && product.price <= appliedPriceRange.max;
-
-      const categoryMatch = appliedCategories.length === 0 || 
-        appliedCategories.includes(product.category_id) ||
-        appliedCategories.includes(product.subCategory_id);
-
-      return stockMatch && priceMatch && categoryMatch;
-    });
-  };
+  // Sử dụng product filter hook
+  const { sortedAndFilteredProducts, filterCount } = useProductFilter(
+    searchResults,
+    filters,
+    sortType
+  );
 
   // Initial search
   useEffect(() => {
-    const performSearch = async () => {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const results = searchProducts(query);
-      setAllProducts(results);
-      setLoading(false);
-    };
-
     if (query) {
-      performSearch();
-    } else {
-      setAllProducts([]);
-      setLoading(false);
+      searchProducts(query);
     }
-  }, [query]);
-
-  // Apply filters and sorting
-  useEffect(() => {
-    const filtered = filterProducts(allProducts);
-    const sorted = sortProducts(filtered, sortType);
-    setFilteredProducts(sorted);
-  }, [allProducts, appliedStockFilter, appliedPriceRange, appliedCategories, sortType]);
-
-  // Filter handlers
-  const handleApplyFilters = () => {
-    setAppliedStockFilter([...pendingStockFilter]);
-    setAppliedPriceRange({ ...pendingPriceRange });
-    setAppliedCategories([...pendingCategories]);
-    setShowFilterPanel(false);
-  };
-
-  const handleResetFilters = () => {
-    setPendingStockFilter(['Tất cả']);
-    setPendingPriceRange({ min: 0, max: 5000000 });
-    setPendingCategories([]);
-    setAppliedStockFilter(['Tất cả']);
-    setAppliedPriceRange({ min: 0, max: 5000000 });
-    setAppliedCategories([]);
-  };
-
-  const hasChanges = 
-    JSON.stringify(pendingStockFilter) !== JSON.stringify(appliedStockFilter) ||
-    JSON.stringify(pendingPriceRange) !== JSON.stringify(appliedPriceRange) ||
-    JSON.stringify(pendingCategories) !== JSON.stringify(appliedCategories);
+  }, [query, searchProducts]);
 
   const handleProductClick = (product: Product) => {
     router.push(`/productDetail?id=${product.id}`);
   };
 
-  const handleToggleFilters = () => {
-    setShowFilterPanel(!showFilterPanel);
+  const handleApplyFilters = () => {
+    applyFilters();
+    setShowFilterPanel(false);
   };
 
   if (loading) {
@@ -154,7 +90,6 @@ export default function SearchResultPage() {
         ...styles.container,
         padding: isMobile ? '16px 4vw' : '24px 5vw',
       }}>
-
         {/* Content Layout */}
         <div style={{
           ...styles.contentLayout,
@@ -163,70 +98,58 @@ export default function SearchResultPage() {
           {/* Filter Panel - Desktop */}
           {!isMobile && (
             <FilterPanel
-              pendingStockFilter={pendingStockFilter}
-              pendingPriceRange={pendingPriceRange}
-              pendingCategories={pendingCategories}
-              onPendingStockChange={setPendingStockFilter}
-              onPendingPriceChange={setPendingPriceRange}
-              onPendingCategoryChange={setPendingCategories}
+              pendingStockFilter={pendingFilters.stockFilter}
+              pendingPriceRange={pendingFilters.priceRange}
+              pendingCategories={pendingFilters.categories}
+              onPendingStockChange={updatePendingStockFilter}
+              onPendingPriceChange={updatePendingPriceRange}
+              onPendingCategoryChange={updatePendingCategories}
               onApply={handleApplyFilters}
-              onReset={handleResetFilters}
+              onReset={resetFilters}
               hasChanges={hasChanges}
-              products={allProducts}
+              products={searchResults}
               showCategories={true}
             />
           )}
 
           {/* Products Container */}
           <div style={styles.productsContainer}>
-            {/* Simple SortBar with custom left content */}
+            {/* SortBar with search info */}
             <SortBar
               sortType={sortType}
               onSortChange={setSortType}
             >
-                <div style={styles.searchHeader}>
+              <div style={styles.searchHeader}>
                 <h1 style={styles.title}>
-                    Kết quả tìm kiếm cho: <span style={styles.queryText}>"{query}"</span>
+                  Kết quả tìm kiếm cho: <span style={styles.queryText}>"{query}"</span>
                 </h1>
                 <p style={styles.resultCount}>
-                    Tìm thấy {filteredProducts.length} sản phẩm
+                  Tìm thấy {sortedAndFilteredProducts.length} sản phẩm
                 </p>
-                </div>
+              </div>
             </SortBar>
 
-            {/* Mobile Filter Button */}
-            {isMobile && (
-              <div style={styles.mobileFilterContainer}>
-                <button 
-                  style={styles.mobileFilterButton}
-                  onClick={handleToggleFilters}
-                >
-                  🔍 Bộ lọc & Sắp xếp
-                </button>
-              </div>
-            )}
-
             {/* Results Grid */}
-            {filteredProducts.length === 0 ? (
+            {sortedAndFilteredProducts.length === 0 ? (
               <div style={styles.noResults}>
                 <div style={styles.noResultsIcon}>🔍</div>
                 <h3 style={styles.noResultsTitle}>
-                  {allProducts.length === 0 
+                  {searchResults.length === 0 
                     ? 'Không tìm thấy sản phẩm phù hợp' 
                     : 'Không có sản phẩm nào phù hợp với bộ lọc'
                   }
                 </h3>
                 <p style={styles.noResultsText}>
-                  {allProducts.length === 0 
+                  {searchResults.length === 0 
                     ? 'Hãy thử tìm kiếm với từ khóa khác hoặc kiểm tra chính tả.'
                     : 'Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác.'
                   }
                 </p>
                 <div style={styles.noResultsActions}>
-                  {allProducts.length > 0 && (
+                  {searchResults.length > 0 && (
                     <button 
                       style={styles.resetFiltersButton}
-                      onClick={handleResetFilters}
+                      onClick={resetFilters}
                     >
                       Xóa bộ lọc
                     </button>
@@ -247,7 +170,7 @@ export default function SearchResultPage() {
                   : 'repeat(auto-fit, minmax(210px, 1fr))',
                 gap: isMobile ? '16px' : '24px',
               }}>
-                {filteredProducts.map((product) => (
+                {sortedAndFilteredProducts.map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
@@ -259,19 +182,27 @@ export default function SearchResultPage() {
           </div>
         </div>
 
+        {/* Mobile Filter Button */}
+        {isMobile && (
+          <FilterButton 
+            onClick={() => setShowFilterPanel(true)}
+            filterCount={filterCount}
+          />
+        )}
+
         {/* Mobile Filter Popup */}
         {isMobile && showFilterPanel && (
           <FilterPanel
-            pendingStockFilter={pendingStockFilter}
-            pendingPriceRange={pendingPriceRange}
-            pendingCategories={pendingCategories}
-            onPendingStockChange={setPendingStockFilter}
-            onPendingPriceChange={setPendingPriceRange}
-            onPendingCategoryChange={setPendingCategories}
+            pendingStockFilter={pendingFilters.stockFilter}
+            pendingPriceRange={pendingFilters.priceRange}
+            pendingCategories={pendingFilters.categories}
+            onPendingStockChange={updatePendingStockFilter}
+            onPendingPriceChange={updatePendingPriceRange}
+            onPendingCategoryChange={updatePendingCategories}
             onApply={handleApplyFilters}
-            onReset={handleResetFilters}
+            onReset={resetFilters}
             hasChanges={hasChanges}
-            products={allProducts}
+            products={searchResults}
             showCategories={true}
             isPopup={true}
             onClose={() => setShowFilterPanel(false)}
@@ -282,6 +213,7 @@ export default function SearchResultPage() {
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   container: {
     margin: '0 auto',
@@ -302,7 +234,7 @@ const styles = {
     marginBottom: '8px',
   },
   queryText: {
-    color: '#dc2626', // Màu đỏ như yêu cầu
+    color: '#dc2626',
     fontStyle: 'italic',
   },
   resultCount: {
@@ -318,24 +250,6 @@ const styles = {
   productsContainer: {
     flex: 1,
     minWidth: 0,
-  },
-  mobileFilterContainer: {
-    marginBottom: '20px',
-  },
-  mobileFilterButton: {
-    width: '100%',
-    padding: '12px 16px',
-    backgroundColor: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
   },
   productGrid: {
     display: 'grid',

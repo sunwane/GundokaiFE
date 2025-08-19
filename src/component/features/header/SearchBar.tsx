@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import SearchDiv from './SearchDiv';
 import { useRouter } from 'next/navigation';
-import { mockProducts } from '@/data/mockProducts'; // Import mock data
+import { useSearchProducts } from '@/hooks/product/useSearchProducts';
+import { Product } from '@/types/Product';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -11,19 +12,6 @@ interface SearchBarProps {
   className?: string;
   style?: React.CSSProperties;
   isCompact?: boolean;
-}
-
-interface Product {
-  id: string;
-  product_Name: string;
-  price: number;
-  thumbnail: string;
-  stock_quantity: number;
-  category_id: string;
-  subCategory_id: string;
-  created_at: string;
-  description: string;
-  status: string;
 }
 
 function SearchBar({ 
@@ -35,19 +23,11 @@ function SearchBar({
   isCompact = false
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
-
-  // Hàm search sản phẩm từ mock data
-  const searchProducts = (term: string): Product[] => {
-    if (!term.trim()) return [];
-    
-    return mockProducts.filter(product => 
-      product.product_Name.toLowerCase().includes(term.toLowerCase()) ||
-      product.description.toLowerCase().includes(term.toLowerCase())
-    );
-  };
+  
+  // Sử dụng search hook để lấy suggestions
+  const { searchResults, searchProducts } = useSearchProducts();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -58,11 +38,9 @@ function SearchBar({
     }
 
     if (value.trim()) {
-      const found = searchProducts(value.trim());
-      setResults(found);
+      searchProducts(value.trim());
       setShowDropdown(true);
     } else {
-      setResults([]);
       setShowDropdown(false);
     }
   };
@@ -88,19 +66,16 @@ function SearchBar({
     if (onSearchChange) {
       onSearchChange('');
     }
-    setResults([]);
     setShowDropdown(false);
   };
 
   const handleSelectProduct = (product: Product) => {
     setShowDropdown(false);
-    setSearchTerm(''); // Clear search after selection
+    setSearchTerm('');
     router.push(`/productDetail?id=${product.id}`);
   };
 
-  // Close dropdown when clicking outside
   const handleBlur = () => {
-    // Delay to allow click events to fire first
     setTimeout(() => {
       setShowDropdown(false);
     }, 150);
@@ -122,7 +97,7 @@ function SearchBar({
           onKeyPress={handleKeyPress}
           onBlur={handleBlur}
           onFocus={() => {
-            if (searchTerm.trim() && results.length > 0) {
+            if (searchTerm.trim() && searchResults.length > 0) {
               setShowDropdown(true);
             }
           }}
@@ -157,7 +132,7 @@ function SearchBar({
       
       {/* Search Dropdown */}
       <SearchDiv
-        results={results}
+        results={searchResults}
         onSelect={handleSelectProduct}
         visible={showDropdown}
       />
@@ -165,9 +140,8 @@ function SearchBar({
   );
 }
 
-// Styles remain the same...
+// Styles giữ nguyên...
 const styles = {
-  // ... existing styles from your current SearchBar component
   container: {
     flexGrow: 1,
     alignItems: 'center',

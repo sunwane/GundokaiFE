@@ -1,12 +1,27 @@
 import { useMemo } from 'react';
-import { Product } from '@/types/Product';
-import { FilterState } from './useFilterState';
+import { Product, StockStatus } from '@/types/Product';
 import { SortType } from '@/component/features/product/SortBar';
+import { useCategoryFilter } from './useCategoryFilter';
+
+export interface FilterState {
+  stockFilter: StockStatus[];
+  priceRange: { min: number; max: number };
+  categories: string[];
+}
 
 export interface UseProductFilterReturn {
-  filteredProducts: Product[];
   sortedAndFilteredProducts: Product[];
   filterCount: number;
+  categoryData: {
+    categoryGroups: any[];
+    loading: boolean;
+    subCategories: any[];
+    handleSubCategoryChange: (
+      subCategoryId: string,
+      selectedCategories: string[],
+      onCategoryChange?: (categories: string[]) => void
+    ) => void;
+  };
 }
 
 export function useProductFilter(
@@ -14,102 +29,60 @@ export function useProductFilter(
   filters: FilterState,
   sortType: SortType = 'default'
 ): UseProductFilterReturn {
+  
+  // Tích hợp category filter hook
+  const categoryFilterData = useCategoryFilter(products);
 
-  // Apply filters
+  // Filter products
   const filteredProducts = useMemo(() => {
-    if (!products || !Array.isArray(products)) return [];
+    return products.filter(product => {
+      // Stock filter
+      const stockMatch = filters.stockFilter.includes('Tất cả') || 
+        (filters.stockFilter.includes('Còn hàng') && product.stock_quantity > 0) ||
+        (filters.stockFilter.includes('Hết hàng') && product.stock_quantity === 0);
 
-    let filtered = [...products];
+      // Price filter
+      const priceMatch = product.price >= filters.priceRange.min && 
+                        product.price <= filters.priceRange.max;
 
-    // Stock filter
-    if (!filters.stockFilter.includes('Tất cả')) {
-      filtered = filtered.filter(product => {
-        let matched = false;
-        
-        if (filters.stockFilter.includes('Còn hàng') && 
-            (product.stock_quantity || 0) > 0 && 
-            product.status === 'Còn hàng') {
-          matched = true;
-        }
-        
-        if (filters.stockFilter.includes('Hết hàng') && 
-            ((product.stock_quantity || 0) === 0 || product.status === 'Hết hàng')) {
-          matched = true;
-        }
-        
-        if (filters.stockFilter.includes('Hàng sắp về') && 
-            product.status === 'Hàng sắp về') {
-          matched = true;
-        }
-        
-        return matched;
-      });
-    }
+      // Category filter
+      const categoryMatch = filters.categories.length === 0 || 
+        filters.categories.includes(product.subCategory_id);
 
-    // Price range filter
-    filtered = filtered.filter(product =>
-      product.price >= filters.priceRange.min && 
-      product.price <= filters.priceRange.max
-    );
-
-    // Category filter
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter(product =>
-        filters.categories.includes(product.subCategory_id)
-      );
-    }
-
-    return filtered;
+      return stockMatch && priceMatch && categoryMatch;
+    });
   }, [products, filters]);
 
-  // Apply sorting
+  // Sort products
   const sortedAndFilteredProducts = useMemo(() => {
-    if (!filteredProducts || filteredProducts.length === 0) return [];
-
     const sorted = [...filteredProducts];
-
+    
     switch (sortType) {
       case 'price-asc':
         return sorted.sort((a, b) => a.price - b.price);
-      
       case 'price-desc':
         return sorted.sort((a, b) => b.price - a.price);
-      
       case 'newest':
-        return sorted.sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-      
+        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       case 'bestseller':
-        // Assuming products with higher stock_quantity are bestsellers
-        return sorted.sort((a, b) => (b.stock_quantity || 0) - (a.stock_quantity || 0));
-      
+        return sorted.sort((a, b) => a.stock_quantity - b.stock_quantity);
       default:
         return sorted;
     }
   }, [filteredProducts, sortType]);
 
-  // Calculate active filter count
+  // Calculate filter count
   const filterCount = useMemo(() => {
     let count = 0;
-    
-    // Stock filter count (exclude 'Tất cả')
-    count += filters.stockFilter.filter(s => s !== 'Tất cả').length;
-    
-    // Price range count
-    if (filters.priceRange.min > 0 || filters.priceRange.max < 10000000) {
-      count += 1;
-    }
-    
-    // Category count
-    count += filters.categories.length;
-    
+    if (!filters.stockFilter.includes('Tất cả')) count++;
+    if (filters.priceRange.min > 0 || filters.priceRange.max < 5000000) count++;
+    if (filters.categories.length > 0) count++;
     return count;
   }, [filters]);
 
   return {
-    filteredProducts,
     sortedAndFilteredProducts,
     filterCount,
+    categoryData: categoryFilterData,
   };
 }
