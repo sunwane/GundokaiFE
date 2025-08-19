@@ -39,7 +39,7 @@ export default function ProductImage({
       <img 
         ref={imageRef}
         src={product.thumbnail} 
-        alt={product.product_Name} 
+        alt={product.productName} 
         style={{
           ...styles.image,
           // GIẢM HIỆU ỨNG LÀM MỜ ẢNH

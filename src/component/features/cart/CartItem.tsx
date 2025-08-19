@@ -30,7 +30,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
     category, 
     subCategory, 
     loading 
-  } = useCategory(item.product.subCategory.id);
+  } = useCategory(item.product.subCategoryId);
 
   return (
     <div style={styles.container}>
@@ -38,7 +38,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
       <div style={styles.imageContainer}>
         <img 
           src={item.product.thumbnail} 
-          alt={item.product.product_Name}
+          alt={item.product.productName}
           style={{
             ...styles.image,
             filter: item.is_out_of_stock ? 'brightness(0.3)' : 'none'
@@ -64,7 +64,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
 
       {/* Product Info */}
       <div style={styles.infoContainer}>
-        <h3 style={styles.productName}>{item.product.product_Name}</h3>
+        <h3 style={styles.productName}>{item.product.productName}</h3>
         
         <div style={styles.priceRow}>
           <span style={styles.unitPrice}>
@@ -83,7 +83,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
         ) : (
           <div style={styles.stockStatus}>
             <span style={styles.inStockStatus}>
-              Còn {item.product.stock_quantity} sản phẩm
+              Còn {item.product.stockQuantity} sản phẩm
             </span>
           </div>
         )}
@@ -97,7 +97,7 @@ export default function CartItem({ item, onQuantityChange, onRemove }: CartItemP
           <QuantitySelector
             quantity={item.quantity}
             onQuantityChange={handleQuantityChange}
-            maxQuantity={item.product.stock_quantity}
+            maxQuantity={item.product.stockQuantity}
             minQuantity={1}
             disabled={item.is_out_of_stock}
             size="small"

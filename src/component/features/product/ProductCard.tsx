@@ -91,7 +91,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           {/* Card Label */}
           {!loading && (
             <CardLabel 
-              subcategoryId={subCategoryName || product.subcategory.id}
+              subcategoryId={subCategoryName || product.subcategory.subCategoryName}
               categoryId={categoryName || 'Gundam'}
               style={styles.cardLabelContainer}
             />

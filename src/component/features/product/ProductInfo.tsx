@@ -17,14 +17,15 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
   const popupMessage = usePopupMessage();
 
   const handleQuantityChange = (delta: number) => {
-    setQuantity(prev => Math.max(1, Math.min(prev + delta, product.stock_quantity || 1)));
+    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+    setQuantity(prev => Math.max(1, Math.min(prev + delta, product.stockQuantity || 1)));
   };
 
   // Hooks
   const { 
     categoryName,
     subCategoryName,
-  } = useCategory(product.subCategory.id ?? '');
+  } = useCategory(product.subCategoryId ?? '');
 
   const handleAddToCart = () => {
     try {
@@ -35,7 +36,7 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
       
       popupMessage.showSuccess({
         title: 'Thành công!',
-        message: `Đã thêm ${quantity} sản phẩm "${product.product_Name}" vào giỏ hàng`,
+        message: `Đã thêm ${quantity} sản phẩm "${product.productName}" vào giỏ hàng`, // ✅ Đổi từ product.product_Name
         duration: 3000
       });
       
@@ -59,7 +60,8 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
     return price.toLocaleString('vi-VN') + ' VNĐ';
   };
 
-  const isOutOfStock = product.stock_quantity <= 0;
+  // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+  const isOutOfStock = product.stockQuantity <= 0;
 
   // Render features based on ProductDetail data
   const renderFeatures = () => {
@@ -88,7 +90,8 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
     <>
       <div style={styles.container}>
         {/* Product Title */}
-        <h1 style={styles.title}>{product.product_Name}</h1>
+        {/* ✅ Đổi từ product.product_Name thành product.productName */}
+        <h1 style={styles.title}>{product.productName}</h1>
 
         {/* Category Labels */}
         <div style={styles.labelRow}>
@@ -107,7 +110,8 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
           {isOutOfStock ? (
             <span style={styles.outOfStock}>Hết hàng</span>
           ) : (
-            <span style={styles.inStock}>Còn hàng ({product.stock_quantity} sản phẩm)</span>
+            // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+            <span style={styles.inStock}>Còn hàng ({product.stockQuantity} sản phẩm)</span>
           )}
         </div>
 
@@ -140,13 +144,16 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
                 <button 
                   style={{
                     ...styles.quantityBtn,
-                    opacity: quantity >= product.stock_quantity ? 0.5 : 1,
-                    cursor: quantity >= product.stock_quantity ? 'not-allowed' : 'pointer',
+                    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+                    opacity: quantity >= product.stockQuantity ? 0.5 : 1,
+                    cursor: quantity >= product.stockQuantity ? 'not-allowed' : 'pointer',
                   }}
                   onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= product.stock_quantity}
+                  // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+                  disabled={quantity >= product.stockQuantity}
                   onMouseEnter={(e) => {
-                    if (quantity < product.stock_quantity) {
+                    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
+                    if (quantity < product.stockQuantity) {
                       e.currentTarget.style.backgroundColor = '#e5e7eb';
                     }
                   }}

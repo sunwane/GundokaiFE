@@ -47,14 +47,14 @@ export class CartService {
       cart.items[existingItemIndex].total_price =
         cart.items[existingItemIndex].quantity * cart.items[existingItemIndex].product.price;
       cart.items[existingItemIndex].is_out_of_stock =
-        cart.items[existingItemIndex].product.stock_quantity <= 0;
+        cart.items[existingItemIndex].product.stockQuantity <= 0;
     } else {
       const cartItem: CartItem = {
         id: `cart_${Date.now()}_${product.id}`,
         product: product,
         quantity: quantity,
         total_price: product.price * quantity,
-        is_out_of_stock: product.stock_quantity <= 0,
+        is_out_of_stock: product.stockQuantity <= 0,
       };
       cart.items.push(cartItem);
     }

@@ -62,7 +62,6 @@ export default function ProductDetailPage() {
     { label: 'Gundam', href: '/products?category=gundam' },
     { label: 'HG • High Grade', href: '/products?subcategory=hg' },
   ];
-
   return (
     <div>
       <PageHeader />
@@ -82,7 +81,7 @@ export default function ProductDetailPage() {
           <ProductImageGallery
             images={images}
             fallbackImage={product.thumbnail}
-            productName={product.product_Name}
+            productName={product.productName}
           />
 
           {/* Product Info - Now includes productDetail */}

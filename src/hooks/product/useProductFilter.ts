@@ -38,8 +38,8 @@ export function useProductFilter(
     return products.filter(product => {
       // Stock filter
       const stockMatch = filters.stockFilter.includes('Tất cả') || 
-        (filters.stockFilter.includes('Còn hàng') && product.stock_quantity > 0) ||
-        (filters.stockFilter.includes('Hết hàng') && product.stock_quantity === 0);
+        (filters.stockFilter.includes('Còn hàng') && product.stockQuantity > 0) ||
+        (filters.stockFilter.includes('Hết hàng') && product.stockQuantity === 0);
 
       // Price filter
       const priceMatch = product.price >= filters.priceRange.min && 
@@ -65,7 +65,7 @@ export function useProductFilter(
       case 'newest':
         return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       case 'bestseller':
-        return sorted.sort((a, b) => a.stock_quantity - b.stock_quantity);
+        return sorted.sort((a, b) => a.stockQuantity - b.stockQuantity);
       default:
         return sorted;
     }

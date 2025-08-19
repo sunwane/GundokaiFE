@@ -50,20 +50,20 @@ export function useProducts(subcategoryId?: string | null) {
     }
   };
 
-  const filterByStatus = async (status: 'Còn hàng' | 'Hết hàng' | 'Hàng sắp về') => {
+  const filterByStatus = async (status: "Còn hàng" | "Hết hàng" | "Hàng sắp về") => {
     try {
       setLoading(true);
       setError(null);
       
       let response;
       switch (status) {
-        case 'Còn hàng':
+        case "Còn hàng":
           response = await ProductService.getActiveProducts();
           break;
-        case 'Hết hàng':
+        case "Hết hàng":
           response = await ProductService.getOutOfStockProducts();
           break;
-        case 'Hàng sắp về':
+        case "Hàng sắp về":
           response = await ProductService.getComingSoonProducts();
           break;
         default:

@@ -17,21 +17,21 @@ export interface ProductStatusInfo {
 
 export function useProductStatus(product: Product): ProductStatusInfo {
   const statusInfo = useMemo(() => {
-    const stockQuantity = product.stock_quantity || 0;
+    const stockQuantity = product.stockQuantity || 0;
     const status = product.status;
 
     // Xác định trạng thái sản phẩm
-    let statusType: ProductStatusType = 'in-stock';
+    let statusType: ProductStatusType = 'Còn hàng';
     let isOutOfStock = false;
     let isComingSoon = false;
     let statusLabel = '';
     let badgeConfig = undefined;
 
-    if (stockQuantity === 0 || status === 'Hết hàng') {
+    if (stockQuantity == 0 || status == 'Hết hàng') {
       statusType = 'out-of-stock';
       isOutOfStock = true;
       statusLabel = 'HẾT HÀNG';
-    } else if (status === 'Hàng sắp về') {
+    } else if (status == 'Hàng sắp về') {
       statusType = 'coming-soon';
       isComingSoon = true;
       statusLabel = 'HÀNG SẮP VỀ';
@@ -40,9 +40,6 @@ export function useProductStatus(product: Product): ProductStatusInfo {
         color: '#ffffff',
         backgroundColor: 'rgb(0, 119, 255)',
       };
-    } else if (stockQuantity > 0 && status === 'Còn hàng') {
-      statusType = 'in-stock';
-      statusLabel = 'CÒN HÀNG';
     }
 
     return {
@@ -52,7 +49,7 @@ export function useProductStatus(product: Product): ProductStatusInfo {
       statusLabel,
       badgeConfig,
     };
-  }, [product.stock_quantity, product.status]);
+  }, [product.stockQuantity, product.status]);
 
   return statusInfo;
 }

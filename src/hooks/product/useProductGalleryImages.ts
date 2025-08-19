@@ -4,7 +4,7 @@ import { ProductImg } from '@/types/Product';
 export function useProductGalleryImages(images: ProductImg[], thumbnail?: string) {
   // Thêm thumbnail vào đầu danh sách nếu có và chưa có trong images
   const allImages = useMemo(() => {
-    const imgLinks = images.map(img => img.img_link);
+    const imgLinks = images.map(img => img.productImg);
     if (thumbnail && !imgLinks.includes(thumbnail)) {
       return [thumbnail, ...imgLinks];
     }

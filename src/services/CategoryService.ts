@@ -33,12 +33,12 @@ export class CategoryService {
     
     try {
       // TODO: Real API call
-      // const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`);
-      // return await response.json();
+      const response = await fetch(`${API_BASE_URL}/getById/${categoryId}`);
+      return await response.json();
 
       // Mock response for now
-      const category = mockCategories.find(cat => cat.id === categoryId);
-      return category || null;
+      // const category = mockCategories.find(cat => cat.id === categoryId);
+      // return category || null;
     } catch (error) {
       console.error('Error fetching category:', error);
       throw new Error('Failed to fetch category');

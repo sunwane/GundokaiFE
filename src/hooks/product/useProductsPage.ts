@@ -39,8 +39,8 @@ export function useProductsPage(subcategoryId?: string | null) {
     if (!stockFilter.includes('Tất cả')) {
       filtered = filtered.filter(product => {
         let matched = false;
-        if (stockFilter.includes('Còn hàng') && (product.stock_quantity || 0) > 0 && product.status === 'Còn hàng') matched = true;
-        if (stockFilter.includes('Hết hàng') && ((product.stock_quantity || 0) === 0 || product.status === 'Hết hàng')) matched = true;
+        if (stockFilter.includes('Còn hàng') && (product.stockQuantity || 0) > 0 && product.status === 'Còn hàng') matched = true;
+        if (stockFilter.includes('Hết hàng') && ((product.stockQuantity || 0) === 0 || product.status === 'Hết hàng')) matched = true;
         if (stockFilter.includes('Hàng sắp về') && product.status === 'Hàng sắp về') matched = true;
         return matched;
       });

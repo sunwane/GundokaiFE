@@ -48,19 +48,20 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
     const fetchCategoryData = async () => {
       try {
         // 🔄 Lấy subcategory đầy đủ
-        const subCategoryData = await SubCategoryService.getSubCategoryById(subCategoryId);
-        
+        const subCategory = await SubCategoryService.getSubCategoryById(subCategoryId);
+        const subCategoryData= subCategory.result;
         if (subCategoryData) {
           setSubCategory(subCategoryData);
-          setSubCategoryName(subCategoryData.subCategory_Name);
-          setCategoryId(subCategoryData.category_id);
-
-          // 🔄 Lấy category đầy đủ từ categoryId
-          const categoryData = await CategoryService.getCategoryById(subCategoryData.category_id);
+          setSubCategoryName(subCategoryData.subCategoryName);
+          setCategoryId(subCategoryData.mainCategoryId);
           
+          console.log("kitram,1", subCategoryData.mainCategoryId);
+          // 🔄 Lấy category đầy đủ từ categoryId
+          const category = await CategoryService.getCategoryById(subCategoryData.mainCategoryId);
+          const categoryData = category.result;
           if (categoryData) {
             setCategory(categoryData);
-            setCategoryName(categoryData.category_Name);
+            setCategoryName(categoryData.categoryName);
           } else {
             setCategory(null);
             setCategoryName(null);

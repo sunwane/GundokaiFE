@@ -43,7 +43,7 @@ export default function CartPage() {
         {/* Header */}
         <div style={styles.header}>
           <h1 style={styles.title}>Giỏ hàng của bạn</h1>
-          {cart.items.length > 0 && (
+          {cart?.items?.length > 0 && ( // ✅ Thêm optional chaining
             <button 
               style={styles.clearButton}
               onClick={handleClearCart}
@@ -59,8 +59,8 @@ export default function CartPage() {
           )}
         </div>
 
-        {/* Cart Content - giữ nguyên phần render */}
-        {cart.items.length === 0 ? (
+        {/* Cart Content */}
+        {!cart?.items || cart.items.length === 0 ? ( // ✅ Kiểm tra an toàn
           <div style={styles.emptyCart}>
             <div style={styles.emptyCartIcon}>🛒</div>
             <h2 style={styles.emptyCartTitle}>Giỏ hàng trống</h2>
@@ -90,12 +90,12 @@ export default function CartPage() {
             <div style={styles.cartItems}>
               <div style={styles.itemsHeader}>
                 <span style={styles.itemsCount}>
-                  {cart.total_quantity} sản phẩm
+                  {cart.total_quantity || 0} sản phẩm {/* ✅ Thêm fallback */}
                 </span>
               </div>
               
               <div style={styles.itemsList}>
-                {cart.items.map((item: CartItemType) => (
+                {cart.items?.map((item: CartItemType) => ( // ✅ Thêm optional chaining
                   <CartItem
                     key={item.id}
                     item={item}
@@ -115,7 +115,7 @@ export default function CartPage() {
                   <div style={styles.summaryRow}>
                     <span style={styles.summaryLabel}>Tạm tính:</span>
                     <span style={styles.summaryValue}>
-                      {formatPrice(cart.subtotal)}
+                      {formatPrice(cart.subtotal || 0)} {/* ✅ Thêm fallback */}
                     </span>
                   </div>
                   
@@ -129,7 +129,7 @@ export default function CartPage() {
                   <div style={styles.summaryRow}>
                     <span style={styles.totalLabel}>Tổng cộng:</span>
                     <span style={styles.totalValue}>
-                      {formatPrice(cart.total_amount)}
+                      {formatPrice(cart.total_amount || 0)} {/* ✅ Thêm fallback */}
                     </span>
                   </div>
                 </div>

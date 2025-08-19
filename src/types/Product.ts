@@ -31,5 +31,5 @@ export type StockStatus = 'Tất cả' | 'Còn hàng' | 'Hết hàng' | 'Hàng s
 export interface ProductImg {
   id: string;
   productId: string;        // ✅ Có thể cần đổi thành productId nếu BE thay đổi
-  img_link: string;          // ✅ Có thể cần đổi thành imgLink nếu BE thay đổi
+  productImg: string;          // ✅ Có thể cần đổi thành imgLink nếu BE thay đổi
 }

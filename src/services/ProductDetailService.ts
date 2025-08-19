@@ -37,7 +37,7 @@ export class ProductDetailService {
   // ✅ CẬP NHẬT HÀM NÀY THEO API ENDPOINT CỦA BẠN
   static async getProductDetail(productId: string): Promise<ProductDetail | null> {
     try {
-      const response = await fetch(`${API_BASE_URL}/get/${productId}`, {
+      const response = await fetch(`${API_BASE_URL}/productDetail/get/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +50,6 @@ export class ProductDetailService {
       }
       
       const data = await response.json();
-      console.log('Product detail response:', data);
       return data.result || null;
     } catch (error) {
       console.error('Error fetching product detail:', error);
@@ -58,20 +57,18 @@ export class ProductDetailService {
     }
   }
 
-  static async getRelatedProducts(categoryId: string, limit: number = 5): Promise<Product[]> {
+  static async getRelatedProducts(): Promise<Product[]> {
     try {
-      // ✅ SỬ DỤNG API LẤY PRODUCTS THEO SUBCATEGORY
-      const response = await fetch(`${API_BASE_URL}/getProductBySubCategory/${categoryId}`);
+      const response = await fetch(`${API_BASE_URL}/product/random`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
       const data = await response.json();
-      const products = data.result || data;
-      
-      // ✅ GIỚI HẠN SỐ LƯỢNG SẢN PHẨM LIÊN QUAN
-      return Array.isArray(products) ? products.slice(0, limit) : [];
+      return data.result || [];
     } catch (error) {
       console.error('Error fetching related products:', error);
       return [];
     }
   }
+
+  
 }
