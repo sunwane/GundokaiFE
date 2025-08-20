@@ -19,7 +19,7 @@ export function useProducts(subcategoryId?: string | null) {
       } else {
         response = await ProductService.getProducts();
       }
-      setProducts(response);
+      setProducts(response.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error fetching products:', err);

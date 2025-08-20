@@ -41,7 +41,7 @@ export default function SearchDiv({ results, onSelect, visible }: SearchDivProps
             <div style={styles.imageContainer}>
               <img
                 src={product.thumbnail}
-                alt={product.product_Name}
+                alt={product.productName}
                 style={styles.image}
                 onError={(e) => {
                   e.currentTarget.src = '/images/placeholder-product.jpg';
@@ -52,7 +52,7 @@ export default function SearchDiv({ results, onSelect, visible }: SearchDivProps
             {/* Product Info */}
             <div style={styles.infoContainer}>
               <h4 style={styles.productName}>
-                {product.product_Name}
+                {product.productName}
               </h4>
               <div style={styles.priceContainer}>
                 <span style={styles.price}>

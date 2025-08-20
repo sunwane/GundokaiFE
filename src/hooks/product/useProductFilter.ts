@@ -29,10 +29,8 @@ export function useProductFilter(
   filters: FilterState,
   sortType: SortType = 'default'
 ): UseProductFilterReturn {
-  
   // Tích hợp category filter hook
   const categoryFilterData = useCategoryFilter(products);
-
   // Filter products
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
