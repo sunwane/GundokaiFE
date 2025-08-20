@@ -19,6 +19,8 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const subcategoryId = searchParams.get('subcategory');
   const router = useRouter();
+
+  const value = !subcategoryId ? true : false;
   
   // SỬ DỤNG useResponsive THAY VÌ LOGIC CŨ
   const { isMobile, isTablet, windowWidth } = useResponsive({

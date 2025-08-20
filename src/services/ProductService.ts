@@ -142,7 +142,7 @@ export class ProductService {
     // ❌ HIỆN TẠI
     await new Promise(resolve => setTimeout(resolve, 400));
     const searchResults = mockProducts.filter(p => 
-      p.product_Name.toLowerCase().includes(query.toLowerCase()) ||
+      p.productName.toLowerCase().includes(query.toLowerCase()) ||
       p.description.toLowerCase().includes(query.toLowerCase())
     );
     return {

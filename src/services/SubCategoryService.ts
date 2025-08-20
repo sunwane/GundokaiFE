@@ -69,12 +69,12 @@ export class SubCategoryService {
   // Get subcategory name by ID (utility method)
   static async getSubCategoryNameById(subCategoryId: string): Promise<string | null> {
     const subCategory = await this.getSubCategoryById(subCategoryId);
-    return subCategory ? subCategory.subCategory_Name : null;
+    return subCategory ? subCategory.subCategoryName : null;
   }
 
   // Get categoryId by subCategoryId
   static async getCategoryIdBySubCategoryId(subCategoryId: string): Promise<string | null> {
     const subCategory = await this.getSubCategoryById(subCategoryId);
-    return subCategory ? subCategory.category_id : null;
+    return subCategory ? subCategory.categoryId : null;
   }
 }

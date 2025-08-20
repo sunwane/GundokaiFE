@@ -25,7 +25,7 @@ export interface UseProductFilterReturn {
 }
 
 export function useProductFilter(
-  products: Product[],
+  products: Product[] = [], // Default to empty array if no products
   filters: FilterState,
   sortType: SortType = 'default'
 ): UseProductFilterReturn {
@@ -47,7 +47,7 @@ export function useProductFilter(
 
       // Category filter
       const categoryMatch = filters.categories.length === 0 || 
-        filters.categories.includes(product.subCategory.id);
+        filters.categories.includes(product.subcategory.id);
 
       return stockMatch && priceMatch && categoryMatch;
     });
@@ -63,7 +63,7 @@ export function useProductFilter(
       case 'price-desc':
         return sorted.sort((a, b) => b.price - a.price);
       case 'newest':
-        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       case 'bestseller':
         return sorted.sort((a, b) => a.stockQuantity - b.stockQuantity);
       default:

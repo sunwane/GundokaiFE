@@ -136,7 +136,8 @@ export default function FilterPanel({
 
 const styles = {
   filterPanel: {
-    width: '300px',
+    width: '20vw',
+    minWidth: '300px',
     backgroundImage: 'url("/images/frames/filter.png")',
     backgroundSize: '100% 100%',
     backgroundRepeat: 'no-repeat',

@@ -48,6 +48,6 @@ export class CategoryService {
   // Get category name by ID (utility method)
   static async getCategoryNameById(categoryId: string): Promise<string | null> {
     const category = await this.getCategoryById(categoryId);
-    return category ? category.category_Name : null;
+    return category ? category.categoryName : null;
   }
 }
