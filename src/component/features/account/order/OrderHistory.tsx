@@ -1,149 +1,199 @@
-import React from 'react';
-import { OrderWithDetails } from '@/types/Order';
-import Card from '@/component/ui/CardCotainer';
-import CardHeader from '@/component/ui/CardHeader';
-import LoadingSpinner from '@/component/ui/LoadingSpinner';
-import EmptyState from '@/component/ui/EmptyState';
-import ActionButton from '@/component/ui/ActionButton';
-import OrderCard from '@/component/features/account/order/OrderCard';
-import OrderStatusSelect from '@/component/features/account/order/OrderStatusSelect';
-import { useOrderFilter } from '@/hooks/order/useOrderFilter';
+import React, { useEffect, useState } from "react";
+import { OrderService } from "@/services/OrderService";
+import { Order } from "@/types/Order";
 
-interface OrderHistoryProps {
-  orders: OrderWithDetails[];
-  isLoading: boolean;
-  onRefresh: () => void;
-}
+const OrderHistory: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const itemsPerPage = 10;
 
-export default function OrderHistory({ orders, isLoading, onRefresh }: OrderHistoryProps) {
-  const {
-    selectedStatus,
-    setSelectedStatus,
-    filteredOrders,
-    orderCounts
-  } = useOrderFilter(orders);
+  useEffect(() => {
+    const fetchOrderHistory = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  if (isLoading) {
-    return (
-      <Card padding="none">
-        <CardHeader title="Lịch sử mua hàng" icon="📦" />
-        <LoadingSpinner text="Đang tải lịch sử đơn hàng..." />
-      </Card>
-    );
-  }
+        console.log(`Fetching page ${currentPage} with size ${itemsPerPage}`);
 
-  const getEmptyStateMessage = () => {
-    switch (selectedStatus) {
-      case 'pending':
-        return {
-          title: 'Không có đơn hàng chờ xử lý',
-          subtitle: 'Hiện tại bạn không có đơn hàng nào đang chờ xử lý.'
-        };
-      case 'shipping':
-        return {
-          title: 'Không có đơn hàng đang giao',
-          subtitle: 'Hiện tại bạn không có đơn hàng nào đang trong quá trình giao hàng.'
-        };
-      case 'delivered':
-        return {
-          title: 'Không có đơn hàng đã giao',
-          subtitle: 'Bạn chưa có đơn hàng nào được giao thành công.'
-        };
-      case 'cancelled':
-        return {
-          title: 'Không có đơn hàng đã hủy',
-          subtitle: 'Bạn chưa hủy đơn hàng nào.'
-        };
-      default:
-        return {
-          title: 'Chưa có đơn hàng nào',
-          subtitle: 'Bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm của chúng tôi!'
-        };
+        // Gọi API lấy lịch sử mua hàng với phân trang
+        const response: any = await OrderService.getOrderHistory(
+          currentPage,
+          itemsPerPage
+        );
+
+        console.log("API response:", response);
+
+        // Xử lý response
+        if (response && response.result) {
+          if (response.result.content) {
+            setOrders(response.result.content);
+
+            // Lấy totalPages từ response
+            let pages = 1;
+            if (
+              typeof response.result.totalPages === "number" &&
+              response.result.totalPages > 0
+            ) {
+              pages = response.result.totalPages;
+            } else if (typeof response.result.totalElements === "number") {
+              pages = Math.ceil(response.result.totalElements / itemsPerPage);
+            } else if (response.result.content.length === itemsPerPage) {
+              // Nếu số lượng items = itemsPerPage, có thể có thêm trang
+              pages = currentPage + 2; // Ít nhất có trang tiếp theo
+            } else {
+              pages = currentPage + 1; // Trang hiện tại là trang cuối
+            }
+
+            console.log("Setting totalPages to:", pages);
+            setTotalPages(pages);
+          } else {
+            setOrders(response.result);
+            setTotalPages(
+              Math.ceil(response.result.length / itemsPerPage) || 1
+            );
+          }
+        } else if (Array.isArray(response)) {
+          setOrders(response);
+          setTotalPages(Math.ceil(response.length / itemsPerPage) || 1);
+        } else {
+          console.error("Unexpected API response format:", response);
+          setError("Định dạng dữ liệu không hợp lệ");
+        }
+      } catch (err) {
+        console.error("Error fetching order history:", err);
+        setError(err instanceof Error ? err.message : "Có lỗi xảy ra");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderHistory();
+  }, [currentPage]); // ✅ Thêm currentPage vào dependency array
+
+  // Xử lý khi nhấn nút "Prev"
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
-  const emptyMessage = getEmptyStateMessage();
+  // Xử lý khi nhấn nút "Next"
+  const handleNextPage = () => {
+    console.log(
+      "Next button clicked, current page:",
+      currentPage,
+      "total pages:",
+      totalPages
+    );
+    if (currentPage < totalPages - 1) {
+      console.log("Moving to next page:", currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);
+    } else {
+      console.log("Cannot move to next page, already at last page");
+    }
+  };
+
+  if (loading) {
+    return <p>Đang tải lịch sử mua hàng...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">Lỗi: {error}</p>;
+  }
+
+  if (orders.length === 0) {
+    return <p>Bạn chưa có đơn hàng nào.</p>;
+  }
 
   return (
-    <Card padding="none">
-      <CardHeader title="Lịch sử mua hàng" icon="📦">
-        <div style={styles.headerActions}>
-          {/* Status Filter Select */}
-          {orders.length > 0 && (
-            <OrderStatusSelect
-              selectedStatus={selectedStatus}
-              onStatusChange={setSelectedStatus}
-              orderCounts={orderCounts}
-            />
-          )}
-          
-          {/* Refresh Button */}
-          <ActionButton onClick={onRefresh}>
-            <span>🔄</span>
-            Làm mới
-          </ActionButton>
-        </div>
-      </CardHeader>
+    <div>
+      <h2 className="text-xl font-bold mb-4">Lịch sử mua hàng</h2>
 
-      <div style={styles.content}>
-        {/* Results Section */}
-        {filteredOrders.length === 0 ? (
-          <EmptyState
-            icon="📦"
-            title={emptyMessage.title}
-            subtitle={emptyMessage.subtitle}
-          />
-        ) : (
-          <div style={styles.ordersSection}>
-            {/* Results Summary - Optional, có thể bỏ nếu muốn đơn giản hơn */}
-            <div style={styles.resultsSummary}>
-              <span style={styles.resultsText}>
-                Hiển thị {filteredOrders.length} đơn hàng
+      <div className="space-y-4">
+        {orders.map((order) => (
+          <div
+            key={order.orderId}
+            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+          >
+            {/* // OrderHistory.tsx - Thêm debug info */}
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold text-lg">
+                Mã đơn hàng: {order.orderId}
+              </h3>
+              {/* Debug info - xóa sau khi fix
+              <div className="text-xs text-gray-500 mb-1">
+                Status từ API: "{order.status}"
+              </div>
+              // OrderHistory.tsx */}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  order.status === "PENDING"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : order.status === "CONFIRMED"
+                    ? "bg-blue-100 text-blue-800"
+                    : order.status === "PROCESSING"
+                    ? "bg-purple-100 text-purple-800"
+                    : order.status === "SHIPPED"
+                    ? "bg-indigo-100 text-indigo-800"
+                    : order.status === "DELIVERED"
+                    ? "bg-green-100 text-green-800"
+                    : order.status === "COMPLETED" // ✅ Thêm COMPLETED
+                    ? "bg-green-200 text-green-900"
+                    : order.status === "CANCELLED"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {OrderService.getStatusText(order.status)}
               </span>
             </div>
-
-            {/* Orders List */}
-            <div style={styles.ordersList}>
-              {filteredOrders.map((order) => (
-                <OrderCard key={order.order_id} order={order} />
-              ))}
-            </div>
+            <p className="text-sm text-gray-600">
+              Ngày đặt hàng: {OrderService.formatDate(order.orderDate)}
+            </p>
+            <p className="text-sm text-gray-600">
+              Tổng tiền: {OrderService.formatPrice(order.totalAmount)}
+            </p>
+            <p className="text-sm text-gray-600">
+              Phương thức thanh toán:{" "}
+              {OrderService.getPaymentMethodText(order.paymentMethod)}
+            </p>
           </div>
-        )}
+        ))}
       </div>
-    </Card>
-  );
-}
 
-const styles = {
-  headerActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  content: {
-    padding: '24px',
-  },
-  ordersSection: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '16px',
-  },
-  resultsSummary: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 0',
-    borderBottom: '1px solid #e5e7eb',
-  },
-  resultsText: {
-    fontSize: '14px',
-    color: '#6b7280',
-    fontWeight: '500',
-  },
-  ordersList: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '20px',
-  },
+      {/* Phân trang */}
+      <div className="flex justify-between items-center mt-6">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 0}
+          className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            currentPage === 0
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
+          Trước
+        </button>
+        <span className="text-sm">
+          Trang {currentPage + 1} / {totalPages}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage >= totalPages - 1}
+          className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            currentPage >= totalPages - 1
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
+          Tiếp
+        </button>
+      </div>
+    </div>
+  );
 };
+
+export default OrderHistory;

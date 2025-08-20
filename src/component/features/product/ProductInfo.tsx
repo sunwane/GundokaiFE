@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Product } from '@/types/Product';
-import { ProductDetail } from '@/types/ProductDetail';
-import { CartService } from '@/services/CartService';
-import { useCategory } from '@/hooks/categories/useCategory';
-import { usePopupMessage } from '@/hooks/ui/usePopupMessage';
-import PopupMessage from '@/component/ui/PopupMessage';
+import React, { useState } from "react";
+import { Product } from "@/types/Product";
+import { ProductDetail } from "@/types/ProductDetail";
+import { CartService } from "@/services/CartService";
+import { useCategory } from "@/hooks/categories/useCategory";
+import { usePopupMessage } from "@/hooks/ui/usePopupMessage";
+import PopupMessage from "@/component/ui/PopupMessage";
 
 interface ProductInfoProps {
   product: Product;
@@ -12,52 +12,58 @@ interface ProductInfoProps {
   onAddToCart?: (productId: string, quantity: number) => void;
 }
 
-export default function ProductInfo({ product, productDetail, onAddToCart }: ProductInfoProps) {
+export default function ProductInfo({
+  product,
+  productDetail,
+  onAddToCart,
+}: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
   const popupMessage = usePopupMessage();
 
   const handleQuantityChange = (delta: number) => {
     // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
-    setQuantity(prev => Math.max(1, Math.min(prev + delta, product.stockQuantity || 1)));
+    setQuantity((prev) =>
+      Math.max(1, Math.min(prev + delta, product.stockQuantity || 1))
+    );
   };
 
   // Hooks
-  const { 
-    categoryName,
-    subCategoryName,
-  } = useCategory(product.subCategoryId ?? '');
+  const { categoryName, subCategoryName } = useCategory(
+    product.subCategoryId ?? ""
+  );
 
   const handleAddToCart = () => {
     try {
       CartService.addToCart(product, quantity);
-      
+
       // Cart count sẽ tự động update thông qua custom event
       // Không cần gọi thêm gì
-      
+
       popupMessage.showSuccess({
-        title: 'Thành công!',
+        title: "Thành công!",
         message: `Đã thêm ${quantity} sản phẩm "${product.productName}" vào giỏ hàng`, // ✅ Đổi từ product.product_Name
-        duration: 3000
+        duration: 3000,
       });
-      
+
       setQuantity(1);
-      
+
       if (onAddToCart) {
         onAddToCart(product.id, quantity);
       }
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      
+      console.error("Error adding to cart:", error);
+
       popupMessage.showError({
-        title: 'Lỗi!',
-        message: 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!',
-        duration: 4000
+        title: "Lỗi!",
+        message:
+          "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng. Vui lòng thử lại!",
+        duration: 4000,
       });
     }
   };
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString('vi-VN') + ' VNĐ';
+    return price.toLocaleString("vi-VN") + " VNĐ";
   };
 
   // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
@@ -68,7 +74,9 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
     if (!productDetail) {
       return (
         <ul style={styles.featureList}>
-          <li style={{ fontStyle: 'italic', color: '#9ca3af' }}>Đang tải thông tin chi tiết...</li>
+          <li style={{ fontStyle: "italic", color: "#9ca3af" }}>
+            Đang tải thông tin chi tiết...
+          </li>
         </ul>
       );
     }
@@ -111,7 +119,9 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
             <span style={styles.outOfStock}>Hết hàng</span>
           ) : (
             // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
-            <span style={styles.inStock}>Còn hàng ({product.stockQuantity} sản phẩm)</span>
+            <span style={styles.inStock}>
+              Còn hàng ({product.stockQuantity} sản phẩm)
+            </span>
           )}
         </div>
 
@@ -121,32 +131,35 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
             <div style={styles.quantitySection}>
               <span style={styles.quantityLabel}>Số lượng</span>
               <div style={styles.quantityControls}>
-                <button 
+                <button
                   style={{
                     ...styles.quantityBtn,
                     opacity: quantity <= 1 ? 0.5 : 1,
-                    cursor: quantity <= 1 ? 'not-allowed' : 'pointer',
+                    cursor: quantity <= 1 ? "not-allowed" : "pointer",
                   }}
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
                   onMouseEnter={(e) => {
                     if (quantity > 1) {
-                      e.currentTarget.style.backgroundColor = '#e5e7eb';
+                      e.currentTarget.style.backgroundColor = "#e5e7eb";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                    e.currentTarget.style.backgroundColor = "#f9fafb";
                   }}
                 >
                   -
                 </button>
                 <span style={styles.quantityValue}>{quantity}</span>
-                <button 
+                <button
                   style={{
                     ...styles.quantityBtn,
                     // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
                     opacity: quantity >= product.stockQuantity ? 0.5 : 1,
-                    cursor: quantity >= product.stockQuantity ? 'not-allowed' : 'pointer',
+                    cursor:
+                      quantity >= product.stockQuantity
+                        ? "not-allowed"
+                        : "pointer",
                   }}
                   onClick={() => handleQuantityChange(1)}
                   // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
@@ -154,27 +167,27 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
                   onMouseEnter={(e) => {
                     // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
                     if (quantity < product.stockQuantity) {
-                      e.currentTarget.style.backgroundColor = '#e5e7eb';
+                      e.currentTarget.style.backgroundColor = "#e5e7eb";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                    e.currentTarget.style.backgroundColor = "#f9fafb";
                   }}
                 >
                   +
                 </button>
               </div>
             </div>
-            <button 
+            <button
               style={styles.addToCartBtn}
               onClick={handleAddToCart}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1d4ed8';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.backgroundColor = "#1d4ed8";
+                e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#2563eb';
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.backgroundColor = "#2563eb";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               Thêm giỏ hàng
@@ -198,7 +211,8 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
         <div style={styles.descriptionSection}>
           <h3 style={styles.sectionTitle}>Mô tả sản phẩm</h3>
           <div style={styles.description}>
-            {product.description || 'Mô hình Gundam tỷ lệ 1/144 chất lượng cao từ Bandai. Sản phẩm được thiết kế chi tiết, có thể tùy chỉnh tư thế và trang bị vũ khí đa dạng. Phù hợp cho người sưu tập và những ai yêu thích dòng Gundam.'}
+            {product.description ||
+              "Mô hình Gundam tỷ lệ 1/144 chất lượng cao từ Bandai. Sản phẩm được thiết kế chi tiết, có thể tùy chỉnh tư thế và trang bị vũ khí đa dạng. Phù hợp cho người sưu tập và những ai yêu thích dòng Gundam."}
           </div>
 
           <h3 style={styles.sectionTitle}>Đặc điểm nổi bật:</h3>
@@ -206,9 +220,9 @@ export default function ProductInfo({ product, productDetail, onAddToCart }: Pro
         </div>
       </div>
 
-      <PopupMessage 
-        popup={popupMessage.popup} 
-        onClose={popupMessage.hidePopup} 
+      <PopupMessage
+        popup={popupMessage.popup}
+        onClose={popupMessage.hidePopup}
       />
     </>
   );
@@ -219,179 +233,178 @@ const styles = {
   container: {
     flex: 1,
     minWidth: 0,
-    background: '#fff',
+    background: "#fff",
   },
   title: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    marginBottom: '12px',
-    color: '#111827',
+    fontSize: "28px",
+    fontWeight: "bold",
+    marginBottom: "12px",
+    color: "#111827",
     lineHeight: 1.3,
   },
   labelRow: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '16px',
-    alignItems: 'center',
+    display: "flex",
+    gap: "8px",
+    marginBottom: "16px",
+    alignItems: "center",
   },
   categoryLabel: {
-    background: '#dbeafe',
-    color: '#1e40af',
-    padding: '6px 12px',
-    borderRadius: '15px',
-    fontSize: '12px',
-    fontWeight: '600',
+    background: "#dbeafe",
+    color: "#1e40af",
+    padding: "6px 12px",
+    borderRadius: "15px",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   gradeLabel: {
-    background: '#fef3c7',
-    color: '#b45309',
-    padding: '6px 12px',
-    borderRadius: '15px',
-    fontSize: '12px',
-    fontWeight: '600',
+    background: "#fef3c7",
+    color: "#b45309",
+    padding: "6px 12px",
+    borderRadius: "15px",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   priceRow: {
-    marginBottom: '0px',
+    marginBottom: "0px",
   },
   price: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    color: '#FB2F38',
+    fontSize: "32px",
+    fontWeight: "bold",
+    color: "#FB2F38",
   },
   stockRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '24px',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "24px",
   },
   stockLabel: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#a3a3a3',
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#a3a3a3",
   },
   inStock: {
-    color: '#059669',
-    fontWeight: '600',
-    fontSize: '16px',
+    color: "#059669",
+    fontWeight: "600",
+    fontSize: "16px",
   },
   outOfStock: {
-    color: '#dc2626',
-    fontWeight: '600',
-    fontSize: '16px',
+    color: "#dc2626",
+    fontWeight: "600",
+    fontSize: "16px",
   },
   actionRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '24px',
-    marginBottom: '32px',
-    padding: '24px 0px',
-    borderTop: '1px solid #e5e7eb',
-    borderBottom: '1px solid #e5e7eb',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "24px",
+    marginBottom: "32px",
+    padding: "24px 0px",
+    borderTop: "1px solid #e5e7eb",
+    borderBottom: "1px solid #e5e7eb",
   },
   quantitySection: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   },
   quantityLabel: {
-    fontWeight: '600',
-    fontSize: '16px',
-    color: '#374151',
+    fontWeight: "600",
+    fontSize: "16px",
+    color: "#374151",
   },
   quantityControls: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0',
-    border: '1px solid #d1d5db',
-    borderRadius: '8px',
-    overflow: 'hidden',
+    display: "flex",
+    alignItems: "center",
+    gap: "0",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    overflow: "hidden",
   },
   quantityBtn: {
-    width: '40px',
-    height: '40px',
-    border: 'none',
-    background: '#f9fafb',
-    color: '#374151',
-    fontWeight: 'bold',
-    fontSize: '18px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "40px",
+    height: "40px",
+    border: "none",
+    background: "#f9fafb",
+    color: "#374151",
+    fontWeight: "bold",
+    fontSize: "18px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   quantityValue: {
-    width: '50px',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: '600',
-    fontSize: '16px',
-    background: '#fff',
-    borderLeft: '1px solid #d1d5db',
-    borderRight: '1px solid #d1d5db',
+    width: "50px",
+    height: "40px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
+    fontSize: "16px",
+    background: "#fff",
+    borderLeft: "1px solid #d1d5db",
+    borderRight: "1px solid #d1d5db",
   },
   addToCartBtn: {
-    padding: '12px 32px',
-    background: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontWeight: '600',
-    fontSize: '16px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
+    padding: "12px 32px",
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "600",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    boxShadow: "0 2px 4px rgba(37, 99, 235, 0.2)",
   },
   outOfStockSection: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '32px',
-    padding: '24px 0px',
-    borderTop: '1px solid #e5e7eb',
-    borderBottom: '1px solid #e5e7eb',
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "32px",
+    padding: "24px 0px",
+    borderTop: "1px solid #e5e7eb",
+    borderBottom: "1px solid #e5e7eb",
   },
   outOfStockBtn: {
-    padding: '12px 32px',
-    background: '#f3f4f6',
-    color: '#9ca3af',
-    border: '1px solid #d1d5db',
-    borderRadius: '8px',
-    fontWeight: '600',
-    fontSize: '16px',
-    cursor: 'not-allowed',
+    padding: "12px 32px",
+    background: "#f3f4f6",
+    color: "#9ca3af",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontWeight: "600",
+    fontSize: "16px",
+    cursor: "not-allowed",
   },
   outOfStockText: {
-    fontSize: '14px',
-    color: '#6b7280',
-    textAlign: 'center' as const,
+    fontSize: "14px",
+    color: "#6b7280",
+    textAlign: "center" as const,
     margin: 0,
   },
   descriptionSection: {
-    paddingTop: '24px',
+    paddingTop: "24px",
   },
   sectionTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    margin: '0 0 12px 0',
-    color: '#111827',
+    fontSize: "20px",
+    fontWeight: "bold",
+    margin: "0 0 12px 0",
+    color: "#111827",
   },
   description: {
-    fontSize: '15px',
-    color: '#4b5563',
-    marginBottom: '24px',
+    fontSize: "15px",
+    color: "#4b5563",
+    marginBottom: "24px",
     lineHeight: 1.6,
   },
   featureList: {
-    fontSize: '15px',
-    color: '#4b5563',
-    marginBottom: '0',
-    paddingLeft: '20px',
+    fontSize: "15px",
+    color: "#4b5563",
+    marginBottom: "0",
+    paddingLeft: "20px",
     lineHeight: 1.8,
   },
 };
-
