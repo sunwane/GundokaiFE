@@ -6,6 +6,7 @@ import PriceRangeSlider from './PriceRangeSlider';
 import CategoryFilter from './CategoryFilter';
 import { StockStatus } from '@/types/Product';
 import { Product } from '@/types/Product';
+import { max } from 'three/tsl';
 
 interface FilterPanelProps {
   // Pending filters
@@ -136,8 +137,7 @@ export default function FilterPanel({
 
 const styles = {
   filterPanel: {
-    width: '20vw',
-    minWidth: '300px',
+    width: '300px',
     backgroundImage: 'url("/images/frames/filter.png")',
     backgroundSize: '100% 100%',
     backgroundRepeat: 'no-repeat',

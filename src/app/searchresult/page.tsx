@@ -23,7 +23,7 @@ import { Product } from '@/types/Product';
 export default function SearchResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { isMobile } = useResponsive();
+  const { isMobile, windowWidth } = useResponsive();
   
   const query = searchParams.get('query') || '';
   
@@ -50,10 +50,24 @@ export default function SearchResultPage() {
   
   // Sử dụng product filter hook
   const { sortedAndFilteredProducts, filterCount } = useProductFilter(
-    searchResults,
+    searchResults || [], // Đảm bảo luôn là mảng
     filters,
     sortType
   );
+
+  // Tính số cột tối đa có thể hiển thị trên một hàng
+  const getMaxColumns = () => {
+    if (isMobile) return 2;
+    // Tính dựa trên width container và min-width của product card
+    const containerWidth = windowWidth - (isMobile ? 32 : 200); // Trừ padding và filter panel
+    const cardMinWidth = 250; // Min width của product card cho search
+    const gap = 24;
+    return Math.floor((containerWidth + gap) / (cardMinWidth + gap));
+  };
+
+  const maxColumns = getMaxColumns();
+  const productCount = sortedAndFilteredProducts.length;
+  const shouldUseFlex = productCount > 0 && productCount < maxColumns;
 
   // Initial search
   useEffect(() => {
@@ -129,7 +143,7 @@ export default function SearchResultPage() {
               </div>
             </SortBar>
 
-            {/* Results Grid */}
+            {/* Results Grid/Flex */}
             {sortedAndFilteredProducts.length === 0 ? (
               <div style={styles.noResults}>
                 <div style={styles.noResultsIcon}>🔍</div>
@@ -163,18 +177,32 @@ export default function SearchResultPage() {
                 </div>
               </div>
             ) : (
+              /* Dynamic Grid/Flex Container */
               <div style={{
-                ...styles.productGrid,
-                gridTemplateColumns: isMobile 
-                  ? 'repeat(2, 1fr)' 
-                  : 'repeat(auto-fit, minmax(210px, 1fr))',
-                gap: isMobile ? '16px' : '24px',
+                ...(shouldUseFlex ? styles.productFlex : styles.productGrid),
+                // Grid styles khi có nhiều sản phẩm
+                ...(!shouldUseFlex && {
+                  gridTemplateColumns: isMobile 
+                    ? 'repeat(2, 1fr)' 
+                    : 'repeat(auto-fit, minmax(210px, 1fr))',
+                  gap: isMobile ? '16px' : '24px',
+                }),
+                // Flex styles khi có ít sản phẩm
+                ...(shouldUseFlex && {
+                  gap: isMobile ? '16px' : '32px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }),
               }}>
                 {sortedAndFilteredProducts.map((product) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
                     onClick={handleProductClick}
+                    style={shouldUseFlex ? {
+                      width: isMobile ? 'calc(50% - 8px)' : '210px',
+                      flexShrink: 0,
+                    } : undefined}
                   />
                 ))}
               </div>
@@ -213,7 +241,7 @@ export default function SearchResultPage() {
   );
 }
 
-// Styles giữ nguyên...
+// Updated styles với productFlex
 const styles = {
   container: {
     margin: '0 auto',
@@ -254,6 +282,13 @@ const styles = {
   productGrid: {
     display: 'grid',
     justifyItems: 'center',
+  },
+  // Thêm style cho flex layout
+  productFlex: {
+    display: 'flex',
+    flexWrap: 'wrap' as const,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
   noResults: {
     display: 'flex',

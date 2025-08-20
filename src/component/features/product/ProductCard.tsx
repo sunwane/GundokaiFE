@@ -10,7 +10,9 @@ import { SubCategoryService } from '@/services/SubCategoryService';
 
 interface ProductCardProps {
   product: Product;
-  onClick?: (product: Product) => void;
+  onClick: (product: Product) => void;
+  style?: React.CSSProperties;
+  isMobile?: boolean; // Thêm prop này
 }
 
 function useCategoryId(subCategoryId: string) {
@@ -27,14 +29,13 @@ function useCategoryId(subCategoryId: string) {
   return categoryId;
 }
 
-export default function ProductCard({ product, onClick }: ProductCardProps) {
+export default function ProductCard({ product, onClick, style, isMobile = false }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   
   // Hooks
   const { 
     categoryName, 
     subCategoryName, 
-
     loading 
   } = useCategory(product.subcategory.id);
   
@@ -45,36 +46,32 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
   const { isOutOfStock } = useProductStatus(product);
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(product);
-    }
-  };
-
   const categoryId = useCategoryId(product.subcategory.id);
 
   return (
     <div 
       style={{
         ...styles.cardWrapper,
-        // BỎ CURSOR not-allowed - LUÔN CHO PHÉP CLICK
+        ...(isMobile ? styles.cardWrapperMobile : {}),
+        ...style, // Apply custom style
         cursor: 'pointer',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
+      onClick={() => onClick(product)}
     >
       {/* Gundam Shadow */}
-      <div style={styles.gundamShadow}></div>
+      <div style={{
+        ...styles.gundamShadow,
+        ...(isMobile ? styles.gundamShadowMobile : {}),
+      }}></div>
       
       {/* Main Card với Gundam Frame */}
       <div 
         style={{
           ...styles.mainCard,
-          // BỎ ĐIỀU KIỆN isOutOfStock - LUÔN CHO PHÉP HOVER EFFECT
+          ...(isMobile ? styles.mainCardMobile : {}),
           transform: isHovered ? 'translate(10px, 10px)' : 'translate(0, 0)',
-          // BỎ FILTER saturate - KHÔNG LÀM MỜ CARD
-          // filter: isOutOfStock ? 'saturate(0.3)' : 'none',
         }}
       >
         {/* Product Image với status handling */}
@@ -93,23 +90,21 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
             <CardLabel 
               subcategoryId={subCategoryName || product.subcategory.subCategoryName}
               categoryId={categoryName || 'Gundam'}
-              style={styles.cardLabelContainer}
+              style={isMobile ? styles.cardLabelMobile : styles.cardLabelContainer}
+              isMobile={isMobile}
             />
           )}
           
           <h3 style={{
             ...styles.productName,
-            // color: isOutOfStock ? '#999' : '#2c3e50',
             color: '#2c3e50', // LUÔN GIỮ MÀU BẬT
           }}>
             {product.productName}
           </h3>
           
           <div style={styles.priceContainer}>
-            {/* BỎ ĐIỀU KIỆN isOutOfStock CHO MÀU GIÁ */}
             <span style={{
               ...styles.price,
-              // color: isOutOfStock ? '#999' : '#e74c3c',
               color: '#e74c3c', // LUÔN GIỮ MÀU ĐỎ
             }}>
               {product.price.toLocaleString('vi-VN')} VNĐ
@@ -130,6 +125,10 @@ const styles = {
     maxWidth: '210px',
     transition: 'all 0.3s ease',
   },
+  cardWrapperMobile: {
+    maxWidth: '140px',
+    minWidth: '140px',
+  },
   gundamShadow: {
     position: 'absolute' as const,
     top: '10px',
@@ -142,6 +141,10 @@ const styles = {
     backgroundPosition: 'center',
     zIndex: 1,
     opacity: 0.8,
+  },
+  gundamShadowMobile: {
+    width: '150px',
+    height: '200px',
   },
   mainCard: {
     position: 'relative' as const,
@@ -157,11 +160,20 @@ const styles = {
     flexDirection: 'column' as const,
     padding: '7px 8px',
   },
+  mainCardMobile: {
+    width: '150px',
+    height: '200px',
+    padding: '4px 4px',
+  },
   productImageContainer: {
     marginBottom: '10px',
   },
   cardLabelContainer: {
     marginBottom: '5px',
+  },
+  cardLabelMobile: {
+    marginBottom: '3px',
+    maxWidth: '80px',
   },
   productInfo: {
     flex: 1,

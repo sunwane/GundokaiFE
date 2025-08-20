@@ -3,6 +3,8 @@ import { Product } from '@/types/Product';
 import { useProductStatus } from '@/hooks/product/useProductStatus';
 import ProductStatusBadge from './ProductStatusBadge';
 import ProductImageOverlay from './ProductImageOverlay';
+import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
+import { mx_heighttonormal } from 'three/tsl';
 
 interface ProductImageProps {
   product: Product;
@@ -10,6 +12,7 @@ interface ProductImageProps {
   onImageLoad?: () => void;
   imageRef?: React.RefObject<HTMLImageElement | null>;
   className?: string;
+  isMobile?: boolean; // Thêm prop này
   style?: React.CSSProperties;
 }
 
@@ -19,6 +22,7 @@ export default function ProductImage({
   onImageLoad,
   imageRef,
   className,
+  isMobile = false, // Thêm prop này
   style 
 }: ProductImageProps) {
   const { 
@@ -31,6 +35,7 @@ export default function ProductImage({
   return (
     <div style={{
       ...styles.container,
+      ...(isMobile ? { height: '100px' } : { height: '180px' }),
       backgroundColor,
       ...style,
     }} className={className}>
@@ -72,15 +77,12 @@ export default function ProductImage({
 const styles = {
   container: {
     position: 'relative' as const,
-    width: '203px',
-    height: '180px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
     borderRadius: '4px',
     transition: 'background-color 0.5s ease',
-    // ĐẢM BẢO OVERLAY CHỈ HIỂN THỊ TRONG KHUNG ẢNH
     isolation: 'isolate' as const,
   },
   image: {

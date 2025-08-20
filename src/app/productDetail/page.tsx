@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
               ...styles.relatedGrid,
               gridTemplateColumns: isMobile 
                 ? 'repeat(2, 1fr)' 
-                : 'repeat(5, 1fr)',
+                : 'repeat(auto-fit, minmax(230px,1fr))',
               gap: isMobile ? '16px' : '24px',
             }}>
               {relatedProducts.map((relatedProduct) => (
