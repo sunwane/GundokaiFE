@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AuthService } from '@/services/AuthService';
+import { UserService } from '@/services/UserService';
 import { ForgotPasswordFormState } from './useForgotPasswordForm';
 
 export const useForgotPasswordAPI = () => {
@@ -17,7 +18,8 @@ export const useForgotPasswordAPI = () => {
     clearMessages();
 
     try {
-      const response = await AuthService.forgotPassword({ email });
+      // ✅ Sử dụng API thật
+      const response = await UserService.sendPasswordResetCode(email);
       setSuccess(response.message);
       return true;
     } catch (err) {
@@ -33,7 +35,8 @@ export const useForgotPasswordAPI = () => {
     clearMessages();
 
     try {
-      const response = await AuthService.resendVerificationCode({ email });
+      // ✅ Sử dụng API thật
+      const response = await UserService.sendPasswordResetCode(email);
       setSuccess(response.message);
       return true;
     } catch (err) {
@@ -49,6 +52,7 @@ export const useForgotPasswordAPI = () => {
     clearMessages();
 
     try {
+      // ✅ Sử dụng API thật
       const response = await AuthService.resetPassword({
         email: formData.email,
         code: formData.verificationCode,

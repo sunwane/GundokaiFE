@@ -10,7 +10,7 @@ interface PasswordInputProps {
   error?: string;
   required?: boolean;
   showPassword: boolean;
-  mode?: ThemeMode; // ✅ Light hoặc dark
+  mode?: ThemeMode;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePassword: () => void;
 }
@@ -24,41 +24,44 @@ export default function PasswordInput({
   error,
   required = false,
   showPassword,
-  mode = 'light', // ✅ Default light
+  mode = 'light',
   onChange,
   onTogglePassword
 }: PasswordInputProps) {
   const theme = getTheme(mode);
   const styles = getStyles(theme);
-  
+
   return (
     <div style={styles.formGroup}>
-      <label style={styles.label} htmlFor={id}>{label}</label>
+      <label htmlFor={id} style={styles.label}>
+        {label} {required && <span style={{ color: theme.errorText }}>*</span>}
+      </label>
       <div style={styles.inputWrapper}>
         <input
           id={id}
-          type={showPassword ? 'text' : 'password'}
           name={name}
+          type={showPassword ? 'text' : 'password'}
           value={value}
-          onChange={onChange}
           placeholder={placeholder}
+          onChange={onChange}
+          required={required}
           style={{
             ...styles.input,
             ...(error ? styles.inputError : {})
           }}
           className={`form-input-${mode}`}
-          required={required}
         />
         <button
           type="button"
           onClick={onTogglePassword}
           style={styles.toggleButton}
+          aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
         >
-          {showPassword ? '👁️' : '👁️‍🗨️'}
+          {showPassword ? '👁️' : '🙈'}
         </button>
       </div>
       {error && (
-        <span style={styles.fieldError}>{error}</span>
+        <span style={styles.errorText}>{error}</span>
       )}
     </div>
   );
@@ -77,7 +80,7 @@ function getStyles(theme: any) {
       outline: 'none',
       transition: 'all 0.2s ease',
       width: '100%',
-      height: '42px', // Đặt chiều cao cố định
+      height: '42px',
     },
   };
 
@@ -98,7 +101,6 @@ function getStyles(theme: any) {
     input: styles.input,
     inputError: {
       borderColor: theme.errorBorder,
-      backgroundColor: theme.errorBackground,
     },
     toggleButton: {
       position: 'absolute' as const,
@@ -108,15 +110,16 @@ function getStyles(theme: any) {
       background: 'none',
       border: 'none',
       cursor: 'pointer',
-      fontSize: '0.875rem',
-      color: theme.inputText,
+      fontSize: '1rem',
       padding: '0.25rem',
+      color: theme.inputText,
       opacity: 0.7,
+      transition: 'opacity 0.2s ease',
     },
-    fieldError: {
-      fontSize: '0.6875rem',
+    errorText: {
+      fontSize: '0.75rem',
       color: theme.errorText,
-      marginTop: '0.125rem',
+      marginTop: '0.25rem',
     },
   };
 }

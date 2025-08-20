@@ -8,9 +8,9 @@ interface UserInfoDisplayProps {
 export default function UserInfoDisplay({ user }: UserInfoDisplayProps) {
   const getGenderText = (gender: string) => {
     switch (gender) {
-      case 'male': return 'Nam';
-      case 'female': return 'Nữ';
-      default: return 'Nam';
+      case 'MALE': return 'Nam';
+      case 'FEMALE': return 'Nữ';
+      default: return 'Other';
     }
   };
 
@@ -30,6 +30,16 @@ export default function UserInfoDisplay({ user }: UserInfoDisplayProps) {
         <label style={styles.infoLabel}>Email</label>
         <div style={styles.infoValue}>{user.email}</div>
       </div>
+
+      {/* ✅ Thêm ghi chú về việc không thể thay đổi email và giới tính */}
+      <div style={{ ...styles.infoItem, ...styles.fullWidth }}>
+        <div style={styles.infoNote}>
+          <span style={styles.noteIcon}>ℹ️</span>
+          <span style={styles.noteText}>
+            Email và giới tính không thể thay đổi. Chỉ có thể cập nhật tên đăng nhập.
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -37,31 +47,51 @@ export default function UserInfoDisplay({ user }: UserInfoDisplayProps) {
 const styles = {
   infoGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: '1fr 1fr',
     gap: '24px',
+    marginTop: '24px',
   },
   infoItem: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '8px',
+    gap: '6px',
+  },
+  fullWidth: {
+    gridColumn: '1 / -1',
   },
   infoLabel: {
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: '600',
     color: '#6b7280',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.5px',
   },
   infoValue: {
+    fontSize: '16px',
+    fontWeight: '500',
+    color: '#1f2937',
     padding: '12px 16px',
     backgroundColor: '#f9fafb',
     border: '1px solid #e5e7eb',
     borderRadius: '8px',
-    fontSize: '16px',
-    color: '#1f2937',
-    fontWeight: '500',
   },
-  fullWidth: {
-    gridColumn: '1 / -1',
+  // ✅ Styles cho info note
+  infoNote: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 16px',
+    backgroundColor: '#eff6ff',
+    border: '1px solid #bfdbfe',
+    borderRadius: '8px',
+    marginTop: '8px',
+  },
+  noteIcon: {
+    fontSize: '16px',
+  },
+  noteText: {
+    fontSize: '13px',
+    color: '#1e40af',
+    fontStyle: 'italic' as const,
   },
 };

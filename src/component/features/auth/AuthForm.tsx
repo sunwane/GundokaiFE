@@ -20,7 +20,23 @@ const tabOptions = [
 ];
 
 export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
-  const auth = useAuth();
+  const {
+    authMode,
+    setAuthMode,
+    loginData,
+    registerData,
+    isLoading,
+    error,
+    errors,
+    showPassword,
+    handleLoginInputChange,
+    handleRegisterInputChange,
+    handleLogin,
+    handleRegister,
+    setShowPassword,
+    handleSendVerificationCode,
+  } = useAuth();
+
   const validation = useFormValidation();
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -36,46 +52,43 @@ export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
   };
 
   return (
-    <BaseAuthCard>
+    <BaseAuthCard className="auth-form">
       <AuthFormHeader />
 
       <BaseAuthContent>
         <TabToggle
           options={tabOptions}
-          activeTab={auth.authMode}
+          activeTab={authMode}
+          onTabChange={setAuthMode}
           mode={mode}
-          onTabChange={(tab) => auth.setAuthMode(tab as 'login' | 'register')}
         />
-
+        
         <div style={styles.tabsContent}>
-          <div style={styles.scrollableContent}>
-            {auth.authMode === 'login' ? (
+          <div className="scrollableContent" style={styles.scrollableContent}>
+            {authMode === 'login' ? (
               <LoginForm
-                data={auth.loginData}
-                isLoading={auth.isLoading}
-                error={auth.error}
-                validationErrors={Object.fromEntries(
-                  Object.entries(validation.errors).map(([key, value]) => [key, String(value)])
-                )}
-                showPassword={auth.showPassword}
+                data={loginData}
+                isLoading={isLoading}
+                error={error}
+                validationErrors={errors}
+                showPassword={showPassword}
                 mode={mode}
-                onInputChange={auth.handleLoginInputChange}
-                onSubmit={handleLoginSubmit}
-                onTogglePassword={() => auth.setShowPassword(!auth.showPassword)}
+                onInputChange={handleLoginInputChange}
+                onSubmit={handleLogin}
+                onTogglePassword={setShowPassword}
               />
             ) : (
               <RegisterForm
-                data={auth.registerData}
-                isLoading={auth.isLoading}
-                error={auth.error}
-                validationErrors={Object.fromEntries(
-                  Object.entries(validation.errors).map(([key, value]) => [key, String(value)])
-                )}
-                showPassword={auth.showPassword}
+                data={registerData}
+                isLoading={isLoading}
+                error={error}
+                validationErrors={errors}
+                showPassword={showPassword}
                 mode={mode}
-                onInputChange={auth.handleRegisterInputChange}
-                onSubmit={handleRegisterSubmit}
-                onTogglePassword={() => auth.setShowPassword(!auth.showPassword)}
+                onInputChange={handleRegisterInputChange}
+                onSubmit={handleRegister}
+                onTogglePassword={setShowPassword}
+                onSendVerificationCode={handleSendVerificationCode}
               />
             )}
           </div>

@@ -1,31 +1,74 @@
-import { Account, AuthResponse, LoginRequest, RegisterRequest, ResetPasswordRequest } from '@/types/Account';
-import { mockAccounts } from '@/data/mockAccounts';
+import { Account, AuthResponse, LoginRequest, RegisterRequest } from '@/types/Account';
+import { UserService } from './UserService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-// Mock storage cho verification codes
-const mockVerificationCodes = new Map<string, { code: string; expiry: number; email: string }>();
+export interface ApiResponse<T> {
+  code?: number;
+  message?: string;
+  result?: T;
+}
+
+export interface AuthenticationResponse {
+  token: string;
+  authenticated: boolean;
+}
+
+export interface UserCreationRequest {
+  username: string;
+  password: string;
+  gender: string;
+  email: string;
+  code: string;
+}
+
+export interface ChangePasswordRequest {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}
 
 export class AuthService {
   
-  // Login
+  /**
+   * 🔐 Đăng nhập
+   */
   static async login(credentials: LoginRequest): Promise<AuthResponse> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     try {
-      const user = mockAccounts.find(account => 
-        account.email === credentials.email && account.password === credentials.password
-      );
+      const response = await fetch(`${API_BASE_URL}/auth/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password
+        }),
+      });
 
-      if (!user) {
-        throw new Error('Email hoặc mật khẩu không đúng');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Email hoặc mật khẩu không đúng');
       }
 
-      const { password, ...userWithoutPassword } = user;
+      const data: ApiResponse<AuthenticationResponse> = await response.json();
       
+      if (!data.result?.token) {
+        throw new Error('Không nhận được token từ server');
+      }
+
+      // Lấy thông tin user sau khi đăng nhập thành công
+      localStorage.setItem('authToken', data.result.token);
+      const userInfo = await UserService.getMyInfo();
+
       return {
-        token: `mock_token_${user.id}_${Date.now()}`,
-        user: userWithoutPassword,
+        token: data.result.token,
+        user: userInfo,
         message: 'Đăng nhập thành công'
       };
     } catch (error) {
@@ -34,36 +77,47 @@ export class AuthService {
     }
   }
 
-  // Register
+  /**
+   * 📝 Đăng ký
+   */
   static async register(userData: RegisterRequest): Promise<AuthResponse> {
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
     try {
-      const existingUser = mockAccounts.find(account => account.email === userData.email);
-      if (existingUser) {
-        throw new Error('Email đã được sử dụng');
-      }
-
-      const existingUsername = mockAccounts.find(account => account.username === userData.username);
-      if (existingUsername) {
-        throw new Error('Tên đăng nhập đã được sử dụng');
-      }
-
-      const newUser: Account = {
-        id: `user${Date.now()}`,
+      const userCreationRequest: UserCreationRequest = {
         username: userData.username,
-        email: userData.email,
         password: userData.password,
-        gender: userData.gender
+        gender: userData.gender,
+        email: userData.email,
+        code: userData.verificationCode || ''
       };
 
-      mockAccounts.push(newUser);
+      const response = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userCreationRequest),
+      });
 
-      const { password, ...userWithoutPassword } = newUser;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Đăng ký thất bại');
+      }
+
+      const data: ApiResponse<Omit<Account, 'password'>> = await response.json();
       
+      if (!data.result) {
+        throw new Error('Không nhận được thông tin người dùng sau khi đăng ký');
+      }
+
+      // Sau khi đăng ký thành công, tự động đăng nhập
+      const loginResponse = await this.login({
+        email: userData.email,
+        password: userData.password
+      });
+
       return {
-        token: `mock_token_${newUser.id}_${Date.now()}`,
-        user: userWithoutPassword,
+        token: loginResponse.token,
+        user: loginResponse.user,
         message: 'Đăng ký thành công'
       };
     } catch (error) {
@@ -72,273 +126,106 @@ export class AuthService {
     }
   }
 
-  // ✅ Forgot Password - Gửi mã xác thực
+  /**
+   * 📧 Gửi mã xác thực quên mật khẩu
+   */
   static async forgotPassword(data: { email: string }): Promise<{ message: string }> {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    try {
-      const user = mockAccounts.find(account => 
-        account.email === data.email || account.username === data.email
-      );
-      
-      if (!user) {
-        throw new Error('Email hoặc tên đăng nhập không tồn tại trong hệ thống');
-      }
-
-      // Generate 6-digit verification code
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      // Store code with 10 minutes expiry
-      const expiry = Date.now() + (10 * 60 * 1000); // 10 minutes
-      mockVerificationCodes.set(user.email, {
-        code: verificationCode,
-        expiry,
-        email: user.email
-      });
-
-      // Mock sending email (in real app, this would trigger email service)
-      console.log(`[MOCK EMAIL] Verification code for ${user.email}: ${verificationCode}`);
-
-      return {
-        message: `Mã xác thực đã được gửi đến email ${user.email}. Mã có hiệu lực trong 10 phút.`
-      };
-    } catch (error) {
-      console.error('Forgot password error:', error);
-      throw error;
-    }
+    return UserService.sendPasswordResetCode(data.email);
   }
 
-  // ✅ Verify Reset Code - Xác thực mã
-  static async verifyResetCode(data: { email: string; code: string }): Promise<{ message: string; isValid: boolean }> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    try {
-      const user = mockAccounts.find(account => 
-        account.email === data.email || account.username === data.email
-      );
-      
-      if (!user) {
-        throw new Error('Email hoặc tên đăng nhập không tồn tại');
-      }
-
-      const storedCodeData = mockVerificationCodes.get(user.email);
-      
-      if (!storedCodeData) {
-        throw new Error('Không tìm thấy mã xác thực. Vui lòng yêu cầu gửi mã mới.');
-      }
-
-      if (Date.now() > storedCodeData.expiry) {
-        mockVerificationCodes.delete(user.email);
-        throw new Error('Mã xác thực đã hết hạn. Vui lòng yêu cầu gửi mã mới.');
-      }
-
-      if (storedCodeData.code !== data.code) {
-        throw new Error('Mã xác thực không đúng. Vui lòng kiểm tra lại.');
-      }
-
-      return {
-        message: 'Mã xác thực hợp lệ. Bạn có thể đặt lại mật khẩu.',
-        isValid: true
-      };
-    } catch (error) {
-      console.error('Verify reset code error:', error);
-      throw error;
-    }
-  }
-
-  // ✅ Reset Password - Đặt lại mật khẩu
+  /**
+   * 🔄 Đặt lại mật khẩu
+   */
   static async resetPassword(data: { 
     email: string; 
     code: string; 
     newPassword: string 
   }): Promise<{ message: string }> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    try {
-      const user = mockAccounts.find(account => 
-        account.email === data.email || account.username === data.email
-      );
-      
-      if (!user) {
-        throw new Error('Email hoặc tên đăng nhập không tồn tại');
-      }
-
-      const storedCodeData = mockVerificationCodes.get(user.email);
-      
-      if (!storedCodeData) {
-        throw new Error('Không tìm thấy mã xác thực. Vui lòng yêu cầu gửi mã mới.');
-      }
-
-      if (Date.now() > storedCodeData.expiry) {
-        mockVerificationCodes.delete(user.email);
-        throw new Error('Mã xác thực đã hết hạn. Vui lòng yêu cầu gửi mã mới.');
-      }
-
-      if (storedCodeData.code !== data.code) {
-        throw new Error('Mã xác thực không đúng. Vui lòng kiểm tra lại.');
-      }
-
-      // Validate new password
-      if (data.newPassword.length < 6) {
-        throw new Error('Mật khẩu mới phải có ít nhất 6 ký tự');
-      }
-
-      // Update password
-      const userIndex = mockAccounts.findIndex(account => account.id === user.id);
-      if (userIndex !== -1) {
-        mockAccounts[userIndex].password = data.newPassword;
-      }
-
-      // Remove used verification code
-      mockVerificationCodes.delete(user.email);
-
-      return {
-        message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.'
-      };
-    } catch (error) {
-      console.error('Reset password error:', error);
-      throw error;
-    }
+    return UserService.resetPassword(data.email, data.code, data.newPassword);
   }
 
-  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Simulate password validation
-    if (currentPassword !== 'password123') {
-      throw new Error('Mật khẩu hiện tại không đúng');
-    }
-    
-    if (newPassword === currentPassword) {
-      throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại');
-    }
-    
-    // Simulate successful password change
-    console.log('Password changed successfully for user:', userId);
-  }
-
-  // ✅ Resend Verification Code - Gửi lại mã xác thực
+  /**
+   * 🔄 Gửi lại mã xác thực
+   */
   static async resendVerificationCode(data: { email: string }): Promise<{ message: string }> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    return UserService.sendVerificationCode(data.email);
+  }
+
+  /**
+   * 👤 Lấy thông tin người dùng hiện tại
+   */
+  static async getCurrentUser(token: string): Promise<Omit<Account, 'password'>> {
+    return UserService.getMyInfo();
+  }
+
+  /**
+   * 🚪 Đăng xuất
+   */
+  static async logout(): Promise<void> {
     try {
-      const user = mockAccounts.find(account => 
-        account.email === data.email || account.username === data.email
-      );
+      const token = localStorage.getItem('authToken');
       
-      if (!user) {
-        throw new Error('Email hoặc tên đăng nhập không tồn tại trong hệ thống');
+      if (token) {
+        // Gọi API logout trên server
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
+      }
+    } catch (error) {
+      console.error('Logout API error:', error);
+      // Vẫn tiếp tục clear localStorage dù API lỗi
+    } finally {
+      // Clear local storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userSession');
+    }
+  }
+
+  /**
+   * 🔐 Đổi mật khẩu
+   */
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponse> {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Vui lòng đăng nhập lại');
       }
 
-      // Check if too many requests (rate limiting)
-      const existingCode = mockVerificationCodes.get(user.email);
-      if (existingCode && (existingCode.expiry - Date.now()) > (8 * 60 * 1000)) {
-        throw new Error('Vui lòng đợi ít nhất 2 phút trước khi yêu cầu gửi mã mới');
-      }
+      // ✅ SỬA: Thêm userId vào request body
+      const changePasswordRequest = {
+        userId: userId,
+        currentPassword: currentPassword,
+        newPassword: newPassword
+      };
 
-      // Generate new verification code
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      // Store code with 10 minutes expiry
-      const expiry = Date.now() + (10 * 60 * 1000);
-      mockVerificationCodes.set(user.email, {
-        code: verificationCode,
-        expiry,
-        email: user.email
+      const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(changePasswordRequest),
       });
 
-      console.log(`[MOCK EMAIL] New verification code for ${user.email}: ${verificationCode}`);
-
-      return {
-        message: `Mã xác thực mới đã được gửi đến email ${user.email}`
-      };
-    } catch (error) {
-      console.error('Resend verification code error:', error);
-      throw error;
-    }
-  }
-
-  // Get current user
-  static async getCurrentUser(token: string): Promise<Omit<Account, 'password'>> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    try {
-      const userIdMatch = token.match(/mock_token_(.+)_\d+/);
-      if (!userIdMatch) {
-        throw new Error('Token không hợp lệ');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Đổi mật khẩu thất bại');
       }
 
-      const userId = userIdMatch[1];
-      const user = mockAccounts.find(account => account.id === userId);
+      const data: ApiResponse<ChangePasswordResponse> = await response.json();
       
-      if (!user) {
-        throw new Error('Người dùng không tồn tại');
+      if (!data.result) {
+        throw new Error('Không nhận được phản hồi từ server');
       }
 
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      return data.result;
     } catch (error) {
-      console.error('Get current user error:', error);
+      console.error('Change password error:', error);
       throw error;
     }
-  }
-
-  // Logout
-  static async logout(): Promise<void> {
-    // Clear local storage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userSession');
-  }
-
-  // Update profile
-  static async updateProfile(userId: string, updates: Partial<Account>): Promise<Omit<Account, 'password'>> {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    try {
-      const userIndex = mockAccounts.findIndex(account => account.id === userId);
-      if (userIndex === -1) {
-        throw new Error('Người dùng không tồn tại');
-      }
-
-      // Validate email uniqueness if updating email
-      if (updates.email && updates.email !== mockAccounts[userIndex].email) {
-        const existingUser = mockAccounts.find(account => 
-          account.email === updates.email && account.id !== userId
-        );
-        if (existingUser) {
-          throw new Error('Email đã được sử dụng bởi tài khoản khác');
-        }
-      }
-
-      // Validate username uniqueness if updating username
-      if (updates.username && updates.username !== mockAccounts[userIndex].username) {
-        const existingUser = mockAccounts.find(account => 
-          account.username === updates.username && account.id !== userId
-        );
-        if (existingUser) {
-          throw new Error('Tên đăng nhập đã được sử dụng bởi tài khoản khác');
-        }
-      }
-
-      mockAccounts[userIndex] = {
-        ...mockAccounts[userIndex],
-        ...updates
-      };
-
-      const { password, ...userWithoutPassword } = mockAccounts[userIndex];
-      return userWithoutPassword;
-    } catch (error) {
-      console.error('Update profile error:', error);
-      throw error;
-    }
-  }
-
-  // ✅ Helper method để debug verification codes (chỉ cho development)
-  static getVerificationCodes(): Map<string, { code: string; expiry: number; email: string }> {
-    if (process.env.NODE_ENV === 'development') {
-      return mockVerificationCodes;
-    }
-    throw new Error('Method chỉ available trong development mode');
   }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/AuthService';
+import { UserService } from '@/services/UserService';
 import { LoginRequest, RegisterRequest } from '@/types/Account';
 
 export type AuthMode = 'login' | 'register';
@@ -21,6 +22,7 @@ export interface UseAuthReturn {
   handleRegisterInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleLogin: (e: React.FormEvent) => Promise<void>;
   handleRegister: (e: React.FormEvent) => Promise<void>;
+  handleSendVerificationCode: (email: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -42,7 +44,7 @@ export const useAuth = (): UseAuthReturn => {
     username: '',
     email: '',
     password: '',
-    gender: 'Nam',
+    gender: 'MALE',
     verificationCode: ''
   });
 
@@ -59,6 +61,25 @@ export const useAuth = (): UseAuthReturn => {
     if (error) setError('');
   };
 
+  const handleSendVerificationCode = async (email: string) => {
+    if (!email) {
+      setError('Vui lòng nhập email trước khi gửi mã xác thực');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await UserService.sendVerificationCode(email);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi gửi mã xác thực');
+      throw err; // Throw để component có thể handle
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -68,7 +89,9 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.login(loginData);
       localStorage.setItem('authToken', response.token);
       localStorage.setItem('userSession', JSON.stringify(response.user));
-      router.push('/account');
+      
+      // ✅ Redirect về trang chủ thay vì /account
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {
@@ -85,7 +108,9 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.register(registerData);
       localStorage.setItem('authToken', response.token);
       localStorage.setItem('userSession', JSON.stringify(response.user));
-      router.push('/account');
+      
+      // ✅ Redirect về trang chủ thay vì /account
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng ký thất bại');
     } finally {
@@ -111,6 +136,7 @@ export const useAuth = (): UseAuthReturn => {
     handleRegisterInputChange,
     handleLogin,
     handleRegister,
+    handleSendVerificationCode,
     clearError,
   };
 };
