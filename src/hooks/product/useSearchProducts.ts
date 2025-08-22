@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
-import { Product } from '@/types/Product';
-import { mockProducts } from '@/data/mockProducts';
+import { Product, ProductResponse } from '@/types/Product';
+import { ProductService } from '@/services/ProductService';
 
 export interface UseSearchProductsReturn {
   searchResults: Product[];
@@ -26,12 +26,17 @@ export function useSearchProducts(): UseSearchProductsReturn {
       setError(null);
       
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // await new Promise(resolve => setTimeout(resolve, 300));
       
-      const results = mockProducts.filter(product => 
-        product.product_Name.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase())
-      );
+      // const results = mockProducts.filter(product => 
+      //   product.productName.toLowerCase().includes(query.toLowerCase()) ||
+      //   product.description.toLowerCase().includes(query.toLowerCase())
+      // );
+      const response: ProductResponse = await ProductService.searchProducts(query);
+      
+      // ✅ XỬ LÝ RESPONSE THEO STRUCTURE CỦA BE
+      const results = response.result || response.data || [];
+      setSearchResults(Array.isArray(results) ? results : []);
       
       setSearchResults(results);
     } catch (err) {

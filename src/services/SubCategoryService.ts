@@ -75,6 +75,6 @@ export class SubCategoryService {
   // Get categoryId by subCategoryId
   static async getCategoryIdBySubCategoryId(subCategoryId: string): Promise<string | null> {
     const subCategory = await this.getSubCategoryById(subCategoryId);
-    return subCategory ? subCategory.mainCategory.id : null;
+    return subCategory ? subCategory.mainCategoryId : null;
   }
 }
