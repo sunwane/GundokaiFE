@@ -236,4 +236,72 @@ export class ProductService {
     return await response.json();
     */
   }
+
+  /**
+   * 🔥 Lấy sản phẩm sắp cháy hàng (Hot/Trending)
+   * 
+   * 🔄 Hiện tại: Tạm dùng getOutOfStockProducts (chờ backend)
+   * 🌐 Tương lai: GET /api/products/trending hoặc /api/products/hot
+   */
+  static async getHotProducts(): Promise<ProductResponse> {
+    // ❌ HIỆN TẠI - Tạm dùng out of stock, limit 5
+    await new Promise(resolve => setTimeout(resolve, 400));
+    const hotProducts = mockProducts
+      .filter(p => p.status === 'Hết hàng') // Tạm thời
+      .slice(0, 5); // Chỉ lấy 5 sản phẩm
+    
+    return {
+      data: hotProducts,
+      total: hotProducts.length,
+      message: "Sản phẩm sắp cháy hàng"
+    };
+
+    // ✅ TƯƠNG LAI - Real API
+    /*
+    try {
+      const response = await fetch('/api/products/hot?limit=5');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching hot products:', error);
+      throw error;
+    }
+    */
+  }
+
+  /**
+   * ✨ Lấy sản phẩm mới nhất (New/Fresh)
+   * 
+   * 🔄 Hiện tại: Tạm dùng getComingSoonProducts (chờ backend)
+   * 🌐 Tương lai: GET /api/products/latest hoặc /api/products/new
+   */
+  static async getLatestProducts(): Promise<ProductResponse> {
+    // ❌ HIỆN TẠI - Tạm dùng coming soon, limit 5
+    await new Promise(resolve => setTimeout(resolve, 400));
+    const latestProducts = mockProducts
+      .filter(p => p.status === 'Hàng sắp về') // Tạm thời
+      .slice(0, 5); // Chỉ lấy 5 sản phẩm
+    
+    return {
+      data: latestProducts,
+      total: latestProducts.length,
+      message: "Sản phẩm mới nhất"
+    };
+
+    // ✅ TƯƠNG LAI - Real API
+    /*
+    try {
+      const response = await fetch('/api/products/latest?limit=5');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching latest products:', error);
+      throw error;
+    }
+    */
+  }
 }

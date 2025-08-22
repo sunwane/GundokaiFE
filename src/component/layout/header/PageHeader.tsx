@@ -172,6 +172,7 @@ const styles = {
     alignItems: 'center',
     position: 'relative' as const,
     backgroundColor: '#fff',
+    zIndex: 10,
   },
   headerBottom: {
     display: 'flex',
