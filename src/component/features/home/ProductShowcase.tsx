@@ -25,9 +25,8 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
           ProductService.getHotProducts(),
           ProductService.getLatestProducts()
         ]);
-        
-        setHotProducts(hotResponse.data);
-        setLatestProducts(latestResponse.data);
+        setHotProducts(hotResponse.result);
+        setLatestProducts(latestResponse.result);
       } catch (error) {
         console.error('Error fetching showcase products:', error);
       } finally {
@@ -39,7 +38,7 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
   }, []);
 
   const handleProductClick = (product: Product) => {
-    router.push(`/products/${product.id}`);
+    router.push(`/productDetail?id=${product.id}`);
   };
 
   if (loading) {

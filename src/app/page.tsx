@@ -17,7 +17,7 @@ export default function Home() {
       <BannerList banners={banners} isMobile={isMobile} />
       <ProductCategoryIntro categories={categories} isMobile={isMobile}/>
       <GundamModelShowcase models={gundamModels} isMobile={isMobile} />
-      {/* <ProductShowcase isMobile={isMobile} /> */}
+      <ProductShowcase isMobile={isMobile} />
       <Footer />
     </div>
   );

@@ -32,11 +32,13 @@ export function useProductFilter(
   // Tích hợp category filter hook
   const categoryFilterData = useCategoryFilter(products);
   // Filter products
+  console.log(products)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       // Stock filter
       const stockMatch = filters.stockFilter.includes('Tất cả') || 
         (filters.stockFilter.includes('Còn hàng') && product.stockQuantity > 0) ||
+        (filters.stockFilter.includes('Hàng sắp về') ) ||
         (filters.stockFilter.includes('Hết hàng') && product.stockQuantity === 0);
 
       // Price filter

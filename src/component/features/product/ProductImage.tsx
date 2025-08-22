@@ -3,8 +3,6 @@ import { Product } from '@/types/Product';
 import { useProductStatus } from '@/hooks/product/useProductStatus';
 import ProductStatusBadge from './ProductStatusBadge';
 import ProductImageOverlay from './ProductImageOverlay';
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
-import { mx_heighttonormal } from 'three/tsl';
 
 interface ProductImageProps {
   product: Product;
