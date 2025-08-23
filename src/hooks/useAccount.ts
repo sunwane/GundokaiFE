@@ -63,6 +63,7 @@ export function useAccount() {
     try {
       const userNotifications = await NotificationService.getUserNotifications(user.id);
       setNotifications(userNotifications);
+      console.log('Loaded notifications:', userNotifications);
     } catch (error) {
       console.error('Failed to load notifications:', error);
     } finally {

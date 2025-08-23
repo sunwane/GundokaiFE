@@ -1,33 +1,115 @@
 import { Notification } from '@/types/Notification';
-import { mockNotifications } from '@/data/mockNoti';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
 export class NotificationService {
+  // ✅ Hàm helper để lấy token
+  private static getAuthToken(): string | null {
+    return localStorage.getItem('authToken');
+  }
+
+  // ✅ Hàm helper để transform data từ BE response
+  private static transformNotification(beNotification: any): Notification {
+    return {
+      id: beNotification.id,
+      user_id: beNotification.user_id,          // ✅ Giữ nguyên field name
+      message: beNotification.message,
+      is_read: beNotification.readOrNot,        // ✅ Chuyển đổi readOrNot -> is_read
+      sent_at: beNotification.sent_at
+    };
+  }
+
   static async getUserNotifications(userId: string): Promise<Notification[]> {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    return mockNotifications
-      .filter(notification => notification.user_id == userId)
-      .sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
+    try {
+      const token = this.getAuthToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // ✅ Gọi API đơn giản như ProductService
+      const response = await fetch(`${API_BASE_URL}/notification/getAll`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,  // ✅ Thêm token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Notifications API response:', data);
+
+      // ✅ Xử lý response theo cấu trúc BE
+      const notifications = data.result || data;
+      
+      if (!Array.isArray(notifications)) {
+        console.warn('Notifications data is not an array:', notifications);
+        return [];
+      }
+
+      // ✅ Transform và filter theo userId
+      return notifications
+        .filter(notification => notification.user_id === userId)
+        .map(this.transformNotification)
+        .sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
+
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      throw error;
+    }
   }
 
   static async markAsRead(notificationId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const notification = mockNotifications.find(n => n.id === notificationId);
-    if (notification) {
-      notification.is_read = true;
+    try {
+      const token = this.getAuthToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/notification/markAsRead/${notificationId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Mark as read response:', data);
+
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      throw error;
     }
   }
 
   static async markAllAsRead(userId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    mockNotifications
-      .filter(n => n.user_id === userId)
-      .forEach(n => n.is_read = true);
+    try {
+      const notifications = await this.getUserNotifications(userId);
+      const unreadNotifications = notifications.filter(n => !n.is_read);
+      
+      const markPromises = unreadNotifications.map(notification => 
+        this.markAsRead(notification.id)
+      );
+      
+      await Promise.all(markPromises);
+      
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+      throw error;
+    }
   }
 
+  // ✅ Utility function
   static getUnreadCount(notifications: Notification[]): number {
     return notifications.filter(n => !n.is_read).length;
   }
