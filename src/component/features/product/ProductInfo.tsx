@@ -28,7 +28,7 @@ export default function ProductInfo({
 
   // Hooks
   const { categoryName, subCategoryName } = useCategory(
-    product.subCategoryId ?? ""
+    product.subcategory?.id ?? ""
   );
 
   const handleAddToCart = () => {
@@ -398,32 +398,6 @@ const styles = {
   comingSoonText: {
     fontSize: "14px",
     color: "#b45309",
-    textAlign: "center" as const,
-    margin: 0,
-  },
-  outOfStockSection: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    gap: "12px",
-    marginBottom: "32px",
-    padding: "24px 0px",
-    borderTop: "1px solid #e5e7eb",
-    borderBottom: "1px solid #e5e7eb",
-  },
-  outOfStockBtn: {
-    padding: "12px 32px",
-    background: "#f3f4f6",
-    color: "#9ca3af",
-    border: "1px solid #d1d5db",
-    borderRadius: "8px",
-    fontWeight: "600",
-    fontSize: "16px",
-    cursor: "not-allowed",
-  },
-  outOfStockText: {
-    fontSize: "14px",
-    color: "#6b7280",
     textAlign: "center" as const,
     margin: 0,
   },
