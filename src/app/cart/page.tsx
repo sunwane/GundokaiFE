@@ -113,35 +113,63 @@ export default function CartPage() {
     );
   };
 
+  // src/app/cart/page.tsx
   const handleOrderSuccess = (order: any) => {
     console.log("Đặt hàng thành công:", order);
 
     try {
-      const statusText = OrderService.getPaymentStatusText(order.paymentStatus);
-      const formattedAmount = OrderService.formatPrice(order.totalAmount);
+      const statusText = OrderService.getPaymentStatusText
+        ? OrderService.getPaymentStatusText(order.paymentStatus)
+        : order.paymentStatus;
+
+      const formattedAmount = OrderService.formatPrice
+        ? OrderService.formatPrice(order.totalAmount)
+        : `${order.totalAmount?.toLocaleString("vi-VN") || 0}₫`;
 
       if (order.paymentMethod === "VNPAY" && order.paymentUrl) {
         alert(
-          `Đơn hàng đã được tạo thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nTrạng thái: ${statusText}\nBạn sẽ được chuyển đến trang thanh toán VNPay.`
+          `Đơn hàng đã được tạo thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nStock đã được cập nhật!\nBạn sẽ được chuyển đến trang thanh toán VNPay.`
         );
+
+        // ✅ Clear cart sau khi đặt hàng thành công
+        localStorage.removeItem("gundam_cart");
+        setManualCart({
+          items: [],
+          total_quantity: 0,
+          total_amount: 0,
+          subtotal: 0,
+        });
+
+        // ✅ Trigger cart update event
+        const event = new CustomEvent("cartUpdated");
+        window.dispatchEvent(event);
 
         setTimeout(() => {
           window.location.href = order.paymentUrl;
         }, 2000);
       } else if (order.paymentMethod === "COD") {
         alert(
-          `Đặt hàng COD thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nTrạng thái: ${statusText}\nChúng tôi sẽ liên hệ với bạn sớm nhất.`
+          `Đặt hàng COD thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nStock đã được cập nhật!\nChúng tôi sẽ liên hệ với bạn sớm nhất.`
         );
+
+        // ✅ Clear cart cho COD
+        localStorage.removeItem("gundam_cart");
+        setManualCart({
+          items: [],
+          total_quantity: 0,
+          total_amount: 0,
+          subtotal: 0,
+        });
+
+        // ✅ Trigger cart update event
+        const event = new CustomEvent("cartUpdated");
+        window.dispatchEvent(event);
       }
 
       setShowCheckoutForm(false);
     } catch (error) {
       console.error("Error in handleOrderSuccess:", error);
-      alert(
-        `Đặt hàng thành công!\nMã đơn hàng: ${
-          order.orderId
-        }\nSố tiền: ${order.totalAmount.toLocaleString("vi-VN")}₫`
-      );
+      alert("Đặt hàng thành công!");
       setShowCheckoutForm(false);
     }
   };
