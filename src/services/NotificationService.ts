@@ -41,7 +41,6 @@ export class NotificationService {
       }
 
       const data = await response.json();
-      console.log('Notifications API response:', data);
 
       // ✅ Xử lý response theo cấu trúc BE
       const notifications = data.result || data;

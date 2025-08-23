@@ -169,9 +169,7 @@ export default function AccountPage() {
       case 'notifications':
         return (
           <NotificationList 
-            notifications={notifications}
-            isLoading={notificationsLoading}
-            onRefresh={handleRefreshNotifications} // ✅ Dùng hàm refresh mới
+            userId={user.id} // ✅ Truyền userId
           />
         );
       case 'password':
