@@ -17,6 +17,7 @@ export interface OrderDetail {
   quantity: number;
   unitPrice: number;
   subTotal: number;
+  productName?: string;
 }
 
 // Interface cho đơn hàng
