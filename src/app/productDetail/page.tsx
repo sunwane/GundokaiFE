@@ -100,8 +100,8 @@ export default function ProductDetailPage() {
               ...styles.relatedGrid,
               gridTemplateColumns: isMobile 
                 ? 'repeat(2, 1fr)' 
-                : 'repeat(5, 1fr)',
-              gap: isMobile ? '16px' : '20px',
+                : 'repeat(auto-fit, minmax(230px,1fr))',
+              gap: isMobile ? '16px' : '24px',
             }}>
               {relatedProducts.map((relatedProduct) => (
                 <ProductCard 
@@ -175,5 +175,6 @@ const styles = {
   relatedGrid: {
     display: 'grid',
     justifyItems: 'center',
+    padding: '0 30px',
   },
 };

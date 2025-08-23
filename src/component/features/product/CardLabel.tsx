@@ -6,13 +6,15 @@ interface CardLabelProps {
   subcategoryId: string;
   className?: string;
   style?: React.CSSProperties;
+  isMobile?: boolean; // Thêm prop này
 }
 
 export default function CardLabel({ 
   categoryId,
   subcategoryId, 
   className, 
-  style 
+  style,
+  isMobile = false // Default false
 }: CardLabelProps) {
 
   // ✅ Hàm xử lý lấy text trong ngoặc (nếu có)
@@ -29,16 +31,23 @@ export default function CardLabel({
     <div 
       style={{
         ...styles.cardLabel,
+        ...(isMobile ? styles.cardLabelMobile : {}),
         ...style
       }}
       className={className}
     >
       {/* Category label */}
-      <span style={styles.categoryLabel}>
+      <span style={{
+        ...styles.categoryLabel,
+        ...(isMobile ? styles.categoryLabelMobile : {}),
+      }}>
         {getDisplayText(categoryId)}
       </span>
       {/* Subcategory label - Hiển thị text trong ngoặc (nếu có) */}
-      <span style={styles.subcategoryLabel}>
+      <span style={{
+        ...styles.subcategoryLabel,
+        ...(isMobile ? styles.subcategoryLabelMobile : {}),
+      }}>
         {getDisplayText(subcategoryId).toUpperCase()}
       </span>
     </div>
@@ -53,7 +62,10 @@ const styles = {
     background: '#fff',
     overflow: 'hidden',
     width: 'fit-content',
-    maxWidth: '200px', // ✅ Giới hạn chiều rộng tối đa
+    maxWidth: '180px', // ✅ Giới hạn chiều rộng tối đa
+  },
+  cardLabelMobile: {
+    maxWidth: '80px',
   },
   categoryLabel: {
     border: 'none',
@@ -74,6 +86,14 @@ const styles = {
     // ✅ Text overflow handling
     textOverflow: 'ellipsis', // Hiển thị ...
     whiteSpace: 'nowrap',    // Không xuống dòng
+  },
+  categoryLabelMobile: {
+    fontSize: '9px',
+    height: '18px',
+    paddingLeft: '4px',
+    paddingRight: '8px',
+    paddingTop: '3px',
+    paddingBottom: '3px',
   },
   subcategoryLabel: {
     background: '#fff',
@@ -101,5 +121,14 @@ const styles = {
     overflow: 'hidden',      // Ẩn phần text thừa
     textOverflow: 'ellipsis', // Hiển thị ...
     whiteSpace: 'nowrap',    // Không xuống dòng
+  },
+  subcategoryLabelMobile: {
+    fontSize: '10px',
+    height: '18px',
+    paddingLeft: '8px',
+    paddingRight: '4px',
+    paddingTop: '3px',
+    paddingBottom: '3px',
+    maxWidth: '60px',
   },
 };

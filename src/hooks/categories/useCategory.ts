@@ -54,8 +54,7 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
           setSubCategory(subCategoryData);
           setSubCategoryName(subCategoryData.subCategoryName);
           setCategoryId(subCategoryData.mainCategoryId);
-          
-          console.log("kitram,1", subCategoryData.mainCategoryId);
+        
           // 🔄 Lấy category đầy đủ từ categoryId
           const category = await CategoryService.getCategoryById(subCategoryData.mainCategoryId);
           const categoryData = category.result;

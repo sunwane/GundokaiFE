@@ -11,8 +11,8 @@ import { OrderService } from "@/services/OrderService";
 
 export default function CartPage() {
   const {
-    cart,
-    loading,
+    cart: fetchedCart,
+    loading: fetchedLoading,
     isMobile,
     router,
     handleQuantityChange,
@@ -25,15 +25,82 @@ export default function CartPage() {
 
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [manualCart, setManualCart] = useState<{
+    items: any[];
+    total_quantity: number;
+    total_amount: number;
+    subtotal: number;
+  } | null>(null);
+  const [manualLoading, setManualLoading] = useState(true);
 
+  const loadCartData = () => {
+    try {
+      console.log("Loading cart manually...");
+      setManualLoading(true);
+
+      const cartJson = localStorage.getItem("gundam_cart");
+      console.log("Cart JSON:", cartJson);
+
+      if (cartJson) {
+        const parsed = JSON.parse(cartJson);
+        console.log("Parsed cart:", parsed);
+        setManualCart(parsed);
+      } else {
+        setManualCart({
+          items: [],
+          total_quantity: 0,
+          total_amount: 0,
+          subtotal: 0,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      setManualCart({
+        items: [],
+        total_quantity: 0,
+        total_amount: 0,
+        subtotal: 0,
+      });
+    } finally {
+      setManualLoading(false); // ✅ Đảm bảo set false
+    }
+  };
+  useEffect(() => {
+    loadCartData();
+  }, []);
   // Check login status
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsLoggedIn(!!token);
   }, []);
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      console.log("Cart updated, reloading manually...");
+      setTimeout(() => {
+        loadCartData();
+      }, 200);
+    };
 
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, []);
+  const cart = manualCart || fetchedCart;
+  const loading = manualLoading || fetchedLoading;
+  useEffect(() => {
+    console.log("=== DETAILED DEBUG ===");
+    console.log("Manual Cart:", manualCart);
+    console.log("Manual Loading:", manualLoading);
+    console.log("Fetched Cart:", fetchedCart);
+    console.log("Fetched Loading:", fetchedLoading);
+    console.log("Final Cart:", cart);
+    console.log("Final Loading:", loading);
+    console.log("Cart items length:", cart?.items?.length || 0);
+  }, [manualCart, manualLoading, fetchedCart, fetchedLoading, cart, loading]);
   const calculateTotalAmount = () => {
-    if (!cart.items || cart.items.length === 0) return 0;
+    if (!cart || !cart.items || cart.items.length === 0) return 0;
 
     return cart.items.reduce(
       (
@@ -80,11 +147,15 @@ export default function CartPage() {
   };
 
   const prepareCheckoutItems = () => {
-    if (!cart.items || cart.items.length === 0) return [];
+    if (!cart || !cart.items) return [];
 
     return cart.items.map(
       (item: {
-        product: { id: any; product_Name: any; price: number };
+        product: {
+          id: string;
+          product_Name: string;
+          price: number;
+        };
         quantity: number;
       }) => ({
         productId: item.product.id,
@@ -100,6 +171,7 @@ export default function CartPage() {
 
   const canCheckout = () => {
     return (
+      cart &&
       cart.items &&
       cart.items.length > 0 &&
       cart.items.every(
@@ -141,7 +213,19 @@ export default function CartPage() {
       </div>
     );
   }
-
+  if (!cart) {
+    return (
+      <div>
+        <PageHeader />
+        <div style={styles.container}>
+          <div style={styles.emptyCart}>
+            <div style={styles.emptyCartIcon}>🛒</div>
+            <h2 style={styles.emptyCartTitle}>Đang tải giỏ hàng...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <PageHeader />
@@ -303,7 +387,7 @@ export default function CartPage() {
 
       {showCheckoutForm && (
         <CheckoutForm
-          cartItems={prepareCheckoutItems()}
+          cartItems={prepareCheckoutItems()} // ✅ Dùng function an toàn
           totalAmount={totalAmount}
           isOpen={showCheckoutForm}
           onClose={() => setShowCheckoutForm(false)}

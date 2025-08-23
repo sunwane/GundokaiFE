@@ -21,7 +21,6 @@ export default function ProductInfo({
   const popupMessage = usePopupMessage();
 
   const handleQuantityChange = (delta: number) => {
-    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
     setQuantity((prev) =>
       Math.max(1, Math.min(prev + delta, product.stockQuantity || 1))
     );
@@ -29,19 +28,16 @@ export default function ProductInfo({
 
   // Hooks
   const { categoryName, subCategoryName } = useCategory(
-    product.subCategoryId ?? ""
+    product.subcategory?.id ?? ""
   );
 
   const handleAddToCart = () => {
     try {
       CartService.addToCart(product, quantity);
 
-      // Cart count sẽ tự động update thông qua custom event
-      // Không cần gọi thêm gì
-
       popupMessage.showSuccess({
         title: "Thành công!",
-        message: `Đã thêm ${quantity} sản phẩm "${product.productName}" vào giỏ hàng`, // ✅ Đổi từ product.product_Name
+        message: `Đã thêm ${quantity} sản phẩm "${product.productName}" vào giỏ hàng`,
         duration: 3000,
       });
 
@@ -66,8 +62,12 @@ export default function ProductInfo({
     return price.toLocaleString("vi-VN") + " VNĐ";
   };
 
-  // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
-  const isOutOfStock = product.stockQuantity <= 0;
+  // ✅ THÊM LOGIC XỬ LÝ TRẠNG THÁI
+  const isComingSoon = product.status === "Hàng sắp về";
+  const isOutOfStock =
+    !isComingSoon &&
+    (product.stockQuantity <= 0 || product.status === "Hết hàng");
+  const isInStock = !isComingSoon && !isOutOfStock;
 
   // Render features based on ProductDetail data
   const renderFeatures = () => {
@@ -98,7 +98,6 @@ export default function ProductInfo({
     <>
       <div style={styles.container}>
         {/* Product Title */}
-        {/* ✅ Đổi từ product.product_Name thành product.productName */}
         <h1 style={styles.title}>{product.productName}</h1>
 
         {/* Category Labels */}
@@ -115,18 +114,19 @@ export default function ProductInfo({
         {/* Stock Status */}
         <div style={styles.stockRow}>
           <span style={styles.stockLabel}>Tình trạng:</span>
-          {isOutOfStock ? (
+          {isComingSoon ? (
+            <span style={styles.comingSoon}>Hàng sắp về</span>
+          ) : isOutOfStock ? (
             <span style={styles.outOfStock}>Hết hàng</span>
           ) : (
-            // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
             <span style={styles.inStock}>
               Còn hàng ({product.stockQuantity} sản phẩm)
             </span>
           )}
         </div>
 
-        {/* Quantity and Add to Cart */}
-        {!isOutOfStock && (
+        {/* Quantity and Add to Cart - Chỉ hiện khi còn hàng */}
+        {isInStock && (
           <div style={styles.actionRow}>
             <div style={styles.quantitySection}>
               <span style={styles.quantityLabel}>Số lượng</span>
@@ -154,7 +154,6 @@ export default function ProductInfo({
                 <button
                   style={{
                     ...styles.quantityBtn,
-                    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
                     opacity: quantity >= product.stockQuantity ? 0.5 : 1,
                     cursor:
                       quantity >= product.stockQuantity
@@ -162,10 +161,8 @@ export default function ProductInfo({
                         : "pointer",
                   }}
                   onClick={() => handleQuantityChange(1)}
-                  // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
                   disabled={quantity >= product.stockQuantity}
                   onMouseEnter={(e) => {
-                    // ✅ Đổi từ product.stock_quantity thành product.stockQuantity
                     if (quantity < product.stockQuantity) {
                       e.currentTarget.style.backgroundColor = "#e5e7eb";
                     }
@@ -195,7 +192,19 @@ export default function ProductInfo({
           </div>
         )}
 
-        {/* Out of Stock Section */}
+        {/* ✅ COMING SOON SECTION */}
+        {isComingSoon && (
+          <div style={styles.comingSoonSection}>
+            <button style={styles.comingSoonBtn} disabled>
+              ⏰ Hàng sắp về
+            </button>
+            <p style={styles.comingSoonText}>
+              Sản phẩm đang được nhập về. Chúng tôi sẽ thông báo khi có hàng!
+            </p>
+          </div>
+        )}
+
+        {/* ✅ OUT OF STOCK SECTION - Chỉ hiện khi hết hàng (không phải sắp về) */}
         {isOutOfStock && (
           <div style={styles.outOfStockSection}>
             <button style={styles.outOfStockBtn} disabled>
@@ -293,6 +302,12 @@ const styles = {
     fontWeight: "600",
     fontSize: "16px",
   },
+  // ✅ THÊM STYLE CHO COMING SOON
+  comingSoon: {
+    color: "#d97706",
+    fontWeight: "600",
+    fontSize: "16px",
+  },
   actionRow: {
     display: "flex",
     alignItems: "center",
@@ -358,6 +373,33 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.2s ease",
     boxShadow: "0 2px 4px rgba(37, 99, 235, 0.2)",
+  },
+  // ✅ THÊM STYLES CHO COMING SOON SECTION
+  comingSoonSection: {
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "32px",
+    padding: "24px 0px",
+    borderTop: "1px solid #e5e7eb",
+    borderBottom: "1px solid #e5e7eb",
+  },
+  comingSoonBtn: {
+    padding: "12px 32px",
+    background: "#fef3c7",
+    color: "#b45309",
+    border: "1px solid #fbbf24",
+    borderRadius: "8px",
+    fontWeight: "600",
+    fontSize: "16px",
+    cursor: "not-allowed",
+  },
+  comingSoonText: {
+    fontSize: "14px",
+    color: "#b45309",
+    textAlign: "center" as const,
+    margin: 0,
   },
   outOfStockSection: {
     display: "flex",

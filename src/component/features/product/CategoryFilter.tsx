@@ -73,7 +73,7 @@ export default function CategoryFilter({
       ))}
 
       {/* Selected Summary */}
-      {selectedCategories.length > 0 && (
+      {/* {selectedCategories.length > 0 && (
         <div style={styles.summary}>
           <div style={styles.summaryHeader}>
             <span style={styles.summaryIcon}>✅</span>
@@ -96,7 +96,7 @@ export default function CategoryFilter({
             })}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

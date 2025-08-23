@@ -27,11 +27,7 @@ export function useProductStatus(product: Product): ProductStatusInfo {
     let statusLabel = '';
     let badgeConfig = undefined;
 
-    if (stockQuantity == 0 || status == 'Hết hàng') {
-      statusType = 'out-of-stock';
-      isOutOfStock = true;
-      statusLabel = 'HẾT HÀNG';
-    } else if (status == 'Hàng sắp về') {
+    if(status == 'Hàng sắp về'){
       statusType = 'coming-soon';
       isComingSoon = true;
       statusLabel = 'HÀNG SẮP VỀ';
@@ -40,6 +36,10 @@ export function useProductStatus(product: Product): ProductStatusInfo {
         color: '#ffffff',
         backgroundColor: 'rgb(0, 119, 255)',
       };
+    }else if(stockQuantity == 0 || status == 'Hết hàng'){
+      statusType = 'out-of-stock';
+      isOutOfStock = true;
+      statusLabel = 'HẾT HÀNG';
     }
 
     return {

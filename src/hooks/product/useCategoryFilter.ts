@@ -34,16 +34,16 @@ export function useCategoryFilter(products: Product[] = []): UseCategoryFilterRe
 
     return categories.map(category => {
       const categorySubCategories = subCategories
-        .filter(sub => sub.category_id === category.id)
+        .filter(sub => sub.mainCategory.id === category.id)
         .map(sub => ({
           id: sub.id,
           name: sub.subCategoryName,
-          count: products.filter(p => p.subCategory.id === sub.id).length
+          count: products.filter(p => p.subcategory.id === sub.id).length
         }));
 
       return {
         categoryId: category.id,
-        categoryName: category.category_Name,
+        categoryName: category.categoryName,
         subcategories: categorySubCategories
       };
     }).filter(group => group.subcategories.length > 0); // Chỉ hiển thị category có subcategory

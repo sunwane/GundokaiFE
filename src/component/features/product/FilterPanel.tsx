@@ -6,6 +6,7 @@ import PriceRangeSlider from './PriceRangeSlider';
 import CategoryFilter from './CategoryFilter';
 import { StockStatus } from '@/types/Product';
 import { Product } from '@/types/Product';
+import { max } from 'three/tsl';
 
 interface FilterPanelProps {
   // Pending filters

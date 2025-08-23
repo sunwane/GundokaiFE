@@ -4,29 +4,83 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Environment, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 
-function GundamModel() {
+interface GundamModelConfig {
+  // Scale settings
+  defaultScale?: number;
+  appearScale?: number;
+  poseScale?: number;
+  
+  // Position settings
+  defaultPosition?: [number, number, number];
+  appearPosition?: [number, number, number];
+  posePosition?: [number, number, number];
+  
+  // Rotation settings
+  defaultRotation?: [number, number, number];
+  
+  // Animation settings
+  appearAnimationNames?: string[];
+  poseAnimationNames?: string[];
+  transitionDuration?: number;
+  appearCutTime?: number; // Thời gian cắt animation appear (giây)
+  
+  // Material settings
+  colorMultiplier?: number;
+  metalnessAdjust?: number;
+  roughnessAdjust?: number;
+  envMapIntensityAdjust?: number;
+  aoMapIntensity?: number;
+}
+
+interface GundamModelProps {
+  modelPath: string;
+  config?: GundamModelConfig;
+}
+
+function GundamModel({ modelPath, config = {} }: GundamModelProps) {
   const modelRef = useRef<THREE.Group>(null);
-  const { scene, animations } = useGLTF('/model/gat-x105_aile_strike.glb');
+  const { scene, animations } = useGLTF(modelPath);
   const { actions, mixer } = useAnimations(animations, modelRef);
   const [hasAppeared, setHasAppeared] = useState(false);
   
+  // Default config values (giữ nguyên hiện tại)
+  const defaultConfig: Required<GundamModelConfig> = {
+    defaultScale: 1.6,
+    appearScale: 1.9,
+    poseScale: 1.6,
+    defaultPosition: [0.5, -1.5, 0],
+    appearPosition: [0.9, -1.85, 0],
+    posePosition: [0.5, -1.5, 0],
+    defaultRotation: [0, -Math.PI / 10, 0],
+    appearAnimationNames: ['01-APPEAR', 'APPEAR', 'appear'],
+    poseAnimationNames: ['99-POSE2', 'POSE2', 'pose2'],
+    transitionDuration: 0.3,
+    appearCutTime: 6,
+    colorMultiplier: 0.92,
+    metalnessAdjust: -0.4,
+    roughnessAdjust: 0.5,
+    envMapIntensityAdjust: -0.5,
+    aoMapIntensity: 2.0,
+  };
+  
+  // Merge user config với default
+  const finalConfig = { ...defaultConfig, ...config };
+  
   useEffect(() => {
     if (scene) {
-      // Dịch chuyển model lên để thấy toàn thân
-      scene.position.set(0.5, -1.5, 0);
+      // Set position và rotation theo config
+      scene.position.set(...finalConfig.defaultPosition);
+      scene.rotation.set(...finalConfig.defaultRotation);
       
-      // Đặt tư thế mặc định - Quay sang trái n độ
-      scene.rotation.set(0, -Math.PI / 10, 0);
-      
-      // ✅ Điều chỉnh material để che nhựa nhưng giữ màu trắng
+      // Điều chỉnh material theo config
       scene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.color.multiplyScalar(0.92);
-            child.material.metalness = Math.max(0, child.material.metalness - 0.4);
-            child.material.roughness = Math.min(1, child.material.roughness + 0.5);
-            child.material.envMapIntensity = Math.max(0, (child.material.envMapIntensity || 1) - 0.5);
-            child.material.aoMapIntensity = 2.0;
+            child.material.color.multiplyScalar(finalConfig.colorMultiplier);
+            child.material.metalness = Math.max(0, child.material.metalness + finalConfig.metalnessAdjust);
+            child.material.roughness = Math.min(1, child.material.roughness + finalConfig.roughnessAdjust);
+            child.material.envMapIntensity = Math.max(0, (child.material.envMapIntensity || 1) + finalConfig.envMapIntensityAdjust);
+            child.material.aoMapIntensity = finalConfig.aoMapIntensity;
             child.material.needsUpdate = true;
           }
           
@@ -36,20 +90,26 @@ function GundamModel() {
       });
     }
 
-    // Chạy animation sequence
+    // Animation logic với config
     if (actions && Object.keys(actions).length > 0) {
       console.log('Available animations:', Object.keys(actions));
       
-      // Tìm animation appear
-      const appearAction = actions['01-APPEAR'] || actions['APPEAR'] || actions['appear'];
-      const pose2Action = actions['99-POSE2'] || actions['POSE2'] || actions['pose2'] || Object.values(actions)[2];
+      // Tìm animation appear theo config
+      const appearAction = finalConfig.appearAnimationNames
+        .map(name => actions[name])
+        .find(action => action);
+      
+      // Tìm animation pose theo config  
+      const poseAction = finalConfig.poseAnimationNames
+        .map(name => actions[name])
+        .find(action => action) || Object.values(actions)[2];
       
       if (appearAction && !hasAppeared) {
         console.log('Playing appear animation:', appearAction.getClip().name);
         
-        // ✅ Set scale to lớn cho appear animation
-        scene.scale.setScalar(1.9); // Tăng từ 1.6 lên 1.9
-        scene.position.set(0.9, -1.85, 0);
+        // Set scale và position cho appear animation theo config
+        scene.scale.setScalar(finalConfig.appearScale);
+        scene.position.set(...finalConfig.appearPosition);
         
         // Dừng tất cả animations trước
         Object.values(actions).forEach(action => {
@@ -61,22 +121,22 @@ function GundamModel() {
         appearAction.setLoop(THREE.LoopOnce, 1);
         appearAction.clampWhenFinished = true;
         
-        // ✅ Tính toán thời điểm chuyển đổi - cắt 6s cuối
+        // Tính toán thời điểm chuyển đổi theo config
         const originalDuration = appearAction.getClip().duration;
-        const transitionTime = Math.max(0, originalDuration - 6); // Cắt 6s cuối
+        const transitionTime = Math.max(0, originalDuration - finalConfig.appearCutTime);
         
         console.log(`Appear duration: ${originalDuration}s, will transition at: ${transitionTime}s`);
         
-        // ✅ Timeout để chuyển sớm sang pose2
+        // Timeout để chuyển sang pose
         const transitionTimeout = setTimeout(() => {
-          console.log('Transitioning to pose 2 early...');
+          console.log('Transitioning to pose animation...');
           
-          if (pose2Action) {
-            // ✅ Smooth scale transition từ 1.9 về 1.6
+          if (poseAction) {
+            // Smooth scale transition theo config
             const scaleAnimation = () => {
               const duration = 500; // 0.5 giây
-              const startScale = 1.9;
-              const endScale = 1.6;
+              const startScale = finalConfig.appearScale;
+              const endScale = finalConfig.poseScale;
               const startTime = Date.now();
               
               const animate = () => {
@@ -89,6 +149,14 @@ function GundamModel() {
                 
                 scene.scale.setScalar(currentScale);
                 
+                // Smooth position transition
+                const startPos = finalConfig.appearPosition;
+                const endPos = finalConfig.posePosition;
+                const currentPos = startPos.map((start, i) => 
+                  start + (endPos[i] - start) * easeOut
+                ) as [number, number, number];
+                scene.position.set(...currentPos);
+                
                 if (progress < 1) {
                   requestAnimationFrame(animate);
                 }
@@ -97,40 +165,39 @@ function GundamModel() {
               animate();
             };
             
-            // Bắt đầu scale animation
+            // Bắt đầu transition animations
             scaleAnimation();
             
-            // ✅ Sử dụng crossFadeTo để transition mượt mà
-            appearAction.crossFadeTo(pose2Action, 0.3, true); // 0.3s crossfade
-            pose2Action.setLoop(THREE.LoopRepeat, Infinity);
-            console.log('Playing pose 2 animation:', pose2Action.getClip().name);
+            // Sử dụng crossFadeTo với duration từ config
+            appearAction.crossFadeTo(poseAction, finalConfig.transitionDuration, true);
+            poseAction.setLoop(THREE.LoopRepeat, Infinity);
+            console.log('Playing pose animation:', poseAction.getClip().name);
             
             setHasAppeared(true);
           }
-        }, transitionTime * 1000); // Convert to milliseconds
+        }, transitionTime * 1000);
         
-        // ✅ Cleanup timeout nếu component unmount
         return () => {
           clearTimeout(transitionTimeout);
         };
         
-      } else if (hasAppeared && pose2Action) {
-        // ✅ Set scale bình thường cho pose 2
-        scene.scale.setScalar(1.6);
+      } else if (hasAppeared && poseAction) {
+        // Set scale và position cho pose animation theo config
+        scene.scale.setScalar(finalConfig.poseScale);
+        scene.position.set(...finalConfig.posePosition);
         
-        // Chỉ chạy pose 2 khi đã appear
-        console.log('Running pose 2 animation:', pose2Action.getClip().name);
-        pose2Action.reset().play();
-        pose2Action.setLoop(THREE.LoopRepeat, Infinity);
+        console.log('Running pose animation:', poseAction.getClip().name);
+        poseAction.reset().play();
+        poseAction.setLoop(THREE.LoopRepeat, Infinity);
         
-      } else if (!appearAction && pose2Action) {
-        // ✅ Set scale bình thường khi không có appear animation
-        scene.scale.setScalar(1.6);
+      } else if (!appearAction && poseAction) {
+        // Set scale và position mặc định khi không có appear animation
+        scene.scale.setScalar(finalConfig.defaultScale);
+        scene.position.set(...finalConfig.defaultPosition);
         
-        // Nếu không có appear animation, chạy pose 2 luôn
-        console.log('No appear animation found, playing pose 2:', pose2Action.getClip().name);
-        pose2Action.reset().play();
-        pose2Action.setLoop(THREE.LoopRepeat, Infinity);
+        console.log('No appear animation found, playing pose:', poseAction.getClip().name);
+        poseAction.reset().play();
+        poseAction.setLoop(THREE.LoopRepeat, Infinity);
         setHasAppeared(true);
       }
     }
@@ -143,7 +210,7 @@ function GundamModel() {
         });
       }
     };
-  }, [actions, scene, hasAppeared, mixer]);
+  }, [actions, scene, hasAppeared, mixer, finalConfig]);
 
   // Update animation mixer
   useFrame((state, delta) => {
@@ -162,9 +229,16 @@ function GundamModel() {
 interface GundamScene3DProps {
   className?: string;
   style?: React.CSSProperties;
+  modelPath?: string;
+  config?: GundamModelConfig; // Thêm prop config
 }
 
-export default function GundamScene3D({ className, style }: GundamScene3DProps) {
+export default function GundamScene3D({ 
+  className, 
+  style, 
+  modelPath = '/model/gat-x105_aile_strike.glb',
+  config = {} // Default empty config
+}: GundamScene3DProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
@@ -189,13 +263,11 @@ export default function GundamScene3D({ className, style }: GundamScene3DProps) 
         onCreated={() => setIsLoading(false)}
         shadows
       >
-        {/* ✅ Giảm ambient light để tạo contrast tốt hơn */}
-        <ambientLight intensity={0.8} /> {/* Giảm từ 1.1 xuống 0.8 */}
+        <ambientLight intensity={0.8} />
         
-        {/* Key light - ánh sáng chính từ trên */}
         <directionalLight 
           position={[3, 8, 5]} 
-          intensity={0.9} // ✅ Giảm từ 1.0 xuống 0.9
+          intensity={0.9}
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
@@ -206,40 +278,34 @@ export default function GundamScene3D({ className, style }: GundamScene3DProps) 
           shadow-camera-bottom={-10}
         />
         
-        {/* Fill light - ánh sáng phụ */}
         <pointLight 
           position={[-2, 2, 3]} 
-          intensity={0.7} // ✅ Giảm từ 1.0 xuống 0.7
+          intensity={0.7}
           color="#4a90e2"
         />
         
-        {/* Rim light - ánh sáng viền */}
         <spotLight 
           position={[-3, 5, -2]} 
-          intensity={0.8} // ✅ Giảm từ 1.0 xuống 0.8
+          intensity={0.8}
           angle={Math.PI / 6}
-          penumbra={0.4} // ✅ Tăng penumbra để mềm hơn
+          penumbra={0.4}
           color="#ffffff"
           castShadow
         />
         
-        {/* Back light để tạo depth */}
         <pointLight 
           position={[0, 2, -5]} 
-          intensity={0.3} // ✅ Giảm từ 0.4 xuống 0.3
+          intensity={0.3}
           color="#1e3a8a"
         />
         
-        {/* Environment với độ sáng vừa phải */}
-        <Environment preset="dawn" /> {/* ✅ Đổi từ "night" sang "dawn" để balanced hơn */}
+        <Environment preset="dawn" />
         
-        {/* Fog để che các chi tiết xa và tạo depth */}
-        <fog attach="fog" args={['#2a2a3e', 6, 18]} /> {/* ✅ Điều chỉnh màu và khoảng cách */}
+        <fog attach="fog" args={['#2a2a3e', 6, 18]} />
         
-        {/* Gundam Model */}
-        <GundamModel />
+        {/* Gundam Model với config */}
+        <GundamModel modelPath={modelPath} config={config} />
         
-        {/* Controls */}
         <OrbitControls
           enablePan={false}
           enableZoom={false}
@@ -257,7 +323,6 @@ export default function GundamScene3D({ className, style }: GundamScene3DProps) 
         />
       </Canvas>
       
-      {/* Controls hint */}
       <div style={styles.controlsHint}>
         🖱️ Kéo để xoay mô hình
       </div>
@@ -265,6 +330,7 @@ export default function GundamScene3D({ className, style }: GundamScene3DProps) 
   );
 }
 
+// Styles giữ nguyên...
 const styles = {
   container: {
     position: 'relative' as const,
@@ -314,17 +380,16 @@ const styles = {
     top: '16px',
     left: '50%',
     transform: 'translateX(-50%)',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)', // ✅ Tối hơn
-    color: '#e5e7eb', // ✅ Màu chữ sáng hơn
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    color: '#e5e7eb',
     padding: '8px 16px',
     borderRadius: '20px',
     fontSize: '12px',
     zIndex: 5,
-    border: '1px solid rgba(59, 130, 246, 0.3)', // ✅ Thêm border
+    border: '1px solid rgba(59, 130, 246, 0.3)',
   },
 };
 
-// Add CSS keyframes for spinner animation
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = `
@@ -336,5 +401,4 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(style);
 }
 
-// Preload the GLTF
 useGLTF.preload('/model/gat-x105_aile_strike.glb');

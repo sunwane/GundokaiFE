@@ -2,45 +2,15 @@ import { Product, ProductResponse } from '@/types/Product';
 import { mockProducts } from '@/data/mockProducts';
 
 const API_BASE_URL = 'http://localhost:8080/product';
-/**
- * 🎯 ProductService - Service Layer Pattern
- * 
- * 🔄 Hiện tại: Sử dụng mock data
- * 🌐 Tương lai: Sẽ gọi real API endpoints
- * 
- * ⚡ Lợi ích của Service Layer:
- * - Tách biệt logic API call khỏi components/hooks
- * - Dễ dàng thay đổi từ mock -> real API
- * - Centralized API management
- * - Type safety với TypeScript
- * 
- * 🔄 Khi nối backend: CHỈ CẦN THAY ĐỔI BÊN TRONG HÀM, KHÔNG THAY ĐỔI INTERFACE
- */
-export class ProductService {
-  
-  /**
-   * 📋 Lấy tất cả sản phẩm
-   * 
-   * 🔄 Hiện tại: Return mock data
-   * 🌐 Tương lai: GET /api/products
-   */
-  static async getProducts(): Promise<ProductResponse> {
-    // ❌ HIỆN TẠI: Mock data với delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-      data: mockProducts,
-      total: mockProducts.length,
-      message: "Products retrieved successfully"
-    };
 
+export class ProductService {
+  static async getProducts(): Promise<ProductResponse> {
     // ✅ TƯƠNG LAI: Real API call
-    /*
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch(`${API_BASE_URL}/getAll`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}` // Nếu cần auth
         }
       });
       
@@ -55,25 +25,11 @@ export class ProductService {
       console.error('Error fetching products:', error);
       throw error;
     }
-    */
   }
-
-  /**
-   * 🔍 Lấy sản phẩm theo ID
-   * 
-   * 🔄 Hiện tại: Find trong mock array
-   * 🌐 Tương lai: GET /api/products/:id
-   */
+  
   static async getProductById(id: string): Promise<Product | null> {
-    // ❌ HIỆN TẠI
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const product = mockProducts.find(p => p.id === id);
-    return product || null;
-
-    // ✅ TƯƠNG LAI: Real API
-    /*
     try {
-      const response = await fetch(`/api/products/${id}`);
+      const response = await fetch(`${API_BASE_URL}/getProductById/${id}`);
       if (response.status === 404) return null;
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
@@ -83,25 +39,15 @@ export class ProductService {
       console.error(`Error fetching product ${id}:`, error);
       return null;
     }
-    */
   }
 
-  /**
-   * 📂 Lấy sản phẩm theo subcategory
-   * 
-   * 🔄 Hiện tại: Filter mock array
-   * 🌐 Tương lai: GET /api/products?subcategory=:id
-   */
   static async getProductsBySubCategory(subCategoryId: string): Promise<ProductResponse> {
-    
     try {
       // const response = await fetch(`/api/products?subcategory=${subCategoryId}`);
       const response = await fetch(`${API_BASE_URL}/getProductBySubCategory/${subCategoryId}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
       const data = await response.json();
-      console.log("check 4:",data)
-      return data.result;
+      return data;
     } catch (error) {
       console.error('Error fetching products by subcategory:', error);
       throw error;
@@ -138,34 +84,25 @@ export class ProductService {
    * 🔄 Hiện tại: Search trong mock array
    * 🌐 Tương lai: GET /api/products/search?q=:query
    */
-  static async searchProducts(query: string): Promise<ProductResponse> {
-    // ❌ HIỆN TẠI
-    await new Promise(resolve => setTimeout(resolve, 400));
-    const searchResults = mockProducts.filter(p => 
-      p.product_Name.toLowerCase().includes(query.toLowerCase()) ||
-      p.description.toLowerCase().includes(query.toLowerCase())
-    );
-    return {
-      data: searchResults,
-      total: searchResults.length,
-      message: `Search results for: ${query}`
-    };
-
-    // ✅ TƯƠNG LAI: Server-side search với full-text search
-    /*
-    try {
-      const response = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error searching products:', error);
-      throw error;
-    }
-    */
+static async searchProducts(query: string): Promise<ProductResponse> {
+  try {
+    // ✅ SỬA: Sử dụng query parameter thay vì path parameter
+    const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    throw error;
   }
-
+}
   /**
    * 💰 Lấy sản phẩm theo khoảng giá
    * 
@@ -206,12 +143,6 @@ export class ProductService {
       total: outOfStockProducts.length,
       message: "Sản phẩm hết hàng"
     };
-
-    // ✅ TƯƠNG LAI
-    /*
-    const response = await fetch('/api/products?status=out_of_stock');
-    return await response.json();
-    */
   }
 
   /**
@@ -230,10 +161,33 @@ export class ProductService {
       message: "Hàng sắp về"
     };
 
-    // ✅ TƯƠNG LAI
-    /*
-    const response = await fetch('/api/products?status=coming_soon');
-    return await response.json();
-    */
+  }
+  static async getHotProducts(): Promise<ProductResponse> {
+    // ❌ HIỆN TẠI - Tạm dùng out of stock, limit 5
+    await new Promise(resolve => setTimeout(resolve, 400));
+    try {
+      const response = await fetch(`${API_BASE_URL}/getTop5BestSeller`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching hot products:', error);
+      throw error;
+    }
+
+  }
+
+  static async getLatestProducts(): Promise<ProductResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/getTop5Newest`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching latest products:', error);
+      throw error;
+    }
   }
 }
