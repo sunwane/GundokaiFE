@@ -16,6 +16,7 @@ export interface ResponsiveState {
   isLargeDesktop: boolean;
   isSmallScreen: boolean;
   orientation: 'portrait' | 'landscape';
+  isHydrated: boolean;
 }
 
 const DEFAULT_BREAKPOINTS: ResponsiveBreakpoints = {
@@ -28,41 +29,33 @@ const DEFAULT_BREAKPOINTS: ResponsiveBreakpoints = {
 export function useResponsive(customBreakpoints?: Partial<ResponsiveBreakpoints>): ResponsiveState {
   const breakpoints = { ...DEFAULT_BREAKPOINTS, ...customBreakpoints };
   
-  const [windowWidth, setWindowWidth] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth;
-    }
-    return breakpoints.desktop; // Default for SSR
-  });
-
-  const [windowHeight, setWindowHeight] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerHeight;
-    }
-    return 800; // Default for SSR
-  });
+  // Start with desktop defaults for SSR
+  const [windowWidth, setWindowWidth] = useState(breakpoints.desktop);
+  const [windowHeight, setWindowHeight] = useState(800);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // Only update after hydration
+    setIsHydrated(true);
+    setWindowWidth(window.innerWidth);
+    setWindowHeight(window.innerHeight);
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
     };
 
-    // Set initial values
-    setWindowWidth(window.innerWidth);
-    setWindowHeight(window.innerHeight);
-
     window.addEventListener('resize', handleResize);
-    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isMobile = windowWidth < breakpoints.mobile;
-  const isTablet = windowWidth >= breakpoints.mobile && windowWidth < breakpoints.tablet;
-  const isDesktop = windowWidth >= breakpoints.tablet && windowWidth < breakpoints.largeDesktop;
-  const isLargeDesktop = windowWidth >= breakpoints.largeDesktop;
-  const isSmallScreen = windowWidth < breakpoints.tablet;
-  const orientation = windowWidth > windowHeight ? 'landscape' : 'portrait';
+  // Calculate values - use desktop defaults if not hydrated
+  const isMobile = isHydrated ? windowWidth < breakpoints.mobile : false;
+  const isTablet = isHydrated ? windowWidth >= breakpoints.mobile && windowWidth < breakpoints.tablet : false;
+  const isDesktop = isHydrated ? windowWidth >= breakpoints.tablet && windowWidth < breakpoints.largeDesktop : true;
+  const isLargeDesktop = isHydrated ? windowWidth >= breakpoints.largeDesktop : false;
+  const isSmallScreen = isHydrated ? windowWidth < breakpoints.tablet : false;
+  const orientation = isHydrated ? (windowWidth > windowHeight ? 'landscape' : 'portrait') : 'landscape';
 
   return {
     windowWidth,
@@ -72,6 +65,7 @@ export function useResponsive(customBreakpoints?: Partial<ResponsiveBreakpoints>
     isLargeDesktop,
     isSmallScreen,
     orientation,
+    isHydrated,
   };
 }
 

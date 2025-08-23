@@ -4,37 +4,41 @@ import PasswordInput from '@/component/ui/form/PasswordInput';
 import SubmitButton from '@/component/ui/form/SubmitButton';
 import ErrorMessage from '@/component/ui/ErrorMessage';
 import { LoginRequest } from '@/types/Account';
-import { ThemeMode } from '@/types/Theme'; // ✅ Import ThemeMode
+import { ValidationErrors } from '@/hooks/validation/useValidation';
+import { ThemeMode } from '@/types/Theme';
 import { useRouter } from 'next/navigation';
 
 interface LoginFormProps {
-  data: LoginRequest;
+  data?: LoginRequest;
   isLoading: boolean;
   error: string;
-  validationErrors: { [key: string]: string };
+  validationErrors: ValidationErrors;
   showPassword: boolean;
-  mode?: ThemeMode; // ✅ Thêm mode prop
+  mode?: ThemeMode;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
-  onTogglePassword: () => void;
+  onTogglePassword: (show: boolean) => void;
 }
 
 export default function LoginForm({
-  data,
+  data = { email: '', password: '' },
   isLoading,
   error,
   validationErrors,
   showPassword,
-  mode = 'light', // ✅ Default light
+  mode = 'light',
   onInputChange,
   onSubmit,
-  onTogglePassword
+  onTogglePassword,
 }: LoginFormProps) {
-  const router = useRouter();
   const [rememberMe, setRememberMe] = useState(false);
+  const router = useRouter();
+
+  const email = data?.email || '';
+  const password = data?.password || '';
 
   const handleForgotPassword = () => {
-    router.push('/auth/forgot-password');
+    router.push('/forgot-password');
   };
 
   return (
@@ -44,10 +48,9 @@ export default function LoginForm({
         label="Email hoặc Tên đăng nhập"
         type="text"
         name="email"
-        value={data.email}
+        value={email}
         placeholder="Nhập email hoặc tên đăng nhập"
-        error={validationErrors.email}
-        mode={mode} // ✅ Pass mode
+        mode={mode}
         onChange={onInputChange}
         required
       />
@@ -56,16 +59,14 @@ export default function LoginForm({
         id="password"
         label="Mật khẩu"
         name="password"
-        value={data.password}
-        error={validationErrors.password}
+        value={password}
         showPassword={showPassword}
-        mode={mode} // ✅ Pass mode
+        mode={mode}
         onChange={onInputChange}
         onTogglePassword={onTogglePassword}
         required
       />
 
-      {/* Remember Me và Forgot Password */}
       <div style={styles.checkboxAndForgotContainer}>
         <div style={styles.checkboxContainer}>
           <input
@@ -93,7 +94,7 @@ export default function LoginForm({
 
       <SubmitButton 
         isLoading={isLoading}
-        mode={mode} // ✅ Pass mode
+        mode={mode}
       >
         Đăng nhập
       </SubmitButton>

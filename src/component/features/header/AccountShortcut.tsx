@@ -1,11 +1,13 @@
-'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useClickOutside } from '@/hooks/useClickOutside';
-import { useToggle } from '@/hooks/useToggle';
-import UserInfoDisplay from '@/component/features/account/UserInfoHeader';
-import AccountMenuList from '@/component/features/account/AccountMenuList';
-import LogoutButton from '@/component/features/account/LogoutButton';
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { useToggle } from "@/hooks/useToggle";
+import UserInfoDisplay from "@/component/features/account/UserInfoHeader";
+import AccountMenuList from "@/component/features/account/AccountMenuList";
+import LogoutButton from "@/component/features/account/LogoutButton";
+// ✅ SỬA: Import với destructuring thay vì default import
+import { AuthService } from "@/services/AuthService";
 
 interface AccountShortcutProps {
   user: {
@@ -19,15 +21,18 @@ interface AccountShortcutProps {
   children: React.ReactNode;
 }
 
-export default function AccountShortcut({ 
-  user, 
-  onLogout, 
+export default function AccountShortcut({
+  user,
+  onLogout,
   isDesktop = false,
   isTablet = false, // Default false
-  children 
+  children,
 }: AccountShortcutProps) {
   const [isOpen, toggleOpen, setOpen] = useToggle(false);
-  const dropdownRef = useClickOutside<HTMLDivElement>(() => setOpen(false), isOpen);
+  const dropdownRef = useClickOutside<HTMLDivElement>(
+    () => setOpen(false),
+    isOpen
+  );
   const router = useRouter();
 
   const handleToggle = () => {
@@ -53,9 +58,19 @@ export default function AccountShortcut({
     setOpen(false);
   };
 
-  const handleLogout = () => {
-    onLogout();
-    setOpen(false);
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+      onLogout();
+
+      // Redirect về trang chủ
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Vẫn logout local dù API lỗi
+      onLogout();
+      router.push("/");
+    }
   };
 
   if (!user) {
@@ -63,22 +78,26 @@ export default function AccountShortcut({
   }
 
   return (
-    <div 
+    <div
       ref={dropdownRef}
       style={styles.container}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Wrapper để ẩn text trên tablet */}
-      <div 
-        style={styles.triggerWrapper} 
+      <div
+        style={styles.triggerWrapper}
         onClick={handleToggle}
-        title={isTablet ? 'Tài khoản' : undefined} // Thêm tooltip cho tablet
+        title={isTablet ? "Tài khoản" : undefined} // Thêm tooltip cho tablet
       >
         {isTablet ? (
           // Chỉ hiển thị icon trên tablet
           <div style={styles.tabletTrigger}>
-            <img src="/images/icons/account.png" alt="Account" style={styles.tabletIcon} />
+            <img
+              src="/images/icons/account.png"
+              alt="Account"
+              style={styles.tabletIcon}
+            />
           </div>
         ) : (
           children
@@ -87,9 +106,11 @@ export default function AccountShortcut({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div style={{
-          ...styles.dropdown,
-        }}>
+        <div
+          style={{
+            ...styles.dropdown,
+          }}
+        >
           <UserInfoDisplay user={user} variant="compact" />
           <div style={styles.divider} />
           <AccountMenuList
@@ -101,12 +122,12 @@ export default function AccountShortcut({
             {isDesktop && (
               <button
                 style={styles.viewAllButton}
-                onClick={() => handleMenuItemClick('/account')}
+                onClick={() => handleMenuItemClick("/account")}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e6f3ff';
+                  e.currentTarget.style.backgroundColor = "#e6f3ff";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f0f8ff';
+                  e.currentTarget.style.backgroundColor = "#f0f8ff";
                 }}
               >
                 <span style={styles.viewAllIcon}>📋</span>
@@ -124,65 +145,65 @@ export default function AccountShortcut({
 // Styles giữ nguyên...
 const styles = {
   container: {
-    position: 'relative' as const,
-    display: 'inline-block',
+    position: "relative" as const,
+    display: "inline-block",
   },
   triggerWrapper: {
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   dropdown: {
-    position: 'absolute' as const,
-    top: '100%',
-    right: '0',
-    backgroundColor: '#ffffff',
-    border: '1px solid #e5e7eb',
-    borderRadius: '12px',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+    position: "absolute" as const,
+    top: "100%",
+    right: "0",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "12px",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
     zIndex: 1000,
-    minWidth: '280px',
-    overflow: 'hidden',
-    marginTop: '3px',
+    minWidth: "280px",
+    overflow: "hidden",
+    marginTop: "3px",
   },
   divider: {
-    height: '1px',
-    backgroundColor: '#e5e7eb',
+    height: "1px",
+    backgroundColor: "#e5e7eb",
   },
   actionSection: {
-    padding: '8px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '4px',
+    padding: "8px",
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "4px",
   },
   viewAllButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    width: '100%',
-    padding: '10px 12px',
-    backgroundColor: '#f0f8ff',
-    border: '1px solid #bfdbfe',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    width: "100%",
+    padding: "10px 12px",
+    backgroundColor: "#f0f8ff",
+    border: "1px solid #bfdbfe",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   },
   viewAllIcon: {
-    fontSize: '14px',
+    fontSize: "14px",
   },
   viewAllText: {
-    fontSize: '13px',
-    color: '#1e40af',
-    fontWeight: '600',
+    fontSize: "13px",
+    color: "#1e40af",
+    fontWeight: "600",
   },
   tabletTrigger: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s ease',
-    padding: '8px',
-    borderRadius: '4px',
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+    padding: "8px",
+    borderRadius: "4px",
   },
   tabletIcon: {
-    width: '28px',
-    height: '28px',
+    width: "28px",
+    height: "28px",
   },
 };

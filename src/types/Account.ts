@@ -3,7 +3,7 @@ export interface Account {
   username: string;
   email: string;
   password: string;
-  gender: string;
+  gender: string | null; // ✅ SỬA: Allow null từ backend
 }
 
 export interface AuthResponse {
@@ -21,7 +21,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  gender: string;
+  gender: string; 
   verificationCode?: string; // Optional for registration
 }
 

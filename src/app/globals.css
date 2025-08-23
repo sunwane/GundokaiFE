@@ -24,3 +24,199 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 } */
+
+/* SSR-safe responsive utilities */
+@media (max-width: 767px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-hidden {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1099px) {
+  .small-screen-hidden {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1100px) {
+  .large-screen-hidden {
+    display: none !important;
+  }
+}
+
+/* Auth page responsive fixes */
+@media (max-width: 1099px) {
+  .auth-background-model {
+    display: none !important;
+  }
+  
+  .auth-main-grid {
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0 !important;
+  }
+  
+  .auth-left-section {
+    width: 100% !important;
+    max-width: 600px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+  }
+  
+  .auth-right-section {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  .auth-left-section {
+    width: 50vw !important;
+  }
+}
+
+@media (min-width: 1100px) {
+  .auth-left-section {
+    width: 40vw !important;
+  }
+  
+  .auth-background-model {
+    width: 55% !important;
+  }
+}
+
+/* Account page responsive fixes */
+@media (max-width: 767px) {
+  .account-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .account-sidebar {
+    display: none !important;
+  }
+  
+  .mobile-tab-nav {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .account-grid {
+    grid-template-columns: 300px 1fr !important;
+  }
+  
+  .account-sidebar {
+    display: block !important;
+  }
+  
+  .mobile-tab-nav {
+    display: none !important;
+  }
+}
+
+/* ✅ THÊM: Notification animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ✅ THÊM: Spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Button hover effects */
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Input focus effects */
+input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Notification hover effects */
+.notification:hover .notification-close {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.1);
+}
+
+/* Responsive notification */
+@media (max-width: 480px) {
+  .notification {
+    left: 20px !important;
+    right: 20px !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+  }
+}
+
+/* Custom scrollbar for better UI */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

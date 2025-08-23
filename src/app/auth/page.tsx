@@ -1,16 +1,25 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AuthForm from '@/component/features/auth/AuthForm';
 import ModelSection from '@/component/features/auth/ModelSection';
-import { useResponsive } from '@/hooks/useResponsive';
 
 export default function AuthPage() {
-  // SỬ DỤNG useResponsive THAY VÌ LOGIC CŨ
-  const { isSmallScreen, isMobile, windowWidth } = useResponsive({
-    mobile: 768,
-    tablet: 1100,
-  });
- 
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(1200); // Default desktop width
+
+  useEffect(() => {
+    // Mark as hydrated and get real window size
+    setIsHydrated(true);
+    setWindowWidth(window.innerWidth);
+    
+    const checkScreenSize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
@@ -24,47 +33,52 @@ export default function AuthPage() {
     };
   }, []);
 
+  // Use computed values that are consistent between server and client
+  const isSmallScreen = isHydrated ? windowWidth < 1100 : false;
+  const isMobile = isHydrated ? windowWidth < 768 : false;
+
   return (
     <main style={styles.container}>
-      {/* Model Section - Ẩn khi màn hình nhỏ */}
-      {!isSmallScreen && (
-        <div style={{
+      {/* Model Section - Show/hide based on hydration state */}
+      <div 
+        style={{
           ...styles.backgroundModelSection,
-          width: windowWidth > 1400 ? '60%' : '55%', // RESPONSIVE WIDTH
-        }}>
-          <ModelSection />
-        </div>
-      )}
+          display: (!isHydrated || !isSmallScreen) ? 'block' : 'none'
+        }}
+      >
+        <ModelSection />
+      </div>
       
       {/* Content chính */}
       <div style={{
         ...styles.content,
-        padding: isMobile ? '0.5rem' : '1rem', // RESPONSIVE PADDING
+        padding: isHydrated && isMobile ? '0.5rem' : '1rem',
       }}>
         <div style={{
           ...styles.mainGrid,
-          ...(isSmallScreen ? styles.mainGridCentered : {})
+          ...(isHydrated && isSmallScreen ? styles.mainGridCentered : {})
         }}>
           {/* Auth Form */}
           <div style={{
             ...styles.leftSection,
-            ...(isSmallScreen ? styles.leftSectionCentered : {}),
-            width: isSmallScreen ? '100%' : isMobile ? '50vw' : '40vw', // RESPONSIVE WIDTH
+            ...(isHydrated && isSmallScreen ? styles.leftSectionCentered : {}),
+            width: isHydrated ? (isSmallScreen ? '100%' : isMobile ? '50vw' : '40vw') : '40vw',
           }}>
             <div style={styles.authFormWrapper}>
               <AuthForm />
             </div>
           </div>
           
-          {/* Khoảng trống bên phải - Ẩn khi màn hình nhỏ */}
-          {!isSmallScreen && (
-            <div style={{
+          {/* Khoảng trống bên phải */}
+          <div 
+            style={{
               ...styles.rightSection,
-              padding: isMobile ? '1rem' : '1.5rem', // RESPONSIVE PADDING
-            }}>
-              {/* Intentionally empty - model is in background */}
-            </div>
-          )}
+              padding: isHydrated && isMobile ? '1rem' : '1.5rem',
+              display: (!isHydrated || !isSmallScreen) ? 'flex' : 'none'
+            }}
+          >
+            {/* Intentionally empty - model is in background */}
+          </div>
         </div>
       </div>
     </main>
@@ -88,6 +102,7 @@ const styles = {
     position: 'absolute' as const,
     right: 0,
     height: '100%',
+    width: '55%',
     zIndex: 1,
     pointerEvents: 'auto' as const,
   },
@@ -104,6 +119,7 @@ const styles = {
     zIndex: 100,
     pointerEvents: 'none' as const,
     justifyContent: 'center',
+    padding: '1rem',
   },
   mainGrid: {
     display: 'flex',
@@ -127,6 +143,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: '600px',
+    width: '40vw',
     height: 'auto',
     overflow: 'visible',
     zIndex: 20,
@@ -155,5 +172,6 @@ const styles = {
     overflow: 'hidden',
     pointerEvents: 'none' as const,
     background: 'transparent',
+    padding: '1.5rem',
   },
 };
