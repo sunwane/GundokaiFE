@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/component/layout/header/PageHeader';
 import AccountSidebar from '@/component/features/account/AccountSidebar';
@@ -29,7 +29,10 @@ export default function AccountPage() {
 
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(1200); // Default desktop width
+  const [windowWidth, setWindowWidth] = useState(1200);
+  
+  // ✅ SỬ DỤNG REF ĐỂ TRACK VIỆC ĐÃ LOAD
+  const loadedTabs = useRef(new Set<string>());
 
   useEffect(() => {
     setIsHydrated(true);
@@ -42,6 +45,32 @@ export default function AccountPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // ✅ CHỈ SET TAB TỪ URL, KHÔNG LOAD DATA Ở ĐÂY
+  useEffect(() => {
+    setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
+
+  // ✅ LOAD DATA CHỈ KHI CẦN THIẾT
+  useEffect(() => {
+    if (!user || !activeTab) return;
+
+    // Kiểm tra đã load tab này chưa
+    const tabKey = `${activeTab}-${user.id}`;
+    if (loadedTabs.current.has(tabKey)) {
+      return; // Đã load rồi, không load lại
+    }
+
+    if (activeTab === 'orders' && !ordersLoading) {
+      console.log('Loading orders for first time');
+      loadOrders();
+      loadedTabs.current.add(tabKey);
+    } else if (activeTab === 'notifications' && !notificationsLoading) {
+      console.log('Loading notifications for first time');
+      loadNotifications();
+      loadedTabs.current.add(tabKey);
+    }
+  }, [activeTab, user?.id]); // ✅ CHỈ DEPEND VÀO activeTab VÀ user.id
 
   // Computed responsive values
   const isMobile = isHydrated ? windowWidth < 768 : false;
@@ -61,18 +90,43 @@ export default function AccountPage() {
   const spacing = getResponsiveSpacing();
 
   const handleTabChange = (tab: string) => {
+    console.log('Tab changed to:', tab);
     setActiveTab(tab);
     
-    if (tab === 'orders' && orders.length === 0) {
+    // ✅ CHỈ LOAD NẾU CHƯA TỪNG LOAD TAB NÀY
+    if (!user) return;
+    
+    const tabKey = `${tab}-${user.id}`;
+    if (loadedTabs.current.has(tabKey)) {
+      console.log(`Tab ${tab} already loaded, skipping`);
+      return;
+    }
+
+    if (tab === 'orders') {
+      console.log('Loading orders for tab change');
       loadOrders();
-    } else if (tab === 'notifications' && notifications.length === 0) {
+      loadedTabs.current.add(tabKey);
+    } else if (tab === 'notifications') {
+      console.log('Loading notifications for tab change');
       loadNotifications();
+      loadedTabs.current.add(tabKey);
     }
   };
 
-  useEffect(() => {
-    setActiveTab(tabFromUrl);
-  }, [tabFromUrl]);
+  // ✅ HÀM REFRESH CHO PHÉP LOAD LẠI
+  const handleRefreshOrders = () => {
+    const tabKey = `orders-${user?.id}`;
+    loadedTabs.current.delete(tabKey); // Xóa khỏi cache
+    loadOrders();
+    loadedTabs.current.add(tabKey);
+  };
+
+  const handleRefreshNotifications = () => {
+    const tabKey = `notifications-${user?.id}`;
+    loadedTabs.current.delete(tabKey); // Xóa khỏi cache
+    loadNotifications();
+    loadedTabs.current.add(tabKey);
+  };
 
   if (isLoading) {
     return (
@@ -109,7 +163,7 @@ export default function AccountPage() {
           <OrderHistory 
             orders={orders}
             isLoading={ordersLoading}
-            onRefresh={loadOrders}
+            onRefresh={handleRefreshOrders} // ✅ Dùng hàm refresh mới
           />
         );
       case 'notifications':
@@ -117,7 +171,7 @@ export default function AccountPage() {
           <NotificationList 
             notifications={notifications}
             isLoading={notificationsLoading}
-            onRefresh={loadNotifications}
+            onRefresh={handleRefreshNotifications} // ✅ Dùng hàm refresh mới
           />
         );
       case 'password':
@@ -136,14 +190,13 @@ export default function AccountPage() {
     <div>
       <PageHeader />
       
-      {/* ✅ Welcome Banner - Cập nhật màu xanh biển */}
+      {/* ✅ Welcome Banner */}
       <div style={styles.welcomeBanner}>
         <div style={{
           ...styles.bannerContent,
           padding: getResponsivePadding(),
         }}>
           <div style={styles.welcomeContainer}>
-            {/* ✅ Avatar tròn giống sidebar */}
             <div style={styles.bannerAvatar}>
               {getAvatarText(user.username)}
             </div>
@@ -170,7 +223,7 @@ export default function AccountPage() {
           gap: spacing.large,
           alignItems: 'start',
         }}>
-          {/* Sidebar - hidden on mobile when not hydrated or is mobile */}
+          {/* Sidebar */}
           {(!isHydrated || !isMobile) && (
             <div style={styles.sidebarContainer}>
               <AccountSidebar
@@ -214,9 +267,8 @@ const styles = {
     alignItems: 'center',
     height: '50vh',
   },
-  // ✅ SỬA: Banner màu xanh biển thay vì gradient tím
   welcomeBanner: {
-    background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)', // Màu xanh biển như ảnh 2
+    background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)',
     color: 'white',
     marginBottom: '32px',
   },
@@ -225,13 +277,11 @@ const styles = {
     margin: '0 auto',
     padding: '32px 5vw',
   },
-  // ✅ THÊM: Container cho avatar và text
   welcomeContainer: {
     display: 'flex',
     alignItems: 'center',
     gap: '20px',
   },
-  // ✅ THÊM: Avatar tròn giống sidebar
   bannerAvatar: {
     width: '80px',
     height: '80px',
