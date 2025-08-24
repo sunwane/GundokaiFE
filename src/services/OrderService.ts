@@ -1,6 +1,6 @@
 // src/services/OrderService.ts
 import { Order, OrderDetail, CreateOrderRequest, CreateOrderResponse, OrderStatus, PaymentMethod, UpdateOrderStatusRequest } from '@/types/Order';
-import { mockOrders, mockOrderDetails } from '@/data/mockOrders';
+// import { mockOrders, mockOrderDetails } from '@/data/mockOrders';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -77,7 +77,7 @@ export class OrderService {
 
       // Log để debug
       const url = `${API_BASE_URL}/order/history?page=${page}&size=${size}`;
-      console.log('API URL:', url);
+      // console.log('API URL:', url);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -93,7 +93,7 @@ export class OrderService {
       }
 
       const data = await response.json();
-      console.log('API response data:', data);
+      // console.log('API response data:', data);
       
       // Kiểm tra và sửa totalPages nếu cần
       if (data.result && data.result.content) {
@@ -339,7 +339,13 @@ static getStatusText(status: string): string {
     };
     return statusMap[status] || 'Không xác định';
   }
+  static async getUserOrders(userId: string): Promise<OrderDetail[]> {
 
+    // Replace with actual implementation
+
+    return [];
+
+  }
   /**
    * 🎨 Lấy màu cho trạng thái đơn hàng
    */

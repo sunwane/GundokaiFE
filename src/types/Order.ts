@@ -11,6 +11,7 @@ export type PaymentMethod = 'VNPAY' | 'COD';
 
 // Interface cho chi tiết đơn hàng
 export interface OrderDetail {
+  status: string;
   id: string;
   orderId: string;
   productId: string;

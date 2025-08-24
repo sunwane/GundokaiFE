@@ -18,6 +18,7 @@ const OrderHistory: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
   const [currentSort, setCurrentSort] = useState<SortOption>({
     field: "orderDate",
     direction: "desc",
@@ -27,23 +28,25 @@ const OrderHistory: React.FC = () => {
   const itemsPerPage = 10;
 
   // ✅ Sort options
+  // ✅ Sort options - sửa lại VNPay/COD
   const sortOptions: SortOption[] = [
     { field: "orderDate", direction: "desc", label: "Thời gian mới nhất" },
     { field: "orderDate", direction: "asc", label: "Thời gian cũ nhất" },
-    { field: "paymentMethod", direction: "asc", label: "VNPay trước" },
-    { field: "paymentMethod", direction: "desc", label: "COD trước" },
+    { field: "paymentMethod", direction: "desc", label: "VNPay trước" }, // ✅ desc = VNPay trước
+    { field: "paymentMethod", direction: "asc", label: "COD trước" }, // ✅ asc = COD trước
     { field: "totalAmount", direction: "desc", label: "Giá cao nhất" },
     { field: "totalAmount", direction: "asc", label: "Giá thấp nhất" },
     { field: "status", direction: "asc", label: "Trạng thái A-Z" },
     { field: "status", direction: "desc", label: "Trạng thái Z-A" },
   ];
-
-  // ✅ Sort function
+  // ✅ Completely rewritten sort function
   const sortOrders = (
     ordersToSort: Order[],
     sortOption: SortOption
   ): Order[] => {
-    return [...ordersToSort].sort((a, b) => {
+    // console.log(`=== SORTING BY: ${sortOption.label} ===`);
+
+    const sorted = [...ordersToSort].sort((a, b) => {
       let aValue: any;
       let bValue: any;
 
@@ -51,23 +54,38 @@ const OrderHistory: React.FC = () => {
         case "orderDate":
           aValue = new Date(a.orderDate).getTime();
           bValue = new Date(b.orderDate).getTime();
+
+          // console.log(`Date comparison:`, {
+          //   orderA: a.orderId.substring(0, 8),
+          //   dateA: new Date(aValue).toLocaleString("vi-VN"),
+          //   timestampA: aValue,
+          //   orderB: b.orderId.substring(0, 8),
+          //   dateB: new Date(bValue).toLocaleString("vi-VN"),
+          //   timestampB: bValue,
+          //   direction: sortOption.direction,
+          // });
           break;
+
         case "paymentMethod":
           aValue = a.paymentMethod;
           bValue = b.paymentMethod;
           break;
+
         case "status":
           aValue = a.status;
           bValue = b.status;
           break;
+
         case "totalAmount":
           aValue = a.totalAmount;
           bValue = b.totalAmount;
           break;
+
         default:
           return 0;
       }
 
+      // ✅ Standard comparison logic
       if (aValue < bValue) {
         return sortOption.direction === "asc" ? -1 : 1;
       }
@@ -76,8 +94,21 @@ const OrderHistory: React.FC = () => {
       }
       return 0;
     });
-  };
 
+    // ✅ Debug sorted result
+    // console.log("Sorted result:");
+    sorted.forEach((order, index) => {
+      const date = new Date(order.orderDate);
+      // console.log(
+      //   `${index + 1}. ${order.orderId.substring(
+      //     0,
+      //     8
+      //   )}... - ${date.toLocaleString("vi-VN")} (${date.getTime()})`
+      // );
+    });
+
+    return sorted;
+  };
   // ✅ Handle sort change - IMPLEMENT ĐÚng
   const handleSortChange = (sortOption: SortOption) => {
     console.log("Changing sort to:", sortOption.label);
@@ -86,18 +117,18 @@ const OrderHistory: React.FC = () => {
   };
 
   // ✅ Fetch and sort orders
+  // OrderHistory.tsx
   const fetchOrderHistory = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      console.log("Fetching order history...");
-      const response = await OrderService.getOrderHistory(
-        currentPage,
-        itemsPerPage
-      );
+      // console.log("Fetching ALL order history for proper sorting...");
 
-      console.log("Order history response:", response);
+      // ✅ Lấy tất cả orders
+      const response = await OrderService.getOrderHistory(0, 1000);
+
+      // console.log("Order history response:", response);
 
       let fetchedOrders: Order[] = [];
 
@@ -106,19 +137,40 @@ const OrderHistory: React.FC = () => {
           fetchedOrders = response.result;
         } else if (response.result.content) {
           fetchedOrders = response.result.content;
-          setTotalPages(response.result.totalPages || 1);
         }
       } else if (Array.isArray(response)) {
         fetchedOrders = response;
       }
 
-      // ✅ Apply sorting
-      const sortedOrders = sortOrders(fetchedOrders, currentSort);
-      setOrders(sortedOrders);
+      // ✅ Set tổng số orders
+      setTotalOrders(fetchedOrders.length);
 
-      console.log(
-        `Found ${sortedOrders.length} orders, sorted by ${currentSort.label}`
-      );
+      // console.log("=== ALL RAW ORDERS FROM API ===");
+      // console.log(`Total orders: ${fetchedOrders.length}`);
+
+      // ✅ Sort tất cả orders
+      const sortedOrders = sortOrders(fetchedOrders, currentSort);
+
+      // ✅ Apply pagination AFTER sorting
+      const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
+      const startIndex = currentPage * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedOrders = sortedOrders.slice(startIndex, endIndex);
+
+      // console.log("=== PAGINATION INFO ===");
+      // console.log(`Total orders: ${sortedOrders.length}`);
+      // console.log(`Items per page: ${itemsPerPage}`);
+      // console.log(`Current page: ${currentPage + 1}`);
+      // console.log(`Total pages: ${totalPages}`);
+      // console.log(
+      //   `Showing orders ${startIndex + 1} to ${Math.min(
+      //     endIndex,
+      //     sortedOrders.length
+      //   )}`
+      // );
+
+      setOrders(paginatedOrders);
+      setTotalPages(totalPages);
     } catch (err) {
       console.error("Error fetching order history:", err);
       setError(err instanceof Error ? err.message : "Có lỗi xảy ra");
@@ -144,11 +196,6 @@ const OrderHistory: React.FC = () => {
     }
   };
 
-  // ❌ XÓA FUNCTION NÀY NẾU CÓ:
-  // function handleSortChange(arg0: SortOption): void {
-  //   throw new Error("Function not implemented.");
-  // }
-
   if (loading) {
     return <p>Đang tải lịch sử mua hàng...</p>;
   }
@@ -173,7 +220,13 @@ const OrderHistory: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">
-          Lịch sử mua hàng ({orders.length} đơn hàng)
+          Lịch sử mua hàng
+          <span className="text-blue-600 ml-2">({totalOrders} đơn hàng)</span>
+          {totalPages > 1 && (
+            <span className="text-sm text-gray-500 ml-2">
+              - Trang {currentPage + 1}/{totalPages}
+            </span>
+          )}
         </h2>
 
         {/* ✅ Sort dropdown */}
@@ -198,7 +251,19 @@ const OrderHistory: React.FC = () => {
           </select>
         </div>
       </div>
-
+      {/* ✅ Thêm thông tin pagination chi tiết
+      {totalOrders > 0 && (
+        <div className="mb-4 text-sm text-gray-600">
+          Hiển thị {currentPage * itemsPerPage + 1} -{" "}
+          {Math.min((currentPage + 1) * itemsPerPage, totalOrders)}
+          trong tổng số {totalOrders} đơn hàng
+          {currentSort.label && (
+            <span className="ml-2 text-blue-600">
+              (Sắp xếp: {currentSort.label})
+            </span>
+          )}
+        </div>
+      )} */}
       <div className="space-y-4">
         {orders.map((order) => (
           <div
@@ -212,15 +277,10 @@ const OrderHistory: React.FC = () => {
                     Mã đơn hàng: {order.orderId}
                   </h3>
 
-                  {/* ✅ Payment method badge - màu nhẹ hơn */}
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${
-                      order.paymentMethod === "VNPAY"
-                        ? "bg-gray-100 text-gray-700 border"
-                        : "bg-gray-50 text-gray-600 border"
-                    }`}
-                  >
-                    {OrderService.getPaymentMethodText(order.paymentMethod)}
+                  {/* ✅ Giữ badge payment method */}
+                  <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700 border">
+                    {/* ✅ Hiển thị COD thay vì "Thanh toán khi nhận hàng" */}
+                    {order.paymentMethod === "VNPAY" ? "VNPay" : "COD"}
                   </span>
                 </div>
 
@@ -237,10 +297,11 @@ const OrderHistory: React.FC = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="mb-1">
-                      Phương thức:{" "}
-                      {OrderService.getPaymentMethodText(order.paymentMethod)}
-                    </p>
+                    {/* ✅ Bỏ dòng "Phương thức" vì đã có badge ở trên */}
+                    {/* <p className="mb-1">
+          Phương thức: {OrderService.getPaymentMethodText(order.paymentMethod)}
+        </p> */}
+
                     <p>
                       Thanh toán:{" "}
                       <span
@@ -262,7 +323,7 @@ const OrderHistory: React.FC = () => {
                 </div>
               </div>
 
-              {/* ✅ Order status badge - màu nhẹ hơn */}
+              {/* ✅ Order status badge */}
               <span
                 className={`px-3 py-1 rounded text-sm font-medium border ${
                   order.status === "PENDING"
