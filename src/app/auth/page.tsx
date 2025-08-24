@@ -142,7 +142,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    maxWidth: '600px',
     width: '40vw',
     height: 'auto',
     overflow: 'visible',

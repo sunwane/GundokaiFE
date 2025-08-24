@@ -9,6 +9,7 @@ import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductDetail } from '@/hooks/product/useProductDetail';
 import { useResponsive } from '@/hooks/useResponsive';
+import Footer from '@/component/layout/footer/Footer';
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -114,6 +115,7 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
@@ -123,10 +125,11 @@ const styles = {
   mainContainer: {
     display: "flex",
     flexDirection: 'column' as const,
-    gap: '10px',
+    gap: '8px',
     width: '100%',
-    maxWidth: '1400px',
+    maxWidth: '1440px',
     margin: '0 auto',
+    paddingBottom: '100px',
   },
   loadingContainer: {
     display: 'flex',
@@ -175,6 +178,6 @@ const styles = {
   relatedGrid: {
     display: 'grid',
     justifyItems: 'center',
-    padding: '0 30px',
+    padding: '0 20px',
   },
 };

@@ -19,6 +19,7 @@ import { useSearchProducts } from '@/hooks/product/useSearchProducts';
 import { useFilterState } from '@/hooks/product/useFilterState';
 
 import { Product } from '@/types/Product';
+import Footer from '@/component/layout/footer/Footer';
 
 export default function SearchResultPage() {
   const searchParams = useSearchParams();
@@ -237,6 +238,7 @@ export default function SearchResultPage() {
           />
         )}
       </div>
+      <Footer />
     </div>
   );
 }
@@ -246,6 +248,7 @@ const styles = {
   container: {
     margin: '0 auto',
     minHeight: '70vh',
+    marginBottom: '70px',
   },
   loadingContainer: {
     display: 'flex',

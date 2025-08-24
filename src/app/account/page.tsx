@@ -10,6 +10,8 @@ import ChangePassword from "@/component/features/account/ChangePassword";
 import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useAccount } from "@/hooks/useAccount";
 import UserStats from "../../component/features/account/info/UserStats"; // ✅ Import UserStats
+import Footer from "@/component/layout/footer/Footer";
+import { markAsUntransferable } from "worker_threads";
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
@@ -263,6 +265,7 @@ export default function AccountPage() {
           <div style={styles.mainContent}>{renderContent()}</div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
@@ -321,6 +324,7 @@ const styles = {
     maxWidth: "1400px",
     margin: "0 auto",
     padding: "32px 5vw",
+    marginBottom: "30px",
   },
   sidebarContainer: {
     position: "sticky" as const,

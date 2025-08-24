@@ -14,6 +14,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { useToggle } from '@/hooks/useToggle';
 import { Product } from '@/types/Product';
 import { useProductsPage } from '@/hooks/product/useProductsPage';
+import Footer from '@/component/layout/footer/Footer';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -210,6 +211,7 @@ export default function ProductsPage() {
           onClose={() => setShowMobileFilter(false)}
         />
       )}
+      <Footer />
     </div>
   );
 }
@@ -243,6 +245,7 @@ const styles = {
     display: 'flex',
     margin: '0 auto',
     alignItems: 'flex-start',
+    marginBottom: "60px",
   },
   productsContent: {
     flex: 1,

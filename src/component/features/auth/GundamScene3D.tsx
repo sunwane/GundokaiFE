@@ -48,7 +48,7 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
     defaultScale: 1.6,
     appearScale: 1.9,
     poseScale: 1.6,
-    defaultPosition: [0.5, -1.5, 0],
+    defaultPosition: [0.5, -1.6, 0],
     appearPosition: [0.9, -1.85, 0],
     posePosition: [0.5, -1.5, 0],
     defaultRotation: [0, -Math.PI / 10, 0],
@@ -76,6 +76,11 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
       scene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           if (child.material instanceof THREE.MeshStandardMaterial) {
+            // Reset về màu gốc nếu có
+            if (!child.material.userData.originalColor) {
+              child.material.userData.originalColor = child.material.color.clone();
+            }
+            child.material.color.copy(child.material.userData.originalColor);
             child.material.color.multiplyScalar(finalConfig.colorMultiplier);
             child.material.metalness = Math.max(0, child.material.metalness + finalConfig.metalnessAdjust);
             child.material.roughness = Math.min(1, child.material.roughness + finalConfig.roughnessAdjust);

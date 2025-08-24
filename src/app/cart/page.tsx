@@ -8,6 +8,7 @@ import { useCartPage } from "@/hooks/cart/useCartPage";
 import { CartItem as CartItemType } from "@/types/Cart";
 import { CheckoutForm } from "../../component/Form/CheckoutForm";
 import { OrderService } from "@/services/OrderService";
+import Footer from "@/component/layout/footer/Footer";
 
 export default function CartPage() {
   const {
@@ -411,6 +412,7 @@ export default function CartPage() {
           onOrderSuccess={handleOrderSuccess}
         />
       )}
+      <Footer />
     </div>
   );
 }
@@ -420,6 +422,7 @@ const styles = {
     maxWidth: "1400px",
     margin: "0 auto",
     minHeight: "70vh",
+    paddingBottom: "80px",
   },
   loadingContainer: {
     display: "flex",

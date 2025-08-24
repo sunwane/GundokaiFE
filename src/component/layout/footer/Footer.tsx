@@ -2,71 +2,99 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer style={styles.footer}>
-      <div style={styles.top}>
-        <div style={styles.col}>
-          <div style={styles.logoRow}>
-            <img src="/images/logo.png" alt="Logo" style={styles.logo} />
-            <div>
-              <div style={styles.siteName}>Hội đạo chiến binh</div>
-              <div style={styles.siteSub}>GUNDOKAI</div>
+    <div style={styles.wrapper}>
+      <div
+        style={{
+          position: "relative",
+          ...styles.info,
+          backgroundImage: `url('/images/backgrounds/bg_footer.jpg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 70%",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Overlay làm mờ */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.25)",
+            zIndex: 1,
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <div style={styles.top}>
+            <div style={styles.col}>
+              <div style={styles.logoRow}>
+                <img src="/images/logo.png" alt="Logo" style={styles.logo} />
+                <div>
+                  <div style={styles.siteName}>Hội đạo chiến binh</div>
+                  <div style={styles.siteSub}>GUNDOKAI</div>
+                </div>
+              </div>
+              <div style={styles.desc}>
+                Điểm đến tin cậy cho mọi sản phẩm hobby chất lượng cao. Từ Gundam đến figure, chúng tôi mang đến trải nghiệm mua sắm tuyệt vời nhất.
+              </div>
+              <div style={styles.socialRow}>
+                <a href="#" style={styles.social}><img src="/images/icons/facebook.svg" alt="fb" style={styles.socialIcon} /></a>
+                <a href="#" style={styles.social}><img src="/images/icons/instagram.svg" alt="ig" style={styles.socialIcon} /></a>
+                <a href="#" style={styles.social}><img src="/images/icons/youtube.svg" alt="yt" style={styles.socialIcon} /></a>
+              </div>
+            </div>
+            <div style={styles.col}>
+              <div style={styles.colTitle}>Danh mục</div>
+              <div style={styles.colLink}>Gundam</div>
+              <div style={styles.colLink}>Thẻ bài</div>
+              <div style={styles.colLink}>Figure</div>
+              <div style={styles.colLink}>Sản phẩm khác</div>
+              <div style={styles.colLink}>Phụ kiện</div>
+            </div>
+            <div style={styles.col}>
+              <div style={styles.colTitle}>Hỗ trợ</div>
+              <div style={styles.colLink}>Hướng dẫn mua hàng</div>
+              <div style={styles.colLink}>Chính sách đổi trả</div>
+              <div style={styles.colLink}>Bảo hành</div>
+              <div style={styles.colLink}>FAQ</div>
+              <div style={styles.colLink}>Liên hệ</div>
+            </div>
+            <div style={styles.col}>
+              <div style={styles.colTitle}>Liên hệ</div>
+              <div style={styles.colLink}><span style={styles.icon}>📞</span> 0123 456 789</div>
+              <div style={styles.colLink}><span style={styles.icon}>✉️</span> info@gundokai.com</div>
+              <div style={styles.colLink}><span style={styles.icon}>📍</span> 123 Đường ABC, Quận 1<br/>TP. Hồ Chí Minh</div>
             </div>
           </div>
-          <div style={styles.desc}>
-            Điểm đến tin cậy cho mọi sản phẩm hobby chất lượng cao. Từ Gundam đến figure, chúng tôi mang đến trải nghiệm mua sắm tuyệt vời nhất.
-          </div>
-          <div style={styles.socialRow}>
-            <a href="#" style={styles.social}><img src="/images/icons/facebook.svg" alt="fb" style={styles.socialIcon} /></a>
-            <a href="#" style={styles.social}><img src="/images/icons/instagram.svg" alt="ig" style={styles.socialIcon} /></a>
-            <a href="#" style={styles.social}><img src="/images/icons/youtube.svg" alt="yt" style={styles.socialIcon} /></a>
-          </div>
-        </div>
-        <div style={styles.col}>
-          <div style={styles.colTitle}>Danh mục</div>
-          <div style={styles.colLink}>Gundam</div>
-          <div style={styles.colLink}>Thẻ bài</div>
-          <div style={styles.colLink}>Figure</div>
-          <div style={styles.colLink}>Sản phẩm khác</div>
-          <div style={styles.colLink}>Phụ kiện</div>
-        </div>
-        <div style={styles.col}>
-          <div style={styles.colTitle}>Hỗ trợ</div>
-          <div style={styles.colLink}>Hướng dẫn mua hàng</div>
-          <div style={styles.colLink}>Chính sách đổi trả</div>
-          <div style={styles.colLink}>Bảo hành</div>
-          <div style={styles.colLink}>FAQ</div>
-          <div style={styles.colLink}>Liên hệ</div>
-        </div>
-        <div style={styles.col}>
-          <div style={styles.colTitle}>Liên hệ</div>
-          <div style={styles.colLink}><span style={styles.icon}>📞</span> 0123 456 789</div>
-          <div style={styles.colLink}><span style={styles.icon}>✉️</span> info@gundokai.com</div>
-          <div style={styles.colLink}><span style={styles.icon}>📍</span> 123 Đường ABC, Quận 1<br/>TP. Hồ Chí Minh</div>
         </div>
       </div>
-      <div style={styles.hr}></div>
-      <div style={styles.copyright}>
-        © 2024 Hội đạo chiến binh (GUNDOKAI). Tất cả quyền được bảo lưu.
+      {/* Copyright - nền đen */}
+      <div style={styles.copyrightBar}>
+        <div style={styles.copyright}>
+          © 2024 Hội đạo chiến binh (GUNDOKAI). Tất cả quyền được bảo lưu.
+        </div>
       </div>
-    </footer>
+    </div>
   );
 }
 
 const styles = {
-  footer: {
-    background: "#131c2b",
+  wrapper: {
+    height: "auto",
+    background: "#000",
+  },
+  info: {
+    padding: "0 0 48px 0",
     color: "#e5e7eb",
-    padding: "48px 5vw 16px 5vw",
     fontSize: "15px",
-    marginTop: "64px",
+    width: "100%",
   },
   top: {
     display: "flex",
     gap: "48px",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "flex-start",
-    flexWrap: "wrap" as const,
-    marginBottom: "24px",
+    margin: "0 auto",
+    maxWidth: "85vw",
+    padding: "48px 24px 0 24px",
   },
   col: {
     minWidth: "180px",
@@ -133,9 +161,10 @@ const styles = {
   icon: {
     marginRight: "6px",
   },
-  hr: {
-    borderTop: "1px solid #334155",
-    margin: "24px 0 12px 0",
+  copyrightBar: {
+    background: "#000",
+    width: "100%",
+    padding: "16px 0 8px 0",
   },
   copyright: {
     textAlign: "center" as const,
