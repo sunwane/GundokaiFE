@@ -127,9 +127,6 @@ export default function CartPage() {
         : `${order.totalAmount?.toLocaleString("vi-VN") || 0}₫`;
 
       if (order.paymentMethod === "VNPAY" && order.paymentUrl) {
-        alert(
-          `Đơn hàng đã được tạo thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nStock đã được cập nhật!\nBạn sẽ được chuyển đến trang thanh toán VNPay.`
-        );
 
         // ✅ Clear cart sau khi đặt hàng thành công
         localStorage.removeItem("gundam_cart");
@@ -148,9 +145,6 @@ export default function CartPage() {
           window.location.href = order.paymentUrl;
         }, 2000);
       } else if (order.paymentMethod === "COD") {
-        alert(
-          `Đặt hàng COD thành công!\nMã đơn hàng: ${order.orderId}\nSố tiền: ${formattedAmount}\nStock đã được cập nhật!\nChúng tôi sẽ liên hệ với bạn sớm nhất.`
-        );
 
         // ✅ Clear cart cho COD
         localStorage.removeItem("gundam_cart");
@@ -169,7 +163,6 @@ export default function CartPage() {
       setShowCheckoutForm(false);
     } catch (error) {
       console.error("Error in handleOrderSuccess:", error);
-      alert("Đặt hàng thành công!");
       setShowCheckoutForm(false);
     }
   };
@@ -217,7 +210,6 @@ export default function CartPage() {
 
   const handleCheckoutClick = () => {
     if (!isLoggedIn) {
-      alert("Bạn cần đăng nhập để thanh toán.");
       router.push("/auth");
       return;
     }
@@ -225,9 +217,6 @@ export default function CartPage() {
     if (canCheckout()) {
       setShowCheckoutForm(true);
     } else {
-      alert(
-        "Vui lòng kiểm tra lại giỏ hàng. Có sản phẩm hết hàng hoặc số lượng không hợp lệ."
-      );
     }
   };
 
