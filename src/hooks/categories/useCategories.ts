@@ -31,8 +31,10 @@ export function useCategories() {
       
       // 🌐 Gọi API thông qua CategoryService
       const response = await CategoryService.getCategories();
-      // ✅ Nếu thành công, lưu data vào state
-      setCategories(response.result);
+      console.log('Fetched categories:', response);
+      // ✅ Cách ngắn gọn với optional chaining
+      const categoriesData = response.result || response.data || [];
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
 
     } catch (err) {
       // ❌ Nếu có lỗi, lưu error message

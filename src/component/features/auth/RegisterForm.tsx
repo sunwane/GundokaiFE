@@ -84,12 +84,12 @@ export default function RegisterForm({
     setIsSendingCode(true);
     try {
       await onSendVerificationCode(safeData.email);
-      
+
       setCodeSent(true);
       setCountdown(60);
-      
+
       const timer = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             setCodeSent(false);
@@ -98,13 +98,16 @@ export default function RegisterForm({
           return prev - 1;
         });
       }, 1000);
-      
+
       // ✅ SỬA: Dùng notification thay vì alert
       showNotification('success', 'Mã xác nhận đã được gửi đến email của bạn!');
     } catch (error) {
       console.error('Error sending verification code:', error);
-      // ✅ SỬA: Dùng notification thay vì alert
-      showNotification('error', 'Có lỗi xảy ra khi gửi mã xác nhận');
+
+      // ✅ SỬA: Hiển thị alert khi không kết nối được API
+      alert(
+        'Deploy xem trước giao diện, chưa kết nối API, vui lòng đăng nhập với tài khoản "admin" mật khẩu "admin" để xem qua giao diện'
+      );
     } finally {
       setIsSendingCode(false);
     }
