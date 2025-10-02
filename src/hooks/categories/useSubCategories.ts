@@ -16,15 +16,13 @@ export function useSubCategories(categoryId?: string) {
       let data: SubCategory[];
       if (categoryId) {
        const response = await SubCategoryService.getSubCategoriesByCategoryId(categoryId);
-        data = response.result;
+        data = response.result || response.data || response || [];
         
       } else {
         const response = await SubCategoryService.getSubCategories();
-        data = response.result;
-        //console.log('Fetched subcategories:', data);
+        data = response.result || response.data || response || [];
       }
-      
-      setSubCategories(data);
+      setSubCategories(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error fetching subcategories:', err);

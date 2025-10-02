@@ -34,7 +34,7 @@ function SubCategoryDropdown({
     );
   }
 
-  if (error || subCategories.length === 0) {
+  if (error || !Array.isArray(subCategories) || subCategories.length === 0) {
     return null;
   }
 

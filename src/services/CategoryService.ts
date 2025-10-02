@@ -1,53 +1,11 @@
 import { Category, CategoryResponse } from '@/types/Category';
 import { mockCategories } from '@/data/mockCategories';
+import { CheckAPIService } from './CheckAPIService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/mainCategory';
 
 export class CategoryService {
-  private static apiAvailable: boolean | null = null; // Cache kết quả kiểm tra API
   
-  /**
-   * 🔍 Kiểm tra API có sẵn không bằng cách thử gọi endpoint
-   */
-  private static async checkApiAvailability(): Promise<boolean> {
-    // Nếu đã kiểm tra rồi, return cache
-    if (this.apiAvailable !== null) {
-      return this.apiAvailable;
-    }
-
-    try {
-      console.log('🔍 Checking API availability...');
-      
-      // Thử gọi API với timeout ngắn
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
-      
-      const response = await fetch(`${API_BASE_URL}/getAll`, {
-        method: 'GET',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      clearTimeout(timeoutId);
-      
-      // Nếu response ok, API có sẵn
-      this.apiAvailable = response.ok;
-      console.log('✅ API is available:', this.apiAvailable);
-      
-    } catch (error) {
-      if (error instanceof Error) {
-        console.warn('❌ API check failed:', error.message);
-      } else {
-        console.warn('❌ API check failed:', error);
-      }
-      this.apiAvailable = false;
-    }
-    
-    return this.apiAvailable;
-  }
-
   /**
    * 📋 Get all categories - Tự động kiểm tra API trước
    */
@@ -55,7 +13,7 @@ export class CategoryService {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     // 🔍 Kiểm tra API có sẵn không
-    const apiAvailable = await this.checkApiAvailability();
+    const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     
     if (!apiAvailable) {
       console.log('🎭 Using mock categories data (API not available)');
@@ -102,7 +60,7 @@ export class CategoryService {
     await new Promise(resolve => setTimeout(resolve, 200));
     
     // 🔍 Kiểm tra API có sẵn không
-    const apiAvailable = await this.checkApiAvailability();
+    const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     
     if (!apiAvailable) {
       console.log('🎭 Using mock category data (API not available)');
@@ -141,14 +99,14 @@ export class CategoryService {
    * 🔧 Utility methods
    */
   static async isApiAvailable(): Promise<boolean> {
-    return await this.checkApiAvailability();
+    return await CheckAPIService.isApiAvailable(API_BASE_URL);
   }
   
   static resetApiCheck(): void {
-    this.apiAvailable = null;
+    CheckAPIService.resetApiCheck(API_BASE_URL);
   }
   
   static isMockMode(): boolean {
-    return this.apiAvailable === false;
+    return CheckAPIService.isMockMode(API_BASE_URL);
   }
 }
