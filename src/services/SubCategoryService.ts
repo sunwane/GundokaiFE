@@ -14,9 +14,6 @@ export class SubCategoryService {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     
     if (!apiAvailable) {
-      console.log('🎭 Using mock subcategories data (API not available)');
-      console.log('🎭 Returning mock subcategory:', mockSubCategories);
-
       return {
         result: mockSubCategories,
         total: mockSubCategories.length,
@@ -33,7 +30,6 @@ export class SubCategoryService {
       }
       
       const data = await response.json();
-      console.log('✅ Real API subcategories data received:', data);
       
       return {
         result: Array.isArray(data.result) ? data.result : Array.isArray(data.data) ? data.data : [],
@@ -43,7 +39,6 @@ export class SubCategoryService {
       
     } catch (error) {
       console.error('❌ Real API failed, falling back to mock data:', error);
-      console.log('🎭 Returning mock subcategory:', mockSubCategories);
 
       // 🔄 Fallback: Return mock data
       return {

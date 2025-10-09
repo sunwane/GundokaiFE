@@ -39,6 +39,8 @@ export default function ProductsPage() {
     refetch 
   } = useProductsPage(subcategoryId);
 
+  console.log('ProductsPage render with products:', subcategoryInfo);
+
   const {
     currentFilters,
     pendingFilters,

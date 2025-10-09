@@ -4,7 +4,7 @@ export const mockProductDetails: ProductDetail[] = [
   // RX-78-2 Gundam (PRD001)
   {
     id: 'PD001',
-    product_id: 'PRD001',
+    productId: 'PRD001',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -15,7 +15,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Strike Freedom Gundam (PRD002)
   {
     id: 'PD002',
-    product_id: 'PRD002',
+    productId: 'PRD002',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -26,7 +26,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Nu Gundam (PRD003)
   {
     id: 'PD003',
-    product_id: 'PRD003',
+    productId: 'PRD003',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -37,7 +37,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Barbatos Lupus Rex (PRD004)
   {
     id: 'PD004',
-    product_id: 'PRD004',
+    productId: 'PRD004',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -48,7 +48,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Wing Gundam Zero EW (PRD005)
   {
     id: 'PD005',
-    product_id: 'PRD005',
+    productId: 'PRD005',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -59,7 +59,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Exia (PRD006)
   {
     id: 'PD006',
-    product_id: 'PRD006',
+    productId: 'PRD006',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -70,7 +70,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Double X (PRD007)
   {
     id: 'PD007',
-    product_id: 'PRD007',
+    productId: 'PRD007',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -81,7 +81,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Destiny Gundam (PRD008)
   {
     id: 'PD008',
-    product_id: 'PRD008',
+    productId: 'PRD008',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -92,7 +92,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Justice Gundam (PRD009)
   {
     id: 'PD009',
-    product_id: 'PRD009',
+    productId: 'PRD009',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -103,7 +103,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Freedom Gundam (PRD010)
   {
     id: 'PD010',
-    product_id: 'PRD010',
+    productId: 'PRD010',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -114,7 +114,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Unicorn Gundam (PRD011)
   {
     id: 'PD011',
-    product_id: 'PRD011',
+    productId: 'PRD011',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -125,7 +125,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Sazabi (PRD012)
   {
     id: 'PD012',
-    product_id: 'PRD012',
+    productId: 'PRD012',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -136,7 +136,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Age-1 Normal (PRD013)
   {
     id: 'PD013',
-    product_id: 'PRD013',
+    productId: 'PRD013',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',
@@ -147,7 +147,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Try Burning Gundam (PRD014)
   {
     id: 'PD014',
-    product_id: 'PRD014',
+    productId: 'PRD014',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS, PS',
     ratio: '1/144',
@@ -158,7 +158,7 @@ export const mockProductDetails: ProductDetail[] = [
   // Build Strike Galaxy Cosmos (PRD015)
   {
     id: 'PD015',
-    product_id: 'PRD015',
+    productId: 'PRD015',
     manufacturer: 'Bandai',
     material: 'Nhựa ABS cao cấp',
     ratio: '1/144',

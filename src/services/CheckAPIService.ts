@@ -37,11 +37,11 @@ export class CheckAPIService {
       return isAvailable;
       
     } catch (error) {
-      if (error instanceof Error) {
-        console.warn(`❌ API check failed for ${baseUrl}:`, error.message);
-      } else {
-        console.warn(`❌ API check failed for ${baseUrl}:`, error);
-      }
+      // if (error instanceof Error) {
+      //   console.warn(`❌ API check failed for ${baseUrl}:`, error.message);
+      // } else {
+      //   console.warn(`❌ API check failed for ${baseUrl}:`, error);
+      // }
       
       this.apiCache.set(cacheKey, false);
       return false;

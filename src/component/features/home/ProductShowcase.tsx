@@ -25,8 +25,10 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
           ProductService.getHotProducts(),
           ProductService.getLatestProducts()
         ]);
-        setHotProducts(hotResponse.result);
-        setLatestProducts(latestResponse.result);
+        console.log('Hot Products Response:', hotResponse);
+        console.log('Latest Products Response:', latestResponse);
+        setHotProducts(hotResponse.result || hotResponse.data || hotResponse || []);
+        setLatestProducts(latestResponse.result || latestResponse.data || latestResponse || []);
       } catch (error) {
         console.error('Error fetching showcase products:', error);
       } finally {

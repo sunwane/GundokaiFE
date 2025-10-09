@@ -68,8 +68,8 @@ export function useProductsPage(subcategoryId?: string | null) {
         break;
       case 'newest':
         sorted = sorted.sort((a, b) => {
-          const dateA = new Date(a.created_at || '').getTime();
-          const dateB = new Date(b.created_at || '').getTime();
+          const dateA = new Date(a.createdAt || '').getTime();
+          const dateB = new Date(b.createdAt || '').getTime();
           return dateB - dateA;
         });
         break;
