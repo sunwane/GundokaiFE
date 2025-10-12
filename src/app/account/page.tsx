@@ -3,7 +3,7 @@
 //cứu deploy
 export const dynamic = "force-dynamic";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import PageHeader from "@/component/layout/header/PageHeader";
 import AccountSidebar from "@/component/features/account/AccountSidebar";
@@ -141,12 +141,12 @@ export default function AccountPage() {
 
   if (isLoading) {
     return (
-      <div>
+      <Suspense>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner text="Đang tải thông tin tài khoản..." size="large" />
         </div>
-      </div>
+      </Suspense>
     );
   }
 
@@ -201,81 +201,83 @@ export default function AccountPage() {
   };
 
   return (
-    <div>
-      <PageHeader />
+    <Suspense>
+      <div>
+        <PageHeader />
 
-      {/* ✅ Welcome Banner */}
-      <div style={styles.welcomeBanner}>
-        <div
-          style={{
-            ...styles.bannerContent,
-            padding: getResponsivePadding(),
-          }}
-        >
-          <div style={styles.welcomeContainer}>
-            <div style={styles.bannerAvatar}>
-              {getAvatarText(user.username)}
-            </div>
+        {/* ✅ Welcome Banner */}
+        <div style={styles.welcomeBanner}>
+          <div
+            style={{
+              ...styles.bannerContent,
+              padding: getResponsivePadding(),
+            }}
+          >
+            <div style={styles.welcomeContainer}>
+              <div style={styles.bannerAvatar}>
+                {getAvatarText(user.username)}
+              </div>
 
-            <div style={styles.welcomeText}>
-              <h1 style={styles.welcomeTitle}>
-                Chào mừng trở lại, {user.username}!
-              </h1>
-              <p style={styles.welcomeSubtitle}>
-                Quản lý thông tin tài khoản và đơn hàng của bạn
-              </p>
+              <div style={styles.welcomeText}>
+                <h1 style={styles.welcomeTitle}>
+                  Chào mừng trở lại, {user.username}!
+                </h1>
+                <p style={styles.welcomeSubtitle}>
+                  Quản lý thông tin tài khoản và đơn hàng của bạn
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        style={{
-          ...styles.pageContainer,
-          padding: getResponsivePadding(),
-        }}
-      >
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: isHydrated && isMobile ? "1fr" : "300px 1fr",
-            gap: spacing.large,
-            alignItems: "start",
+            ...styles.pageContainer,
+            padding: getResponsivePadding(),
           }}
         >
-          {/* Sidebar */}
-          {(!isHydrated || !isMobile) && (
-            <div style={styles.sidebarContainer}>
-              <AccountSidebar
-                user={user}
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                onLogout={handleLogout}
-              />
-            </div>
-          )}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isHydrated && isMobile ? "1fr" : "300px 1fr",
+              gap: spacing.large,
+              alignItems: "start",
+            }}
+          >
+            {/* Sidebar */}
+            {(!isHydrated || !isMobile) && (
+              <div style={styles.sidebarContainer}>
+                <AccountSidebar
+                  user={user}
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                  onLogout={handleLogout}
+                />
+              </div>
+            )}
 
-          {/* Mobile Tab Navigation */}
-          {isHydrated && isMobile && (
-            <div style={styles.mobileTabNav}>
-              <select
-                value={activeTab}
-                onChange={(e) => handleTabChange(e.target.value)}
-                style={styles.mobileSelect}
-              >
-                <option value="account">Thông tin tài khoản</option>
-                <option value="orders">Lịch sử đơn hàng</option>
-                <option value="notifications">Thông báo</option>
-                <option value="password">Đổi mật khẩu</option>
-              </select>
-            </div>
-          )}
+            {/* Mobile Tab Navigation */}
+            {isHydrated && isMobile && (
+              <div style={styles.mobileTabNav}>
+                <select
+                  value={activeTab}
+                  onChange={(e) => handleTabChange(e.target.value)}
+                  style={styles.mobileSelect}
+                >
+                  <option value="account">Thông tin tài khoản</option>
+                  <option value="orders">Lịch sử đơn hàng</option>
+                  <option value="notifications">Thông báo</option>
+                  <option value="password">Đổi mật khẩu</option>
+                </select>
+              </div>
+            )}
 
-          <div style={styles.mainContent}>{renderContent()}</div>
+            <div style={styles.mainContent}>{renderContent()}</div>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </Suspense>
   );
 }
 

@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = "force-dynamic";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import ProductCard from "@/component/features/product/ProductCard";
 import Breadcrumbs from "@/component/ui/Breadcrumbs";
@@ -36,18 +36,20 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div>
-        <PageHeader />
-        <div style={styles.loadingContainer}>
-          <LoadingSpinner text="Đang tải sản phẩm..." size="large" />
+      <Suspense>
+        <div>
+          <PageHeader />
+          <div style={styles.loadingContainer}>
+            <LoadingSpinner text="Đang tải sản phẩm..." size="large" />
+          </div>
         </div>
-      </div>
+      </Suspense>
     );
   }
 
   if (error || !product) {
     return (
-      <div>
+      <Suspense>
         <PageHeader />
         <div style={styles.errorContainer}>
           <h2>Không tìm thấy sản phẩm!</h2>
@@ -56,7 +58,7 @@ export default function ProductDetailPage() {
             Quay lại danh sách sản phẩm
           </button>
         </div>
-      </div>
+      </Suspense>
     );
   }
 
@@ -68,7 +70,7 @@ const breadcrumbs = [
   { label: product.subcategory.subCategoryName, href: `/products?subcategory=${product.subcategory.id}` }, // Đường dẫn đến danh mục con
 ];
   return (
-    <div>
+    <Suspense>
       <PageHeader />
       <div style={{
         ...styles.mainContainer,
@@ -120,7 +122,7 @@ const breadcrumbs = [
         )}
       </div>
       <Footer />
-    </div>
+    </Suspense>
   );
 }
 

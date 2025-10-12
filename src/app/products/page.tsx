@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = "force-dynamic";
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import ProductCard from "@/component/features/product/ProductCard";
 import ProductBanner from "@/component/features/product/ProductBanner";
@@ -76,7 +76,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div>
+      <Suspense>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner 
@@ -84,13 +84,13 @@ export default function ProductsPage() {
             size="large"
           />
         </div>
-      </div>
+      </Suspense>
     );
   }
   
   if (error) {
     return (
-      <div>
+      <Suspense>
         <PageHeader />
         <div style={styles.errorContainer}>
           <p>Error: {error}</p>
@@ -98,11 +98,11 @@ export default function ProductsPage() {
             Thử lại
           </button>
         </div>
-      </div>
+      </Suspense>
     );
   }
   return (
-    <div>
+    <Suspense>
       <PageHeader />
       
       <ProductBanner subcategoryInfo={subcategoryInfo} />
@@ -214,7 +214,7 @@ export default function ProductsPage() {
         />
       )}
       <Footer />
-    </div>
+    </Suspense>
   );
 }
 

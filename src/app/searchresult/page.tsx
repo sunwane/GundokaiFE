@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = "force-dynamic";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import ProductCard from '@/component/features/product/ProductCard';
 import LoadingSpinner from "@/component/ui/LoadingSpinner";
@@ -89,17 +89,17 @@ export default function SearchResultPage() {
 
   if (loading) {
     return (
-      <div>
+      <Suspense>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner text="Đang tìm kiếm..." size="large" />
         </div>
-      </div>
+      </Suspense>
     );
   }
 
   return (
-    <div>
+    <Suspense>
       <PageHeader />
       
       <div style={{
@@ -240,7 +240,7 @@ export default function SearchResultPage() {
         )}
       </div>
       <Footer />
-    </div>
+    </Suspense>
   );
 }
 
