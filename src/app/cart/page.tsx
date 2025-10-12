@@ -9,6 +9,7 @@ import { CartItem as CartItemType } from "@/types/Cart";
 import { CheckoutForm } from "../../component/Form/CheckoutForm";
 import { OrderService } from "@/services/OrderService";
 import Footer from "@/component/layout/footer/Footer";
+import { Order } from "@/types/Order";
 
 export default function CartPage() {
   const {
@@ -27,7 +28,7 @@ export default function CartPage() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [manualCart, setManualCart] = useState<{
-    items: any[];
+    items: CartItemType[];
     total_quantity: number;
     total_amount: number;
     subtotal: number;
@@ -36,15 +37,12 @@ export default function CartPage() {
 
   const loadCartData = () => {
     try {
-      console.log("Loading cart manually...");
       setManualLoading(true);
 
       const cartJson = localStorage.getItem("gundam_cart");
-      console.log("Cart JSON:", cartJson);
 
       if (cartJson) {
         const parsed = JSON.parse(cartJson);
-        console.log("Parsed cart:", parsed);
         setManualCart(parsed);
       } else {
         setManualCart({
@@ -55,7 +53,6 @@ export default function CartPage() {
         });
       }
     } catch (error) {
-      console.error("Error loading cart:", error);
       setManualCart({
         items: [],
         total_quantity: 0,
@@ -76,7 +73,6 @@ export default function CartPage() {
   }, []);
   useEffect(() => {
     const handleCartUpdate = () => {
-      console.log("Cart updated, reloading manually...");
       setTimeout(() => {
         loadCartData();
       }, 200);
@@ -91,14 +87,6 @@ export default function CartPage() {
   const cart = manualCart || fetchedCart;
   const loading = manualLoading || fetchedLoading;
   useEffect(() => {
-    console.log("=== DETAILED DEBUG ===");
-    console.log("Manual Cart:", manualCart);
-    console.log("Manual Loading:", manualLoading);
-    console.log("Fetched Cart:", fetchedCart);
-    console.log("Fetched Loading:", fetchedLoading);
-    console.log("Final Cart:", cart);
-    console.log("Final Loading:", loading);
-    console.log("Cart items length:", cart?.items?.length || 0);
   }, [manualCart, manualLoading, fetchedCart, fetchedLoading, cart, loading]);
   const calculateTotalAmount = () => {
     if (!cart || !cart.items || cart.items.length === 0) return 0;
@@ -114,8 +102,7 @@ export default function CartPage() {
     );
   };
 
-  // src/app/cart/page.tsx
-  const handleOrderSuccess = (order: any) => {
+  const handleOrderSuccess = (order: Order) => {
     console.log("Đặt hàng thành công:", order);
 
     try {
@@ -143,7 +130,7 @@ export default function CartPage() {
         window.dispatchEvent(event);
 
         setTimeout(() => {
-          window.location.href = order.paymentUrl;
+          window.location.href = order.paymentUrl ?? "/";
         }, 2000);
       } else if (order.paymentMethod === "COD") {
 
@@ -199,8 +186,8 @@ export default function CartPage() {
       cart.items.every(
         (item: {
           quantity: number;
-          product: { stockQuantity: any };
-          is_out_of_stock: any;
+          product: { stockQuantity: number};
+          is_out_of_stock: boolean;
         }) =>
           item.quantity > 0 &&
           item.quantity <= (item.product.stockQuantity || 0) &&

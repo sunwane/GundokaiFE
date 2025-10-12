@@ -65,7 +65,7 @@ export const useImageBackgroundColor = (
             colorCounts.set(colorKey, (colorCounts.get(colorKey) || 0) + 1);
             
             // 🔍 Debug log - hiển thị TẤT CẢ màu
-            console.log(`Point ${index + 1} (${x},${y}): rgba(${r},${g},${b},${a}) → grouped: ${colorKey}`);
+            //console.log(`Point ${index + 1} (${x},${y}): rgba(${r},${g},${b},${a}) → grouped: ${colorKey}`);
           }
         });
 
@@ -73,26 +73,26 @@ export const useImageBackgroundColor = (
         let mostCommonColor = '248,249,250';
         let maxCount = 0;
 
-        console.log('🎨 Color frequency analysis (ALL COLORS):');
+        //console.log('🎨 Color frequency analysis (ALL COLORS):');
         for (const [color, count] of colorCounts.entries()) {
-          console.log(`  ${color}: ${count} times`);
+          //console.log(`  ${color}: ${count} times`);
           if (count > maxCount) {
             maxCount = count;
             mostCommonColor = color;
           }
         }
 
-        console.log(`🏆 Most common color: ${mostCommonColor} (${maxCount} occurrences)`);
+        //console.log(`🏆 Most common color: ${mostCommonColor} (${maxCount} occurrences)`);
 
         // 🎨 Convert sang rgba để set background
         const [r, g, b] = mostCommonColor.split(',').map(Number);
         const detectedColor = `rgba(${r}, ${g}, ${b}, 1)`;
         setBackgroundColor(detectedColor);
         
-        console.log(`✅ Final background color: ${detectedColor}`);
+        //console.log(`✅ Final background color: ${detectedColor}`);
         
       } catch (error) {
-        console.log('❌ Could not extract background color:', error);
+        //console.log('❌ Could not extract background color:', error);
         
         // 🎨 Enhanced fallback colors theo subcategory
         const fallbackColors: Record<string, string> = {

@@ -26,10 +26,10 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
             style={styles.link}
             onClick={() => handleClick(item.href!)}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#1e40af';
+              e.currentTarget.style.color = '#3b82f6';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#3b82f6';
+              e.currentTarget.style.color = '#000';
             }}
           >
             {item.label}
@@ -45,13 +45,13 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
 
 const styles = {
   container: {
-    fontSize: '13px',
+    fontSize: '13.5px',
     color: '#444',
     display: 'flex',
     alignItems: 'center',
   },
   link: {
-    color: '#081945',
+    color: 'rgb(0, 20, 84)',
     textDecoration: 'none',
     cursor: 'pointer',
     background: 'none',

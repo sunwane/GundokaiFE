@@ -102,7 +102,6 @@ export class SubCategoryService {
       return data;
       
     } catch (error) {
-      console.error('❌ Real API failed, falling back to mock data:', error);
       
       // 🔄 Fallback: Return mock data
       const subCategory = mockSubCategories.find(sub => sub.id === subCategoryId);

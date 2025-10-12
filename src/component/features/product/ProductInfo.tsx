@@ -28,7 +28,7 @@ export default function ProductInfo({
 
   // Hooks
   const { categoryName, subCategoryName } = useCategory(
-    product.subCategoryId
+    product.subcategory.id
   );
 
   const handleAddToCart = () => {
@@ -244,6 +244,7 @@ const styles = {
     flex: 1,
     minWidth: 0,
     background: "#fff",
+    marginTop: "8px",
   },
   title: {
     fontSize: "28px",

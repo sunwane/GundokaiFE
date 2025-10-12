@@ -29,7 +29,11 @@ export default function CartItem({
 
   // Hooks
   const { categoryName, subCategoryName, category, subCategory, loading } =
-    useCategory(item.product.subCategoryId);
+    useCategory(item.product.subcategory.id);
+
+  console.log("id", item.product.subcategory.id);
+
+  console.log({ categoryName, subCategoryName});
 
   return (
     <div style={styles.container}>
@@ -52,6 +56,26 @@ export default function CartItem({
           </div>
         )}
 
+        {/* Stock status */}
+        {item.is_out_of_stock ? (
+          <div style={styles.stockStatus}>
+            <span style={styles.outOfStockStatus}>
+              Hết hàng
+            </span>
+          </div>
+        ) : (
+          <div style={styles.stockStatus}>
+            <span style={styles.inStockStatus}>
+              Còn {item.product.stockQuantity}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Product Info */}
+      <div style={styles.infoContainer}>
+        <h3 style={styles.productName}>{item.product.productName}</h3>
+
         {/* Card Label */}
         <div style={styles.cardLabelContainer}>
           <CardLabel
@@ -59,11 +83,6 @@ export default function CartItem({
             subcategoryId={subCategoryName}
           />
         </div>
-      </div>
-
-      {/* Product Info */}
-      <div style={styles.infoContainer}>
-        <h3 style={styles.productName}>{item.product.productName}</h3>
 
         <div style={styles.priceRow}>
           <span style={styles.unitPrice}>
@@ -73,21 +92,6 @@ export default function CartItem({
             Thành tiền: {formatPrice(item.total_price)}
           </span>
         </div>
-
-        {/* Stock status */}
-        {item.is_out_of_stock ? (
-          <div style={styles.stockStatus}>
-            <span style={styles.outOfStockStatus}>
-              Sản phẩm hiện tại hết hàng
-            </span>
-          </div>
-        ) : (
-          <div style={styles.stockStatus}>
-            <span style={styles.inStockStatus}>
-              Còn {item.product.stockQuantity} sản phẩm
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Actions */}
@@ -129,7 +133,7 @@ const styles = {
   container: {
     display: "flex",
     gap: "16px",
-    padding: "20px",
+    padding: "20px 20px 20px 24px",
     backgroundColor: "#fff",
     borderRadius: "12px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
@@ -168,10 +172,7 @@ const styles = {
     textAlign: "center" as const,
   },
   cardLabelContainer: {
-    position: "absolute" as const,
-    top: "8px",
-    left: "8px",
-    zIndex: 2,
+    marginBottom: "12px",  
   },
   infoContainer: {
     flex: 1,
@@ -181,14 +182,13 @@ const styles = {
     fontSize: "18px",
     fontWeight: "bold",
     color: "#111827",
-    marginBottom: "8px",
+    marginBottom: "3px",
     lineHeight: 1.4,
   },
   priceRow: {
     display: "flex",
     flexDirection: "column" as const,
-    gap: "4px",
-    marginBottom: "12px",
+    marginBottom: "8px",
   },
   unitPrice: {
     fontSize: "14px",
@@ -200,17 +200,25 @@ const styles = {
     color: "#dc2626",
   },
   stockStatus: {
-    marginBottom: "16px",
+    position: "absolute" as const,
+    top: "-6px",
+    left: "-12px",
+    zIndex: 2,
+    color: "#fff",
   },
   inStockStatus: {
     fontSize: "14px",
-    color: "#059669",
+    background: "#16a34a",
     fontWeight: "600",
+    padding: "4px 6px",
+    borderRadius: "8px",
   },
   outOfStockStatus: {
     fontSize: "14px",
-    color: "#dc2626",
+    background: "#dc2626",
     fontWeight: "600",
+    padding: "4px 6px",
+    borderRadius: "8px",
   },
   actionsContainer: {
     display: "flex",

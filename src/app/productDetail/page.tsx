@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductDetail } from '@/hooks/product/useProductDetail';
 import { useResponsive } from '@/hooks/useResponsive';
 import Footer from '@/component/layout/footer/Footer';
+import { Product } from '@/types/Product';
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function ProductDetailPage() {
     console.log(`Adding ${quantity} of product ${productId} to cart`);
   };
 
-  const handleProductClick = (clickedProduct: any) => {
+  const handleProductClick = (clickedProduct: Product) => {
     router.push(`/productDetail?id=${clickedProduct.id}`);
   };
 
@@ -57,12 +58,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  // Breadcrumbs data
-  const breadcrumbs = [
-    { label: 'Trang chủ', href: '/' },
-    { label: 'Gundam', href: '/products?category=gundam' },
-    { label: 'HG • High Grade', href: '/products?subcategory=hg' },
-  ];
+// Breadcrumbs data
+const breadcrumbs = [
+  { label: 'Trang chủ', href: '/' },
+  { label: 'Danh mục sản phẩm', href: '/products' }, // Đường dẫn đến danh mục sản phẩm
+  { label: product.subcategory.mainCategory.categoryName, href: `/products?category=${product.subcategory.mainCategory.id}` }, // Đường dẫn đến danh mục cụ thể
+  { label: product.subcategory.subCategoryName, href: `/products?subcategory=${product.subcategory.id}` }, // Đường dẫn đến danh mục con
+];
   return (
     <div>
       <PageHeader />
@@ -159,6 +161,7 @@ const styles = {
     transition: 'background 0.2s',
   },
   detailContainer: {
+    marginTop: '8px',
     display: 'flex',
   },
   relatedSection: {

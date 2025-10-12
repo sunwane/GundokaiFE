@@ -57,6 +57,8 @@ export class CategoryService {
     
     // 🔍 Kiểm tra API có sẵn không
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
+
+    console.log("CategoryID: ", categoryId);
     
     if (!apiAvailable) {
       const category = mockCategories.find(cat => cat.id === categoryId);
