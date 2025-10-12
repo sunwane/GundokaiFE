@@ -18,7 +18,7 @@ import { Product } from '@/types/Product';
 import { useProductsPage } from '@/hooks/product/useProductsPage';
 import Footer from '@/component/layout/footer/Footer';
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const subcategoryId = searchParams.get('subcategory');
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <Suspense>
+      <>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner 
@@ -84,13 +84,13 @@ export default function ProductsPage() {
             size="large"
           />
         </div>
-      </Suspense>
+      </>
     );
   }
   
   if (error) {
     return (
-      <Suspense>
+      <>
         <PageHeader />
         <div style={styles.errorContainer}>
           <p>Error: {error}</p>
@@ -98,11 +98,11 @@ export default function ProductsPage() {
             Thử lại
           </button>
         </div>
-      </Suspense>
+      </>
     );
   }
   return (
-    <Suspense>
+    <>
       <PageHeader />
       
       <ProductBanner subcategoryInfo={subcategoryInfo} />
@@ -214,6 +214,18 @@ export default function ProductsPage() {
         />
       )}
       <Footer />
+    </>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div style={styles.loadingContainer}>
+        <LoadingSpinner text="Đang tải..." size="large" />
+      </div>
+    }>
+      <ProductsPageContent />
     </Suspense>
   );
 }

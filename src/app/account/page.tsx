@@ -1,6 +1,5 @@
 "use client";
 
-//cứu deploy
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect, useRef, Suspense } from "react";
@@ -15,7 +14,7 @@ import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useAccount } from "@/hooks/useAccount";
 import Footer from "@/component/layout/footer/Footer";
 
-export default function AccountPage() {
+function AccountPageContent() {
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab") || "account";
 
@@ -38,11 +37,6 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState(tabFromUrl);
   const [isHydrated, setIsHydrated] = useState(false);
   const [windowWidth, setWindowWidth] = useState(1200);
-  // console.log("=== ACCOUNT PAGE DEBUG ===");
-  // console.log("Orders length:", orders?.length);
-  // console.log("User stats from hook:", userStats);
-  // console.log("Orders loading:", ordersLoading);
-  // ✅ SỬ DỤNG REF ĐỂ TRACK VIỆC ĐÃ LOAD
   const loadedTabs = useRef(new Set<string>());
 
   useEffect(() => {
@@ -57,19 +51,16 @@ export default function AccountPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ CHỈ SET TAB TỪ URL, KHÔNG LOAD DATA Ở ĐÂY
   useEffect(() => {
     setActiveTab(tabFromUrl);
   }, [tabFromUrl]);
 
-  // ✅ LOAD DATA CHỈ KHI CẦN THIẾT
   useEffect(() => {
     if (!user || !activeTab) return;
 
-    // Kiểm tra đã load tab này chưa
     const tabKey = `${activeTab}-${user.id}`;
     if (loadedTabs.current.has(tabKey)) {
-      return; // Đã load rồi, không load lại
+      return;
     }
 
     if (activeTab === "orders" && !ordersLoading) {
@@ -81,9 +72,8 @@ export default function AccountPage() {
       loadNotifications();
       loadedTabs.current.add(tabKey);
     }
-  }, [activeTab, user?.id]); // ✅ CHỈ DEPEND VÀO activeTab VÀ user.id
+  }, [activeTab, user?.id]);
 
-  // Computed responsive values
   const isMobile = isHydrated ? windowWidth < 768 : false;
 
   const getResponsivePadding = () => {
@@ -104,7 +94,6 @@ export default function AccountPage() {
     console.log("Tab changed to:", tab);
     setActiveTab(tab);
 
-    // ✅ CHỈ LOAD NẾU CHƯA TỪNG LOAD TAB NÀY
     if (!user) return;
 
     const tabKey = `${tab}-${user.id}`;
@@ -114,39 +103,36 @@ export default function AccountPage() {
     }
 
     if (tab === "orders") {
-      // console.log("Loading orders for tab change");
       loadOrders();
       loadedTabs.current.add(tabKey);
     } else if (tab === "notifications") {
-      // console.log("Loading notifications for tab change");
       loadNotifications();
       loadedTabs.current.add(tabKey);
     }
   };
 
-  // ✅ HÀM REFRESH CHO PHÉP LOAD LẠI
   const handleRefreshOrders = () => {
     const tabKey = `orders-${user?.id}`;
-    loadedTabs.current.delete(tabKey); // Xóa khỏi cache
+    loadedTabs.current.delete(tabKey);
     loadOrders();
     loadedTabs.current.add(tabKey);
   };
 
   const handleRefreshNotifications = () => {
     const tabKey = `notifications-${user?.id}`;
-    loadedTabs.current.delete(tabKey); // Xóa khỏi cache
+    loadedTabs.current.delete(tabKey);
     loadNotifications();
     loadedTabs.current.add(tabKey);
   };
 
   if (isLoading) {
     return (
-      <Suspense>
+      <>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner text="Đang tải thông tin tài khoản..." size="large" />
         </div>
-      </Suspense>
+      </>
     );
   }
 
@@ -154,7 +140,6 @@ export default function AccountPage() {
     return null;
   }
 
-  // ✅ Hàm tạo avatar từ username
   const getAvatarText = (username: string) => {
     if (!username) return "U";
     return username.charAt(0).toUpperCase();
@@ -163,29 +148,25 @@ export default function AccountPage() {
   const renderContent = () => {
     switch (activeTab) {
       case "account":
-        // console.log("=== RENDER ACCOUNT INFO ===");
-        // console.log("userStats before pass:", userStats);
-        // console.log("user before pass:", user);
-
         return (
           <AccountInfo
             user={user}
             onUserUpdate={setUser}
-            userStats={userStats} // ✅ Đảm bảo pass userStats
+            userStats={userStats}
           />
         );
       case "orders":
         return (
           <OrderHistory
-            orders={orders} // Đảm bảo orders luôn là mảng
+            orders={orders}
             isLoading={ordersLoading}
-            onRefresh={handleRefreshOrders} // ✅ Dùng hàm refresh mới
+            onRefresh={handleRefreshOrders}
           />
         );
       case "notifications":
         return (
           <NotificationList
-            userId={user.id} // ✅ Truyền userId
+            userId={user.id}
           />
         );
       case "password":
@@ -201,82 +182,89 @@ export default function AccountPage() {
   };
 
   return (
-    <Suspense>
-      <div>
-        <PageHeader />
+    <div>
+      <PageHeader />
 
-        {/* ✅ Welcome Banner */}
-        <div style={styles.welcomeBanner}>
-          <div
-            style={{
-              ...styles.bannerContent,
-              padding: getResponsivePadding(),
-            }}
-          >
-            <div style={styles.welcomeContainer}>
-              <div style={styles.bannerAvatar}>
-                {getAvatarText(user.username)}
-              </div>
-
-              <div style={styles.welcomeText}>
-                <h1 style={styles.welcomeTitle}>
-                  Chào mừng trở lại, {user.username}!
-                </h1>
-                <p style={styles.welcomeSubtitle}>
-                  Quản lý thông tin tài khoản và đơn hàng của bạn
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div style={styles.welcomeBanner}>
         <div
           style={{
-            ...styles.pageContainer,
+            ...styles.bannerContent,
             padding: getResponsivePadding(),
           }}
         >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: isHydrated && isMobile ? "1fr" : "300px 1fr",
-              gap: spacing.large,
-              alignItems: "start",
-            }}
-          >
-            {/* Sidebar */}
-            {(!isHydrated || !isMobile) && (
-              <div style={styles.sidebarContainer}>
-                <AccountSidebar
-                  user={user}
-                  activeTab={activeTab}
-                  onTabChange={handleTabChange}
-                  onLogout={handleLogout}
-                />
-              </div>
-            )}
+          <div style={styles.welcomeContainer}>
+            <div style={styles.bannerAvatar}>
+              {getAvatarText(user.username)}
+            </div>
 
-            {/* Mobile Tab Navigation */}
-            {isHydrated && isMobile && (
-              <div style={styles.mobileTabNav}>
-                <select
-                  value={activeTab}
-                  onChange={(e) => handleTabChange(e.target.value)}
-                  style={styles.mobileSelect}
-                >
-                  <option value="account">Thông tin tài khoản</option>
-                  <option value="orders">Lịch sử đơn hàng</option>
-                  <option value="notifications">Thông báo</option>
-                  <option value="password">Đổi mật khẩu</option>
-                </select>
-              </div>
-            )}
-
-            <div style={styles.mainContent}>{renderContent()}</div>
+            <div style={styles.welcomeText}>
+              <h1 style={styles.welcomeTitle}>
+                Chào mừng trở lại, {user.username}!
+              </h1>
+              <p style={styles.welcomeSubtitle}>
+                Quản lý thông tin tài khoản và đơn hàng của bạn
+              </p>
+            </div>
           </div>
         </div>
-        <Footer />
       </div>
+
+      <div
+        style={{
+          ...styles.pageContainer,
+          padding: getResponsivePadding(),
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isHydrated && isMobile ? "1fr" : "300px 1fr",
+            gap: spacing.large,
+            alignItems: "start",
+          }}
+        >
+          {(!isHydrated || !isMobile) && (
+            <div style={styles.sidebarContainer}>
+              <AccountSidebar
+                user={user}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+                onLogout={handleLogout}
+              />
+            </div>
+          )}
+
+          {isHydrated && isMobile && (
+            <div style={styles.mobileTabNav}>
+              <select
+                value={activeTab}
+                onChange={(e) => handleTabChange(e.target.value)}
+                style={styles.mobileSelect}
+              >
+                <option value="account">Thông tin tài khoản</option>
+                <option value="orders">Lịch sử đơn hàng</option>
+                <option value="notifications">Thông báo</option>
+                <option value="password">Đổi mật khẩu</option>
+              </select>
+            </div>
+          )}
+
+          <div style={styles.mainContent}>{renderContent()}</div>
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={
+      <div style={styles.loadingContainer}>
+        <LoadingSpinner text="Đang tải..." size="large" />
+      </div>
+    }>
+      <AccountPageContent />
     </Suspense>
   );
 }

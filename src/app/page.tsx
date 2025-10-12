@@ -11,11 +11,10 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { banners, categories, gundamModels } from "@/data/homeData";
 import React, { Suspense } from "react";
 
-export default function Home() {
+function HomeContent() {
   const { isMobile } = useResponsive({ mobile: 400 });
 
   return (
-   <Suspense>
     <div style={styles.wrapper}>
       <PageHeader />
       <BannerList banners={banners} isMobile={isMobile} />
@@ -24,7 +23,24 @@ export default function Home() {
       <ProductShowcase isMobile={isMobile} />
       <Footer />
     </div>
-   </Suspense>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#fff"
+      }}>
+        <div>Đang tải...</div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
 

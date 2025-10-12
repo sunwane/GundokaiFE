@@ -22,7 +22,7 @@ import { useFilterState } from '@/hooks/product/useFilterState';
 import { Product } from '@/types/Product';
 import Footer from '@/component/layout/footer/Footer';
 
-export default function SearchResultPage() {
+function SearchResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isMobile, windowWidth } = useResponsive();
@@ -89,17 +89,17 @@ export default function SearchResultPage() {
 
   if (loading) {
     return (
-      <Suspense>
+      <>
         <PageHeader />
         <div style={styles.loadingContainer}>
           <LoadingSpinner text="Đang tìm kiếm..." size="large" />
         </div>
-      </Suspense>
+      </>
     );
   }
 
   return (
-    <Suspense>
+    <>
       <PageHeader />
       
       <div style={{
@@ -157,7 +157,7 @@ export default function SearchResultPage() {
                 </h3>
                 <p style={styles.noResultsText}>
                   {searchResults.length === 0 
-                    ? 'Hãy thử tìm kiếm với từ khóa khác hoặc kiểm tra chính tả.'
+                    ? 'Hãy thử tìm kiếm với từ khóa khác hoặc kiểm tra chính tả.' 
                     : 'Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác.'
                   }
                 </p>
@@ -240,6 +240,18 @@ export default function SearchResultPage() {
         )}
       </div>
       <Footer />
+    </>
+  );
+}
+
+export default function SearchResultPage() {
+  return (
+    <Suspense fallback={
+      <div style={styles.loadingContainer}>
+        <LoadingSpinner text="Đang tải..." size="large" />
+      </div>
+    }>
+      <SearchResultContent />
     </Suspense>
   );
 }

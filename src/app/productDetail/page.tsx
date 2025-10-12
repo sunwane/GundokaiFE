@@ -14,7 +14,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import Footer from '@/component/layout/footer/Footer';
 import { Product } from '@/types/Product';
 
-export default function ProductDetailPage() {
+function ProductDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
@@ -36,20 +36,18 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <Suspense>
-        <div>
-          <PageHeader />
-          <div style={styles.loadingContainer}>
-            <LoadingSpinner text="Đang tải sản phẩm..." size="large" />
-          </div>
+      <div>
+        <PageHeader />
+        <div style={styles.loadingContainer}>
+          <LoadingSpinner text="Đang tải sản phẩm..." size="large" />
         </div>
-      </Suspense>
+      </div>
     );
   }
 
   if (error || !product) {
     return (
-      <Suspense>
+      <div>
         <PageHeader />
         <div style={styles.errorContainer}>
           <h2>Không tìm thấy sản phẩm!</h2>
@@ -58,19 +56,20 @@ export default function ProductDetailPage() {
             Quay lại danh sách sản phẩm
           </button>
         </div>
-      </Suspense>
+      </div>
     );
   }
 
-// Breadcrumbs data
-const breadcrumbs = [
-  { label: 'Trang chủ', href: '/' },
-  { label: 'Danh mục sản phẩm', href: '/products' }, // Đường dẫn đến danh mục sản phẩm
-  { label: product.subcategory.mainCategory.categoryName, href: `/products?category=${product.subcategory.mainCategory.id}` }, // Đường dẫn đến danh mục cụ thể
-  { label: product.subcategory.subCategoryName, href: `/products?subcategory=${product.subcategory.id}` }, // Đường dẫn đến danh mục con
-];
+  // Breadcrumbs data
+  const breadcrumbs = [
+    { label: 'Trang chủ', href: '/' },
+    { label: 'Danh mục sản phẩm', href: '/products' },
+    { label: product.subcategory.mainCategory.categoryName, href: `/products?category=${product.subcategory.mainCategory.id}` },
+    { label: product.subcategory.subCategoryName, href: `/products?subcategory=${product.subcategory.id}` },
+  ];
+
   return (
-    <Suspense>
+    <div>
       <PageHeader />
       <div style={{
         ...styles.mainContainer,
@@ -82,7 +81,7 @@ const breadcrumbs = [
           ...styles.detailContainer,
           gap: isMobile ? '24px' : '40px',
           flexDirection: isMobile ? 'column' : 'row',
-          alignItems: isMobile? "center" : 'flex-start',
+          alignItems: isMobile ? "center" : 'flex-start',
         }}>
           {/* Product Images */}
           <ProductImageGallery
@@ -122,11 +121,25 @@ const breadcrumbs = [
         )}
       </div>
       <Footer />
+    </div>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense fallback={
+      <div>
+        <PageHeader />
+        <div style={styles.loadingContainer}>
+          <LoadingSpinner text="Đang tải..." size="large" />
+        </div>
+      </div>
+    }>
+      <ProductDetailContent />
     </Suspense>
   );
 }
 
-// Styles giữ nguyên...
 const styles = {
   mainContainer: {
     display: "flex",
