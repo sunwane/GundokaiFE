@@ -12,7 +12,13 @@ interface SortOption {
   label: string;
 }
 
-const OrderHistory: React.FC = () => {
+interface OrderHistoryProps {
+  orders: Order[]; // Mảng các đơn hàng
+  isLoading: boolean; // Trạng thái đang tải
+  onRefresh: () => void; // Hàm để làm mới danh sách đơn hàng
+}
+
+const OrderHistory: React.FC<OrderHistoryProps> = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
