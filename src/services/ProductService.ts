@@ -12,9 +12,6 @@ export class ProductService {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     
     if (!apiAvailable) {
-      console.log('🎭 Using mock subcategories data (API not available)');
-      console.log('🎭 Returning mock subcategory:', mockProducts);
-
       return {
         data: mockProducts,
         total: mockProducts.length,
@@ -51,18 +48,13 @@ export class ProductService {
   static async getProductById(id: string): Promise<Product | null> {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
         
-    if (!apiAvailable) {
-      console.log('🎭 Using mock products data (API not available)');
-      
+    if (!apiAvailable) {      
       // Lọc sản phẩm theo id
       const filteredProduct = mockProducts.find(product => product.id === id);
       
       if (!filteredProduct) {
-        console.log(`🎭 Product with id "${id}" not found in mock data`);
         return null; // Trả về null nếu không tìm thấy sản phẩm
       }
-    
-      console.log('🎭 Returning mock product:', filteredProduct);
       return filteredProduct;
     }
     
@@ -83,11 +75,9 @@ export class ProductService {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
 
     if (!apiAvailable) {
-      console.log('🎭 Using mock subcategories by category data (API not available)');
       const filteredProduct = mockProducts.filter(
         pro => pro.subcategory.id === subCategoryId
       );
-      console.log('🎭 Returning mock subcategories by category:', filteredProduct);
       return {
         data: filteredProduct,
         total: filteredProduct.length,
@@ -141,11 +131,9 @@ static async searchProducts(query: string): Promise<ProductResponse> {
   const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
 
   if (!apiAvailable) {
-    console.log('🎭 Using mock subcategories by category data (API not available)');
     const filteredProduct = mockProducts.filter(
-      pro => pro.productName === query
+      pro => pro.productName.toLowerCase().includes(query.toLowerCase())
     );
-    console.log('🎭 Returning mock subcategories by category:', filteredProduct);
     return {
       data: filteredProduct,
       total: filteredProduct.length,
@@ -236,8 +224,6 @@ static async searchProducts(query: string): Promise<ProductResponse> {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
 
     if (!apiAvailable) {
-      console.log('🎭 Using mock products data (API not available)');
-
       // Lọc các sản phẩm có số lượng lớn hơn 0
       const filteredProducts = mockProducts.filter(pro => pro.stockQuantity > 0);
 
@@ -246,8 +232,6 @@ static async searchProducts(query: string): Promise<ProductResponse> {
 
       // Lấy 5 sản phẩm nhỏ nhất
       const leastQuantityProducts = sortedProducts.slice(0, 5);
-
-      console.log('🎭 Returning top 5 products with the least quantity:', leastQuantityProducts);
 
       return {
         data: leastQuantityProducts,
@@ -261,7 +245,6 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      console.log('Hot products from API:', data);
       return data;
     } catch (error) {
       console.error('Error fetching hot products:', error);
@@ -274,12 +257,10 @@ static async searchProducts(query: string): Promise<ProductResponse> {
 
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     if (!apiAvailable) {
-      console.log('🎭 Using mock products data (API not available)')
       const sortedByDate = [...mockProducts].sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       const latest5Products = sortedByDate.slice(0, 5);
-      console.log('🎭 Returning top 5 newest products:', latest5Products)
       return {
         data: latest5Products,
         total: latest5Products.length,

@@ -34,7 +34,7 @@ export function useCategoryFilter(products: Product[] = []): UseCategoryFilterRe
 
     return categories.map(category => {
       const categorySubCategories = subCategories
-        .filter(sub => sub.mainCategory.id === category.id)
+        .filter(sub => sub.mainCategory && sub.mainCategory.id === category.id)
         .map(sub => ({
           id: sub.id,
           name: sub.subCategoryName,

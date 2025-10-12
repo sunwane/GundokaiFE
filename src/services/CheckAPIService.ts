@@ -12,9 +12,7 @@ export class CheckAPIService {
       return this.apiCache.get(cacheKey)!;
     }
 
-    try {
-      console.log(`🔍 Checking API availability for: ${baseUrl}${endpoint}`);
-      
+    try {      
       // Thử gọi API với timeout ngắn
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
@@ -31,9 +29,7 @@ export class CheckAPIService {
       
       // Nếu response ok, API có sẵn
       const isAvailable = response.ok;
-      this.apiCache.set(cacheKey, isAvailable);
-      console.log(`✅ API ${baseUrl} is available:`, isAvailable);
-      
+      this.apiCache.set(cacheKey, isAvailable);      
       return isAvailable;
       
     } catch (error) {
