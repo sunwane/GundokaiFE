@@ -187,7 +187,12 @@ export default function AccountPage() {
       case "password":
         return <ChangePassword userId={user.id} />;
       default:
-        return <AccountInfo user={user} onUserUpdate={setUser} />;
+        return <AccountInfo user={user} onUserUpdate={setUser} userStats={{
+          orders: 0,
+          ordered: 0,
+          shipping: 0,
+          completed: 0
+        }} />;
     }
   };
 

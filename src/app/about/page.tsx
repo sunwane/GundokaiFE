@@ -7,6 +7,4 @@ export default function About() {
     </div>
   );
 
-  const style = {
-  };
 }

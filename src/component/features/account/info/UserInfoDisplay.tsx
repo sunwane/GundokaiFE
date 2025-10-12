@@ -23,7 +23,7 @@ export default function UserInfoDisplay({ user }: UserInfoDisplayProps) {
       
       <div style={styles.infoItem}>
         <label style={styles.infoLabel}>Giới tính</label>
-        <div style={styles.infoValue}>{getGenderText(user.gender)}</div>
+        <div style={styles.infoValue}>{getGenderText(user.gender ?? 'Nam')}</div>
       </div>
 
       <div style={{ ...styles.infoItem, ...styles.fullWidth }}>

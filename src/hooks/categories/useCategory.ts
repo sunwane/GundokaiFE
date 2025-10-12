@@ -48,9 +48,8 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
     const fetchCategoryData = async () => {
       try {
         // 🔄 Lấy subcategory đầy đủ
-        const subCategory = await SubCategoryService.getSubCategoryById(subCategoryId);
-        console.log("Fetched SubCategory:", subCategory);
-        const subCategoryData = subCategory.result || subCategory.data || subCategory;
+        const subCategory = await SubCategoryService.getSubCategoryById(subCategoryId)!;
+        const subCategoryData = subCategory?.result || subCategory?.data || subCategory;
         if (subCategoryData) {
           setSubCategory(subCategoryData);
           setSubCategoryName(subCategoryData.subCategoryName);
@@ -59,7 +58,7 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
           // 🔄 Lấy category đầy đủ từ categoryId
           const category = await CategoryService.getCategoryById(subCategoryData.mainCategory.id);
           console.log("Fetched Category:", category);
-          const categoryData = category.result || category.data || category;
+          const categoryData = category?.result || category?.data || category;
           if (categoryData) {
             setCategory(categoryData);
             setCategoryName(categoryData.categoryName);

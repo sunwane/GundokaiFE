@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/auth/useAuth';
+import { AuthMode, useAuth } from '@/hooks/auth/useAuth';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import TabToggle from '@/component/ui/form/TabToggle';
 import LoginForm from './LoginForm';
@@ -39,17 +39,17 @@ export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
 
   const validation = useFormValidation();
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validation.validateLogin(auth.loginData)) return;
-    await auth.handleLogin(e);
-  };
+  // const handleLoginSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!validation.validateLogin(auth.loginData)) return;
+  //   await auth.handleLogin(e);
+  // };
 
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validation.validateRegister(auth.registerData)) return;
-    await auth.handleRegister(e);
-  };
+  // const handleRegisterSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!validation.validateRegister(auth.registerData)) return;
+  //   await auth.handleRegister(e);
+  // };
 
   return (
     <BaseAuthCard className="auth-form">
@@ -59,7 +59,7 @@ export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
         <TabToggle
           options={tabOptions}
           activeTab={authMode}
-          onTabChange={setAuthMode}
+          onTabChange={(tab) => setAuthMode(tab as AuthMode)}
           mode={mode}
         />
         
@@ -70,7 +70,7 @@ export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
                 data={loginData}
                 isLoading={isLoading}
                 error={error}
-                validationErrors={errors}
+                validationErrors={errors || {}}
                 showPassword={showPassword}
                 mode={mode}
                 onInputChange={handleLoginInputChange}
@@ -82,7 +82,7 @@ export default function AuthForm({ mode = 'dark' }: AuthFormProps) {
                 data={registerData}
                 isLoading={isLoading}
                 error={error}
-                validationErrors={errors}
+                validationErrors={errors || {}}
                 showPassword={showPassword}
                 mode={mode}
                 onInputChange={handleRegisterInputChange}

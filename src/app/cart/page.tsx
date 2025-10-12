@@ -28,7 +28,7 @@ export default function CartPage() {
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [manualCart, setManualCart] = useState<{
-    items: CartItemType[];
+    items: any[];
     total_quantity: number;
     total_amount: number;
     subtotal: number;

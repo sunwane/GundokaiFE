@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/AuthService';
 import { UserService } from '@/services/UserService';
 import { LoginRequest, RegisterRequest } from '@/types/Account';
+import { ValidationErrors } from './useForgotPasswordValidation';
 
 export type AuthMode = 'login' | 'register';
 
@@ -11,6 +12,7 @@ export interface UseAuthReturn {
   authMode: AuthMode;
   isLoading: boolean;
   error: string;
+  errors?: ValidationErrors; // Validation errors
   showPassword: boolean;
   loginData: LoginRequest;
   registerData: RegisterRequest;
@@ -34,6 +36,7 @@ export const useAuth = (): UseAuthReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors | undefined>(undefined);
   
   const [loginData, setLoginData] = useState<LoginRequest>({
     email: '',
@@ -125,6 +128,7 @@ export const useAuth = (): UseAuthReturn => {
     authMode,
     isLoading,
     error,
+    errors,
     showPassword,
     loginData,
     registerData,

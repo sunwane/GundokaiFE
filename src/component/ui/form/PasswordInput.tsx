@@ -12,7 +12,7 @@ interface PasswordInputProps {
   showPassword: boolean;
   mode?: ThemeMode;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onTogglePassword: () => void;
+  onTogglePassword: (show: boolean) => void;
 }
 
 export default function PasswordInput({
@@ -53,7 +53,7 @@ export default function PasswordInput({
         />
         <button
           type="button"
-          onClick={onTogglePassword}
+          onClick={() => onTogglePassword(!showPassword)}
           style={styles.toggleButton}
           aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
         >

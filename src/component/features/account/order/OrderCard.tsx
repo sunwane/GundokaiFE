@@ -1,10 +1,10 @@
 import React from 'react';
-import { OrderWithDetails } from '@/types/Order';
-import { OrderService } from '@/services/OrderService';
 import StatusBadge from '@/component/ui/StatusBadge';
+import { Order } from '@/types/Order';
+import { OrderService } from '@/services/OrderService';
 
 interface OrderCardProps {
-  order: OrderWithDetails;
+  order: Order;
 }
 
 export default function OrderCard({ order }: OrderCardProps) {
@@ -29,8 +29,8 @@ export default function OrderCard({ order }: OrderCardProps) {
     <div style={styles.orderCard}>
       <div style={styles.orderHeader}>
         <div style={styles.orderInfo}>
-          <h3 style={styles.orderNumber}>Đơn hàng #{order.order_id}</h3>
-          <p style={styles.orderDate}>{formatDate(order.order_date)}</p>
+          <h3 style={styles.orderNumber}>Đơn hàng #{order.orderId}</h3>
+          <p style={styles.orderDate}>{formatDate(order.orderDate)}</p>
         </div>
         <StatusBadge
           status={order.status}
@@ -43,7 +43,7 @@ export default function OrderCard({ order }: OrderCardProps) {
         <div style={styles.customerInfo}>
           <div style={styles.infoRow}>
             <span style={styles.infoLabel}>Người nhận:</span>
-            <span style={styles.infoValue}>{order.customer_Name}</span>
+            <span style={styles.infoValue}>{order.customerName}</span>
           </div>
           <div style={styles.infoRow}>
             <span style={styles.infoLabel}>Số điện thoại:</span>
@@ -57,13 +57,13 @@ export default function OrderCard({ order }: OrderCardProps) {
 
         <div style={styles.orderItems}>
           <h4 style={styles.itemsTitle}>Chi tiết sản phẩm:</h4>
-          {order.details.map((detail) => (
+          {order.orderDetails.map((detail) => (
             <div key={detail.id} style={styles.orderItem}>
               <span style={styles.itemInfo}>
                 Sản phẩm #{detail.productId} × {detail.quantity}
               </span>
               <span style={styles.itemPrice}>
-                {formatPrice(detail.price)}
+                {formatPrice(detail.unitPrice * detail.quantity)}
               </span>
             </div>
           ))}
@@ -73,7 +73,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       <div style={styles.orderFooter}>
         <div style={styles.totalAmount}>
           <span style={styles.totalLabel}>Tổng tiền:</span>
-          <span style={styles.totalValue}>{formatPrice(order.total_amount)}</span>
+          <span style={styles.totalValue}>{formatPrice(order.totalAmount)}</span>
         </div>
       </div>
     </div>

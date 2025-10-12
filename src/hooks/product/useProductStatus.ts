@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Product } from '@/types/Product';
 
-export type ProductStatusType = 'in-stock' | 'out-of-stock' | 'coming-soon';
+export type ProductStatusType = 'Còn hàng' | 'Hết hàng' | 'Hàng sắp về';
 
 export interface ProductStatusInfo {
   statusType: ProductStatusType;
@@ -28,7 +28,7 @@ export function useProductStatus(product: Product): ProductStatusInfo {
     let badgeConfig = undefined;
 
     if(status == 'Hàng sắp về'){
-      statusType = 'coming-soon';
+      statusType = 'Hàng sắp về';
       isComingSoon = true;
       statusLabel = 'HÀNG SẮP VỀ';
       badgeConfig = {
@@ -37,7 +37,7 @@ export function useProductStatus(product: Product): ProductStatusInfo {
         backgroundColor: 'rgb(0, 119, 255)',
       };
     }else if(stockQuantity == 0 || status == 'Hết hàng'){
-      statusType = 'out-of-stock';
+      statusType = 'Hết hàng';
       isOutOfStock = true;
       statusLabel = 'HẾT HÀNG';
     }

@@ -4,7 +4,7 @@ import { Product } from '@/types/Product';
 import { CartService } from '@/services/CartService';
 
 export function useCart() {
-  const [cart, setCart] = useState<Cart>({ items: [], total_quantity: 0, total_amount: 0, subtotal: 0 });
+  const [cart, setCart] = useState<any>({ items: [], total_quantity: 0, total_amount: 0, subtotal: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -79,8 +79,8 @@ export default function CartItem({
         {/* Card Label */}
         <div style={styles.cardLabelContainer}>
           <CardLabel
-            categoryId={categoryName}
-            subcategoryId={subCategoryName}
+            categoryId={categoryName || ""}
+            subcategoryId={subCategoryName || ""}
           />
         </div>
 

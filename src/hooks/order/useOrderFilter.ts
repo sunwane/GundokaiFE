@@ -1,16 +1,16 @@
 import { useState, useMemo } from 'react';
-import { OrderWithDetails } from '@/types/Order';
+import { Order } from '@/types/Order';
 
 export type OrderStatus = 'all' | 'pending' | 'shipping' | 'delivered' | 'cancelled';
 
 interface OrderFilterHookReturn {
   selectedStatus: OrderStatus;
   setSelectedStatus: (status: OrderStatus) => void;
-  filteredOrders: OrderWithDetails[];
+  filteredOrders: Order[];
   orderCounts: Record<OrderStatus, number>;
 }
 
-export function useOrderFilter(orders: OrderWithDetails[]): OrderFilterHookReturn {
+export function useOrderFilter(orders: Order[]): OrderFilterHookReturn {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('all');
 
   // Tính số lượng đơn hàng theo từng trạng thái
@@ -37,7 +37,7 @@ export function useOrderFilter(orders: OrderWithDetails[]): OrderFilterHookRetur
     if (selectedStatus === 'all') {
       return orders;
     }
-    return orders.filter(order => order.status === selectedStatus);
+    return orders.filter(order => order.status === selectedStatus as Order['status']);
   }, [orders, selectedStatus]);
 
   return {
