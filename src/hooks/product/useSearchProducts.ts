@@ -34,8 +34,7 @@ export function useSearchProducts(): UseSearchProductsReturn {
       // );
       const response: ProductResponse = await ProductService.searchProducts(query);
       
-      // ✅ XỬ LÝ RESPONSE THEO STRUCTURE CỦA BE
-      const results = response.result || response.data || [];
+      const results = response.result || [];
       setSearchResults(Array.isArray(results) ? results : []);
       
       setSearchResults(results);
