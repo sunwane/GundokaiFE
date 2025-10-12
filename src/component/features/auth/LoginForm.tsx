@@ -4,9 +4,9 @@ import PasswordInput from '@/component/ui/form/PasswordInput';
 import SubmitButton from '@/component/ui/form/SubmitButton';
 import ErrorMessage from '@/component/ui/ErrorMessage';
 import { LoginRequest } from '@/types/Account';
-import { ValidationErrors } from '@/hooks/validation/useValidation';
 import { ThemeMode } from '@/types/Theme';
 import { useRouter } from 'next/navigation';
+import { ValidationErrors } from '@/hooks/auth/useForgotPasswordValidation';
 
 interface LoginFormProps {
   data?: LoginRequest;

@@ -11,7 +11,6 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { useToggle } from '@/hooks/useToggle';
 
 // Import các hooks có sẵn
-import { useProducts } from '@/hooks/product/useProducts';
 import { useProductFilter } from '@/hooks/product/useProductFilter';
 
 // Import custom hook mới cho search
@@ -136,7 +135,7 @@ export default function SearchResultPage() {
             >
               <div style={styles.searchHeader}>
                 <h1 style={styles.title}>
-                  Kết quả tìm kiếm cho: <span style={styles.queryText}>"{query}"</span>
+                  Kết quả tìm kiếm cho: <span style={styles.queryText}>{`"${query}"`}</span>
                 </h1>
                 <p style={styles.resultCount}>
                   Tìm thấy {sortedAndFilteredProducts.length} sản phẩm

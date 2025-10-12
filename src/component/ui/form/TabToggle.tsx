@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeMode, getTheme } from '@/types/Theme';
+import { ThemeColors, ThemeMode, getTheme } from '@/types/Theme';
 
 interface TabOption {
   value: string;
@@ -85,7 +85,7 @@ function darkenColor(color: string, amount: number = 0.1, mode: ThemeMode = 'lig
   return mode === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)';
 }
 
-function getStyles(theme: any, mode: ThemeMode) {
+function getStyles(theme: ThemeColors, mode: ThemeMode) {
   return {
     tabsList: {
       display: 'grid',

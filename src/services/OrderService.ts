@@ -68,7 +68,7 @@ export class OrderService {
   /**
    * 📋 Lấy lịch sử mua hàng của người dùng hiện tại (có phân trang)
    */
-  static async getOrderHistory(page: number = 0, size: number = 10): Promise<any> {
+  static async getOrderHistory(page: number = 0, size: number = 10): Promise<OrderPageResponse> {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -92,8 +92,7 @@ export class OrderService {
         throw new Error(errorData.message || 'Có lỗi xảy ra khi lấy lịch sử mua hàng');
       }
 
-      const data = await response.json();
-      // console.log('API response data:', data);
+      const data: OrderPageResponse = await response.json();
       
       // Kiểm tra và sửa totalPages nếu cần
       if (data.result && data.result.content) {
@@ -119,7 +118,7 @@ export class OrderService {
   /**
    * 📋 Lấy tất cả đơn hàng (không phân trang)
    */
-  static async getAllOrders(): Promise<any> {
+  static async getAllOrders(): Promise<OrderListResponse> {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -140,7 +139,7 @@ export class OrderService {
         throw new Error(errorData.message || 'Có lỗi xảy ra khi lấy danh sách đơn hàng');
       }
 
-      const data = await response.json();
+      const data: OrderListResponse = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching all orders:', error);

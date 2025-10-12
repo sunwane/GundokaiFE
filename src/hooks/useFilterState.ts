@@ -30,7 +30,7 @@ export interface UseFilterStateReturn {
 
 const DEFAULT_FILTERS: FilterState = {
   stockFilter: ['Tất cả'],
-  priceRange: { min: 0, max: 10000000 },
+  priceRange: { min: 0, max: 50000000 },
   categories: [],
 };
 

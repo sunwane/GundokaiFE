@@ -8,7 +8,7 @@ export default function ModelSection() {
       <GundamScene3D />
       <div style={styles.modelCredit}>
         <p>
-          Model: "エールストライク/GAT-X105 Aile Strike" by みそ太郎 under{' '}
+          Model: {`"エールストライク/GAT-X105 Aile Strike"`} by みそ太郎 under{' '}
           <a 
             href="http://creativecommons.org/licenses/by/4.0/" 
             target="_blank" 

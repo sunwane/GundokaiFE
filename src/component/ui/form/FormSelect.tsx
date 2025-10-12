@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeMode, getTheme } from '@/types/Theme';
+import { ThemeColors, ThemeMode, getTheme } from '@/types/Theme';
 
 interface FormSelectProps {
   id: string;
@@ -11,6 +11,16 @@ interface FormSelectProps {
   mode?: ThemeMode; // ✅ Thêm mode prop
   options: { value: string; label: string }[];
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+interface Theme {
+  inputBackground: string;
+  inputBorder: string;
+  inputText: string;
+  labelText: string;
+  errorBorder: string;
+  errorBackground: string;
+  errorText: string;
 }
 
 export default function FormSelect({
@@ -56,7 +66,7 @@ export default function FormSelect({
 }
 
 // ✅ Generate styles based on theme
-function getStyles(theme: any) {
+function getStyles(theme: ThemeColors) {
   return {
     formGroup: {
       display: 'flex',

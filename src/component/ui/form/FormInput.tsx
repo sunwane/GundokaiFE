@@ -1,5 +1,6 @@
 import React from 'react';
-import { ThemeMode, getTheme } from '@/types/Theme';
+import { ThemeColors, ThemeMode, getTheme } from '@/types/Theme';
+import { Style } from 'util';
 
 interface FormInputProps {
   id: string;
@@ -12,6 +13,16 @@ interface FormInputProps {
   required?: boolean;
   mode?: ThemeMode;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface Theme {
+  inputBackground: string;
+  inputBorder: string;
+  inputText: string;
+  labelText: string;
+  errorBorder: string;
+  errorBackground: string;
+  errorText: string;
 }
 
 export default function FormInput({
@@ -55,7 +66,7 @@ export default function FormInput({
   );
 }
 
-function getStyles(theme: any) {
+function getStyles(theme: ThemeColors) {
   return {
     formGroup: {
       display: 'flex',

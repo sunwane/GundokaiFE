@@ -2,9 +2,10 @@
 import React from 'react';
 import { useSubCategories } from '@/hooks/categories/useSubCategories';
 import LoadingSpinner from '@/component/ui/LoadingSpinner'; // ✅ Import LoadingSpinner
+import { Category } from '@/types/Category';
 
 interface CategoryMenuItemProps {
-  category: any;
+  category: Category;
   isSelected: boolean;
   onClick: (categoryId: string) => void;
   onSubCategoryClick: (subCategoryId: string) => void;

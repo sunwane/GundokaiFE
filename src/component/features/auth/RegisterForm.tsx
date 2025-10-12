@@ -6,12 +6,13 @@ import SubmitButton from '@/component/ui/form/SubmitButton';
 import ErrorMessage from '@/component/ui/ErrorMessage';
 import { RegisterRequest } from '@/types/Account';
 import { ThemeMode } from '@/types/Theme';
+import { ValidationErrors } from '@/hooks/auth/useForgotPasswordValidation';
 
 interface RegisterFormProps {
   data: RegisterRequest;
   isLoading: boolean;
   error: string;
-  validationErrors: any;
+  validationErrors: ValidationErrors;
   showPassword: boolean;
   mode?: ThemeMode;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;

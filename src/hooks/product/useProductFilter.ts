@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Product, StockStatus } from '@/types/Product';
 import { SortType } from '@/component/features/product/SortBar';
-import { useCategoryFilter } from './useCategoryFilter';
+import { CategoryGroup, useCategoryFilter } from './useCategoryFilter';
+import { SubCategory } from '@/types/SubCategory';
 
 export interface FilterState {
   stockFilter: StockStatus[];
@@ -13,9 +14,9 @@ export interface UseProductFilterReturn {
   sortedAndFilteredProducts: Product[];
   filterCount: number;
   categoryData: {
-    categoryGroups: any[];
+    categoryGroups: CategoryGroup[];
     loading: boolean;
-    subCategories: any[];
+    subCategories: SubCategory[];
     handleSubCategoryChange: (
       subCategoryId: string,
       selectedCategories: string[],

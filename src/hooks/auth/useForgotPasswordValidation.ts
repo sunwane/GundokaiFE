@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { ForgotPasswordFormState } from './useForgotPasswordForm';
 
 export interface ValidationErrors {
+  username?: string;
+  password?: string;
+  gender?: string;
   email?: string;
   verificationCode?: string;
   newPassword?: string;

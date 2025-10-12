@@ -1,12 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export interface ModalState {
+export interface ModalState<T = unknown> {
   isOpen: boolean;
-  data?: any;
+  data?: T;
 }
 
-export function useModalState<T = any>(initialState: boolean = false) {
+export function useModalState<T = unknown>(initialState: boolean = false) {
   const [state, setState] = useState<ModalState>({
     isOpen: initialState,
     data: undefined,

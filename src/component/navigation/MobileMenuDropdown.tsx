@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
 import CategoryMenuItem from '@/component/navigation/CategoryMenuItem';
+import { Category } from '@/types/Category';
 
 interface MobileMenuDropdownProps {
   isOpen: boolean;
-  categories: any[];
+  categories: Category[];
   selectedCategory: string | null;
   onCategoryClick: (categoryId: string) => void;
   onSubCategoryClick: (subCategoryId: string) => void;

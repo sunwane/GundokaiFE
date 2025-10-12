@@ -1,4 +1,4 @@
-import { Notification } from '@/types/Notification';
+import { Notification, NotificationBEResponse } from '@/types/Notification';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
@@ -9,7 +9,7 @@ export class NotificationService {
   }
 
   // ✅ Hàm helper để transform data từ BE response
-  private static transformNotification(beNotification: any): Notification {
+  private static transformNotification(beNotification: NotificationBEResponse): Notification {
     return {
       id: beNotification.id,
       user_id: beNotification.user_id,          // ✅ Giữ nguyên field name

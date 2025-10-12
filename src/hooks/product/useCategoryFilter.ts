@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { useSubCategories } from '@/hooks/categories/useSubCategories';
 import { useCategories } from '@/hooks/categories/useCategories';
 import { Product } from '@/types/Product';
+import { SubCategory } from '@/types/SubCategory';
 
-interface CategoryGroup {
+export interface CategoryGroup {
   categoryId: string;
   categoryName: string;
   subcategories: {
@@ -16,7 +17,7 @@ interface CategoryGroup {
 export interface UseCategoryFilterReturn {
   categoryGroups: CategoryGroup[];
   loading: boolean;
-  subCategories: any[];
+  subCategories: SubCategory[];
   handleSubCategoryChange: (
     subCategoryId: string,
     selectedCategories: string[],

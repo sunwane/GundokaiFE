@@ -9,10 +9,10 @@ interface PriceRangeSliderProps {
 }
 
 export default function PriceRangeSlider({
-  priceRange = { min: 0, max: 10000000 }, // Thêm mặc định
+  priceRange = { min: 0, max: 50000000 }, // Thêm mặc định
   onPriceRangeChange,
   minPrice = 0,
-  maxPrice = 10000000
+  maxPrice = 50000000
 }: PriceRangeSliderProps) {
   const [tempMin, setTempMin] = useState(priceRange.min);
   const [tempMax, setTempMax] = useState(priceRange.max);

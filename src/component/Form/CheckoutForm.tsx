@@ -1,6 +1,6 @@
 // components/forms/CheckoutForm.tsx
 import React, { useState } from "react";
-import { CreateOrderRequest, PaymentMethod } from "@/types/Order";
+import { CreateOrderRequest, Order, PaymentMethod } from "@/types/Order";
 import { OrderService } from "@/services/OrderService";
 
 interface CheckoutItem {
@@ -16,7 +16,7 @@ interface CheckoutFormProps {
   totalAmount: number;
   isOpen: boolean;
   onClose: () => void;
-  onOrderSuccess: (order: any) => void;
+  onOrderSuccess: (order: Order) => void;
 }
 
 export const CheckoutForm: React.FC<CheckoutFormProps> = ({
@@ -54,8 +54,6 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setError(null);
 
     try {
-      console.log("Cart items:", cartItems);
-      console.log("Total amount:", totalAmount);
       const orderRequest: CreateOrderRequest = {
         total: totalAmount,
         paymentMethod: formData.paymentMethod,
@@ -69,7 +67,6 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         })),
       };
 
-      console.log("Sending order request:", orderRequest);
       // ✅ Validation trước khi gửi
       if (totalAmount <= 0) {
         setError("Tổng tiền đơn hàng phải lớn hơn 0");

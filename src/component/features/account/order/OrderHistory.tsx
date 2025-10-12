@@ -47,8 +47,8 @@ const OrderHistory: React.FC = () => {
     // console.log(`=== SORTING BY: ${sortOption.label} ===`);
 
     const sorted = [...ordersToSort].sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: Order | number | string;
+      let bValue: Order | number | string;
 
       switch (sortOption.field) {
         case "orderDate":

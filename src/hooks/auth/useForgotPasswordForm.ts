@@ -23,7 +23,7 @@ export const useForgotPasswordForm = () => {
     codeVerified: false,
   });
 
-  const updateField = (field: keyof ForgotPasswordFormState, value: any) => {
+  const updateField = (field: keyof ForgotPasswordFormState, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

@@ -2,19 +2,20 @@
 import { useCart } from './useCart';
 import { useRouter } from 'next/navigation';
 import { useResponsive } from '@/hooks/useResponsive';
-import { usePopupMessage } from '@/hooks/ui/usePopupMessage';
+import { usePopupMessage, UsePopupMessageReturn } from '@/hooks/ui/usePopupMessage';
+import { Cart} from '@/types/Cart';
 
 export interface UseCartPageReturn {
-  cart: any;
+  cart: Cart;
   loading: boolean;
   isMobile: boolean;
-  router: any;
+  router: ReturnType<typeof useRouter>;
   handleQuantityChange: (productId: string, quantity: number) => void;
   handleRemoveItem: (productId: string) => void;
   handleClearCart: () => void;
   handleCheckout: () => void;
   formatPrice: (price: number) => string;
-  popupMessage: any;
+  popupMessage: UsePopupMessageReturn;
 }
 
 export function useCartPage(): UseCartPageReturn {

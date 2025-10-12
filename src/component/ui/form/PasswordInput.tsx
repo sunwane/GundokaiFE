@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeMode, getTheme } from '@/types/Theme';
+import { ThemeColors, ThemeMode, getTheme } from '@/types/Theme';
 
 interface PasswordInputProps {
   id: string;
@@ -57,7 +57,19 @@ export default function PasswordInput({
           style={styles.toggleButton}
           aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
         >
-          {showPassword ? '👁️' : '🙈'}
+          {showPassword ? (
+            <img
+            src={mode === 'dark' ? './images/icons/Eye.png' : './images/icons/EyeBlue.png'}
+            alt="Ẩn mật khẩu"
+              className="h-5 w-5"
+            />
+          ) : (
+            <img
+            src={mode === 'dark' ? './images/icons/ClosedEye.png' : './images/icons/ClosedEyeBlue.png'}
+            alt="Hiện mật khẩu"
+              className="h-5 w-5"
+            />
+          )}
         </button>
       </div>
       {error && (
@@ -67,7 +79,7 @@ export default function PasswordInput({
   );
 }
 
-function getStyles(theme: any) {
+function getStyles(theme: ThemeColors) {
   const styles = {
     input: {
       padding: '0.5rem',

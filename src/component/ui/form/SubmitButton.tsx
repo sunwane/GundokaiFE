@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeMode, getTheme } from '@/types/Theme';
+import { ThemeColors, ThemeMode, getTheme } from '@/types/Theme';
 
 interface SubmitButtonProps {
   isLoading: boolean;
@@ -43,7 +43,7 @@ export default function SubmitButton({
   );
 }
 
-function getStyles(theme: any, mode: ThemeMode) {
+function getStyles(theme: ThemeColors, mode: ThemeMode) {
   return {
     submitButton: {
       padding: '0.75rem 1rem',
