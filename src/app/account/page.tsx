@@ -11,6 +11,9 @@ import LoadingSpinner from "@/component/ui/LoadingSpinner";
 import { useAccount } from "@/hooks/useAccount";
 import Footer from "@/component/layout/footer/Footer";
 
+//cứu deploy
+export const dynamic = "force-dynamic";
+
 export default function AccountPage() {
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab") || "account";

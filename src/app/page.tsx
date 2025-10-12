@@ -8,6 +8,8 @@ import Footer from "@/component/layout/footer/Footer";
 import { useResponsive } from "@/hooks/useResponsive";
 import { banners, categories, gundamModels } from "@/data/homeData";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const { isMobile } = useResponsive({ mobile: 400 });
 
