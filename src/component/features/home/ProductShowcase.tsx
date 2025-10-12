@@ -28,6 +28,7 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
         // setHotProducts(hotResponse.result || hotResponse.data || hotResponse || []);
         // setLatestProducts(latestResponse.result || latestResponse.data || latestResponse || []);
         setHotProducts(hotResponse?.result || hotResponse || []);
+        setLatestProducts(latestResponse?.result || latestResponse || []);
       } catch (error) {
         console.error('Error fetching showcase products:', error);
       } finally {

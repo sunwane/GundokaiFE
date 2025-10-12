@@ -17,7 +17,7 @@ export class CategoryService {
     
     if (!apiAvailable) {
       return {
-        data: mockCategories,
+        result: mockCategories,
         total: mockCategories.length,
         message: 'Categories fetched successfully (Mock Data)'
       };
@@ -33,7 +33,7 @@ export class CategoryService {
       const data = await response.json();
       
       return {
-        data: Array.isArray(data.result) ? data.result : Array.isArray(data.data) ? data.data : [],
+        result: Array.isArray(data.result) ? data.result : Array.isArray(data.data) ? data.data : [],
         total: data.total || 0,
         message: data.message || 'Categories fetched successfully (Real API)'
       };
@@ -42,7 +42,7 @@ export class CategoryService {
       console.error('❌ Real API failed, falling back to mock data:', error);
       // 🔄 Fallback: Return mock data
       return {
-        data: mockCategories,
+        result: mockCategories,
         total: mockCategories.length,
         message: 'Categories fetched successfully (Mock Data - API Failed)'
       };

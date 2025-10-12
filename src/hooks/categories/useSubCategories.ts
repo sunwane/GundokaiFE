@@ -16,11 +16,11 @@ export function useSubCategories(categoryId?: string) {
       let data: SubCategory[];
       if (categoryId) {
        const response = await SubCategoryService.getSubCategoriesByCategoryId(categoryId);
-        data = response.result || response.data || response || [];
+        data =  response || [];
         
       } else {
         const response = await SubCategoryService.getSubCategories();
-        data = response.result || response.data || response || [];
+        data = response.result || response || [];
       }
       setSubCategories(Array.isArray(data) ? data : []);
     } catch (err) {

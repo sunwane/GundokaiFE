@@ -13,7 +13,7 @@ export class ProductService {
     
     if (!apiAvailable) {
       return {
-        data: mockProducts,
+        result: mockProducts,
         total: mockProducts.length,
         message: 'SubCategories fetched successfully (Mock Data)'
       };
@@ -38,7 +38,7 @@ export class ProductService {
     } catch (error) {
       console.error('Error fetching products, fallback mockup data:', error);
       return {
-        data: mockProducts,
+        result: mockProducts,
         total: mockProducts.length,
         message: 'SubCategories fetched successfully (Mock Data)'
       };
@@ -79,7 +79,7 @@ export class ProductService {
         pro => pro.subcategory.id === subCategoryId
       );
       return {
-        data: filteredProduct,
+        result: filteredProduct,
         total: filteredProduct.length,
         message: 'Products fetched successfully (Mock Data - API not available)'
       };
@@ -109,7 +109,7 @@ export class ProductService {
     
     const activeProducts = mockProducts.filter(p => p.status === 'Còn hàng');
     return {
-      data: activeProducts,
+      result: activeProducts,
       total: activeProducts.length,
       message: "Sản phẩm còn hàng"
     };
@@ -135,7 +135,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       pro => pro.productName.toLowerCase().includes(query.toLowerCase())
     );
     return {
-      data: filteredProduct,
+      result: filteredProduct,
       total: filteredProduct.length,
       message: 'Products fetched successfully (Mock Data - API not available)'
     };
@@ -172,7 +172,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       p.price >= minPrice && p.price <= maxPrice
     );
     return {
-      data: filteredProducts,
+      result: filteredProducts,
       total: filteredProducts.length,
       message: `Products in price range: ${minPrice.toLocaleString('vi-VN')}đ - ${maxPrice.toLocaleString('vi-VN')}đ`
     };
@@ -195,7 +195,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
     await new Promise(resolve => setTimeout(resolve, 400));
     const outOfStockProducts = mockProducts.filter(p => p.status === 'Hết hàng');
     return {
-      data: outOfStockProducts,
+      result: outOfStockProducts,
       total: outOfStockProducts.length,
       message: "Sản phẩm hết hàng"
     };
@@ -212,7 +212,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
     await new Promise(resolve => setTimeout(resolve, 400));
     const comingSoonProducts = mockProducts.filter(p => p.status === 'Hàng sắp về');
     return {
-      data: comingSoonProducts,
+      result: comingSoonProducts,
       total: comingSoonProducts.length,
       message: "Hàng sắp về"
     };
@@ -234,7 +234,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       const leastQuantityProducts = sortedProducts.slice(0, 5);
 
       return {
-        data: leastQuantityProducts,
+        result: leastQuantityProducts,
         total: leastQuantityProducts.length,
         message: 'Top 5 products with the least quantity fetched successfully (Mock Data - API not available)',
       };
@@ -262,7 +262,7 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       );
       const latest5Products = sortedByDate.slice(0, 5);
       return {
-        data: latest5Products,
+        result: latest5Products,
         total: latest5Products.length,
         message: 'Top 5 newest products fetched successfully (Mock Data - API not available)',
       };

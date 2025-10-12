@@ -19,7 +19,7 @@ export function useProducts(subcategoryId?: string | null) {
       } else {
         response = await ProductService.getProducts();
       }
-      setProducts(response.result || response.data || []); // ✅ Giá trị mặc định
+      setProducts(response.result || []); // ✅ Giá trị mặc định
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error fetching products:', err);
@@ -41,7 +41,7 @@ export function useProducts(subcategoryId?: string | null) {
       setLoading(true);
       setError(null);
       const response = await ProductService.searchProducts(query);
-      setProducts(response.data);
+      setProducts(response.result || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error searching products:', err);
@@ -70,7 +70,7 @@ export function useProducts(subcategoryId?: string | null) {
           response = await ProductService.getProducts();
       }
       
-      setProducts(response.data);
+      setProducts(response.result || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error filtering products:', err);
@@ -84,7 +84,7 @@ export function useProducts(subcategoryId?: string | null) {
       setLoading(true);
       setError(null);
       const response = await ProductService.getProductsByPriceRange(minPrice, maxPrice);
-      setProducts(response.data);
+      setProducts(response.result || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error filtering products by price:', err);
