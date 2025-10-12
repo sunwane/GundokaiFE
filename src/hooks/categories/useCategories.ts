@@ -33,7 +33,8 @@ export function useCategories() {
       const response = await CategoryService.getCategories();
       console.log('Fetched categories:', response);
       // ✅ Cách ngắn gọn với optional chaining
-      const categoriesData = response.result || response.data || [];
+      // const categoriesData = response.result || response.data || [];
+      const categoriesData = response?.result || response || [];
       setCategories(Array.isArray(categoriesData) ? categoriesData : []);
 
     } catch (err) {

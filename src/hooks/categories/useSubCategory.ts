@@ -21,7 +21,7 @@ export function useSubCategory(subcategoryId?: string | null) {
       
       const response = await SubCategoryService.getSubCategoryById(subcategoryId);
 
-      setSubcategory(response?.result || response?.data || response || null);
+      setSubcategory(response || null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error fetching subcategory:', err);

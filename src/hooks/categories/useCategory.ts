@@ -49,16 +49,17 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
       try {
         // 🔄 Lấy subcategory đầy đủ
         const subCategory = await SubCategoryService.getSubCategoryById(subCategoryId)!;
-        const subCategoryData = subCategory?.result || subCategory?.data || subCategory;
+        // const subCategoryData = subCategory?.result || subCategory?.data || subCategory;
+        const subCategoryData = subCategory;
         if (subCategoryData) {
           setSubCategory(subCategoryData);
           setSubCategoryName(subCategoryData.subCategoryName);
-          setCategoryId(subCategoryData.mainCategoryId);
+          setCategoryId(subCategoryData.mainCategory.id);
         
           // 🔄 Lấy category đầy đủ từ categoryId
           const category = await CategoryService.getCategoryById(subCategoryData.mainCategory.id);
           console.log("Fetched Category:", category);
-          const categoryData = category?.result || category?.data || category;
+          const categoryData = category;
           if (categoryData) {
             setCategory(categoryData);
             setCategoryName(categoryData.categoryName);

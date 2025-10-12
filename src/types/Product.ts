@@ -21,7 +21,8 @@ export interface Product {
 }
 
 export interface ProductResponse {
-  data: Product[];           // ✅ Hoặc result: Product[] tùy BE response structure
+  // data: Product[];           // ✅ Hoặc result: Product[] tùy BE response structure
+  result: Product[];           // ✅ Hoặc result: Product[] tùy BE response structure
   total: number;
   message?: string;
 }

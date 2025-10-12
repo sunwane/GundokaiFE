@@ -5,7 +5,8 @@ export interface Category {
 }
 
 export interface CategoryResponse {
-  data: Category[];
+  //data: Category[];
+  result: Category[];      // ✅ Đổi từ data thành result nếu cần
   total: number;
   message?: string;
 }
