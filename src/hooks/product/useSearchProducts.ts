@@ -1,4 +1,6 @@
 'use client';
+export const dynamic = "force-dynamic";
+
 import { useState, useCallback } from 'react';
 import { Product, ProductResponse } from '@/types/Product';
 import { ProductService } from '@/services/ProductService';

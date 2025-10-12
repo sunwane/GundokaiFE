@@ -1,4 +1,6 @@
 'use client';
+export const dynamic = "force-dynamic";
+
 import React, { useState } from 'react';
 import PageHeader from "@/component/layout/header/PageHeader";
 import ProductCard from "@/component/features/product/ProductCard";
