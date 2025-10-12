@@ -9,11 +9,13 @@ import ProductShowcase from "@/component/features/home/ProductShowcase";
 import Footer from "@/component/layout/footer/Footer";
 import { useResponsive } from "@/hooks/useResponsive";
 import { banners, categories, gundamModels } from "@/data/homeData";
+import React, { Suspense } from "react";
 
 export default function Home() {
   const { isMobile } = useResponsive({ mobile: 400 });
 
   return (
+   <Suspense>
     <div style={styles.wrapper}>
       <PageHeader />
       <BannerList banners={banners} isMobile={isMobile} />
@@ -22,6 +24,7 @@ export default function Home() {
       <ProductShowcase isMobile={isMobile} />
       <Footer />
     </div>
+   </Suspense>
   );
 }
 
