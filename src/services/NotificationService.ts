@@ -1,6 +1,10 @@
 import { Notification, NotificationBEResponse } from '@/types/Notification';
+import { CheckAPIService } from './CheckAPIService';
+import { mockNotifications } from '@/data/mockNoti';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+
+const check_api_url = 'http://localhost:8080/notification';
 
 export class NotificationService {
   // ✅ Hàm helper để lấy token
@@ -20,6 +24,14 @@ export class NotificationService {
   }
 
   static async getUserNotifications(userId: string): Promise<Notification[]> {
+    // 🔍 Kiểm tra API có sẵn không
+    const apiAvailable = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiAvailable) {
+      return mockNotifications
+        .filter(notification => notification.user_id === userId)
+        .sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
+    }
+
     try {
       const token = this.getAuthToken();
       
@@ -63,6 +75,13 @@ export class NotificationService {
   }
 
   static async markAsRead(notificationId: string): Promise<void> {
+    // 🔍 Kiểm tra API có sẵn không
+    const apiAvailable = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiAvailable) {
+      alert('API hiện không có sẵn, chưa thể đánh dấu thật, đây là bản preview giao diện.');
+      return;
+    }
+
     try {
       const token = this.getAuthToken();
       
@@ -92,6 +111,13 @@ export class NotificationService {
   }
 
   static async markAllAsRead(userId: string): Promise<void> {
+    // 🔍 Kiểm tra API có sẵn không
+    const apiAvailable = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiAvailable) {
+      alert('API hiện không có sẵn, chưa thể đánh dấu thật, đây là bản preview giao diện.');
+      return;
+    }
+
     try {
       const notifications = await this.getUserNotifications(userId);
       const unreadNotifications = notifications.filter(n => !n.is_read);

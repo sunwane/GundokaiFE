@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Notification } from '@/types/Notification';
 import { NotificationService } from '@/services/NotificationService';
+import { CheckAPIService } from '@/services/CheckAPIService';
 
 interface UseAutoRefreshNotificationsReturn {
   notifications: Notification[];
@@ -14,6 +15,8 @@ interface UseAutoRefreshNotificationsReturn {
   markAsRead: (notificationId: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
 }
+
+const check_api_url = 'http://localhost:8080/notification';
 
 export function useAutoRefreshNotifications(userId: string): UseAutoRefreshNotificationsReturn {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -67,6 +70,12 @@ export function useAutoRefreshNotifications(userId: string): UseAutoRefreshNotif
 
   // Kiểm tra thông báo mới (không có dependencies để tránh infinite loop)
   const checkForNewNotifications = useCallback(async () => {
+    // 🔍 Kiểm tra API có sẵn không
+    const apiAvailable = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiAvailable) {
+      return;
+    }
+
     const currentUserId = userIdRef.current;
     if (!currentUserId) return;
 

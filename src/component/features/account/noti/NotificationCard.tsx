@@ -69,7 +69,9 @@ export default function NotificationCard({ notification, onMarkAsRead }: Notific
 
 const styles = {
   notificationCard: {
-    border: '1px solid #e5e7eb',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#e5e7eb', // Tách border thành các thuộc tính riêng
     borderRadius: '8px',
     padding: '16px',
     cursor: 'pointer',
@@ -78,7 +80,7 @@ const styles = {
   },
   notificationUnread: {
     backgroundColor: '#eff6ff',
-    borderColor: '#bfdbfe',
+    borderColor: '#bfdbfe', // Chỉ thay đổi borderColor
   },
   notificationHeader: {
     display: 'flex',
