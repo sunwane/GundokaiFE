@@ -1,5 +1,4 @@
 import React from 'react';
-import { Notification } from '@/types/Notification';
 import NotificationCard from './NotificationCard';
 import { useAutoRefreshNotifications } from '@/hooks/useAutoRefreshNotifications';
 

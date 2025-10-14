@@ -1,8 +1,10 @@
-// src/services/OrderService.ts
 import { Order, OrderDetail, CreateOrderRequest, CreateOrderResponse, OrderStatus, PaymentMethod, UpdateOrderStatusRequest } from '@/types/Order';
-// import { mockOrders, mockOrderDetails } from '@/data/mockOrders';
+import { mockOrders } from '@/data/mockOrders';
+import { CheckAPIService } from './CheckAPIService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+const check_api_url = 'http://localhost:8080/order'
 
 export interface OrderResponse {
   result?: Order;
@@ -37,6 +39,43 @@ export class OrderService {
    * 📋 Tạo đơn hàng mới
    */
   static async createOrder(orderRequest: CreateOrderRequest): Promise<CreateOrderResponse> {
+    const apiStatus = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiStatus) {
+      // Nếu API không hoạt động, trả về mock data
+      alert('Cảm ơn bạn đã trải nghiệm hệ thống, hiện API chưa hoạt động nên hệ thống sẽ không lưu đơn hàng của bạn. Vui lòng thử lại sau, xin lỗi vì sự bất tiện này!');
+  
+      // Mock response
+      const mockResponse: CreateOrderResponse = {
+        code: 100,
+        message: 'Đơn hàng đã được tạo thành công (mock data)',
+        result: {
+          orderId: 'mockOrder001',
+          userId: 'mockUser001',
+          customerName: orderRequest.customerName,
+          phoneNumber: orderRequest.phoneNumber,
+          address: orderRequest.address,
+          orderDate: new Date().toISOString(),
+          totalAmount: orderRequest.total,
+          status: 'PENDING',
+          paymentMethod: orderRequest.paymentMethod,
+          paymentStatus: 'PENDING',
+          email: orderRequest.email,
+          orderDetails: orderRequest.items.map((item, index) => ({
+            id: `mockDetail${index + 1}`,
+            orderId: 'mockOrder001',
+            productId: item.productId,
+            quantity: item.quantity,
+            unitPrice: 100000, // Giá giả lập
+            subTotal: item.quantity * 100000, // Tổng giá giả lập
+            productName: `Mock Product ${index + 1}`, // Tên sản phẩm giả lập
+            status: 'PENDING',
+          })),
+        },
+      };
+  
+      return mockResponse;
+    }
+
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -69,6 +108,23 @@ export class OrderService {
    * 📋 Lấy lịch sử mua hàng của người dùng hiện tại (có phân trang)
    */
   static async getOrderHistory(page: number = 0, size: number = 10): Promise<OrderPageResponse> {
+    const apiStatus = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiStatus) {
+      // Nếu API không hoạt động, trả về mock data
+      const start = page * size;
+      const end = start + size;
+      const pagedOrders = mockOrders.slice(start, end);
+      return {
+        result: {
+          content: pagedOrders,
+          totalElements: mockOrders.length,
+          totalPages: Math.ceil(mockOrders.length / size),
+          size: size,
+          number: page,
+        },
+        message: 'Dữ liệu lịch sử mua hàng (mock data)',
+      };
+    }
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -119,6 +175,14 @@ export class OrderService {
    * 📋 Lấy tất cả đơn hàng (không phân trang)
    */
   static async getAllOrders(): Promise<OrderListResponse> {
+    const apiStatus = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiStatus) {
+      // Nếu API không hoạt động, trả về mock data
+      return {
+        result: mockOrders,
+        message: 'Dữ liệu đơn hàng (mock data)',
+      };
+    }
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -151,6 +215,16 @@ export class OrderService {
    * 🔍 Lấy đơn hàng theo ID
    */
   static async getOrderById(orderId: string): Promise<Order> {
+    const apiStatus = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiStatus) {
+      // Nếu API không hoạt động, trả về mock data
+      const mockOrder = mockOrders.find(order => order.orderId === orderId);
+      if (mockOrder) {
+        return mockOrder;
+      } else {
+        throw new Error('Không tìm thấy đơn hàng (mock data)');
+      }
+    }
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -186,6 +260,13 @@ export class OrderService {
    * 📋 Lấy đơn hàng theo userId (Admin function)
    */
   static async getOrdersByUserId(userId: string, page: number = 0, size: number = 10): Promise<Order[]> {
+    const apiStatus = await CheckAPIService.checkApiAvailability(check_api_url);
+    if (!apiStatus) {
+      // Nếu API không hoạt động, trả về mock data
+      const userOrders = mockOrders.filter(order => order.userId === userId);
+      return userOrders;
+    }
+
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {

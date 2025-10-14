@@ -1,114 +1,194 @@
-// import { Order, OrderDetail } from '@/types/Order';
+import { Order } from '@/types/Order';
 
-// export const mockOrders: Order[] = [
-//   {
-//     order_id: "ORD001",
-//     account_id: "user005",
-//     order_date: '2024-08-01T09:15:00Z',
-//     total_amount: 1480000,
-//     status: 'delivered',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   },
-//   {
-//     order_id: "ORD002",
-//     account_id: "user005",
-//     order_date: '2024-08-05T14:30:00Z',
-//     total_amount: 2450000,
-//     status: 'delivered',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   },
-//   {
-//     order_id: "ORD003",
-//     account_id: "user005",
-//     order_date: '2024-08-10T11:20:00Z',
-//     total_amount: 1570000,
-//     status: 'shipping',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   },
-//   {
-//     order_id: "ORD004",
-//     account_id: "user005",
-//     order_date: '2024-08-14T16:45:00Z',
-//     total_amount: 1030000,
-//     status: 'shipping',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   },
-//   {
-//     order_id: "ORD005",
-//     account_id: "user005",
-//     order_date: '2024-08-16T10:00:00Z',
-//     total_amount: 3950000,
-//     status: 'pending',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   },
-//   {
-//     order_id: "ORD006",
-//     account_id: "user005",
-//     order_date: '2024-08-17T13:30:00Z',
-//     total_amount: 890000,
-//     status: 'pending',
-//     phoneNumber: '0901234567',
-//     address: '123 Nguyễn Văn A, Quận 1, TP.HCM',
-//     customer_Name: 'Nguyễn Văn An'
-//   }
-// ];
-
-// export const mockOrderDetails: OrderDetail[] = [
-//   // ORD001 - MG Sazabi Ver.Ka + Action Base
-//   { id: "OD001", order_id: "ORD001", product_id: "PRD017", quantity: 1, price: 1480000 },
-  
-//   // ORD002 - RG Nu Gundam + RG Strike Freedom + HG RX-78-2
-//   { id: "OD002", order_id: "ORD002", product_id: "PRD009", quantity: 1, price: 750000 },
-//   { id: "OD003", order_id: "ORD002", product_id: "PRD011", quantity: 1, price: 720000 },
-//   { id: "OD004", order_id: "ORD002", product_id: "PRD020", quantity: 3, price: 320000 },
-  
-//   // ORD003 - MG Strike Freedom + RG Sazabi
-//   { id: "OD005", order_id: "ORD003", product_id: "PRD002", quantity: 1, price: 1200000 },
-//   { id: "OD006", order_id: "ORD003", product_id: "PRD012", quantity: 1, price: 850000 },
-  
-//   // ORD004 - HG Strike Freedom + HG Unicorn + Action Base
-//   { id: "OD007", order_id: "ORD004", product_id: "PRD021", quantity: 1, price: 420000 },
-//   { id: "OD008", order_id: "ORD004", product_id: "PRD022", quantity: 1, price: 380000 },
-//   { id: "OD009", order_id: "ORD004", product_id: "PRD003", quantity: 1, price: 180000 },
-//   { id: "OD010", order_id: "ORD004", product_id: "PRD010", quantity: 1, price: 150000 },
-  
-//   // ORD005 - PG Strike Freedom + MG Barbatos Lupus Rex
-//   { id: "OD011", order_id: "ORD005", product_id: "PRD026", quantity: 1, price: 4200000 },
-//   { id: "OD012", order_id: "ORD005", product_id: "PRD016", quantity: 1, price: 1150000 },
-  
-//   // ORD006 - Tanjiro Figure
-//   { id: "OD013", order_id: "ORD006", product_id: "PRD007", quantity: 1, price: 890000 }
-// ];
-
-// // Helper function để lấy orders của một user cụ thể
-// export const getOrdersByUserId = (userId: string): Order[] => {
-//   return mockOrders.filter(order => order.account_id === userId);
-// };
-
-// // Helper function để lấy order details của một order
-// export const getOrderDetailsByOrderId = (orderId: string): OrderDetail[] => {
-//   return mockOrderDetails.filter(detail => detail.order_id === orderId);
-// };
-
-// // Helper function để tính tổng số đơn hàng theo status
-// export const getOrderStatsByUserId = (userId: string) => {
-//   const userOrders = getOrdersByUserId(userId);
-  
-//   return {
-//     total: userOrders.length,
-//     pending: userOrders.filter(order => order.status === 'pending').length,
-//     shipping: userOrders.filter(order => order.status === 'shipping').length,
-//     delivered: userOrders.filter(order => order.status === 'delivered').length,
-//     cancelled: userOrders.filter(order => order.status === 'cancelled').length
-//   };
-// };
+export const mockOrders: Order[] = [
+  {
+    orderId: 'order001',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-10-01T10:30:00.000Z',
+    totalAmount: 1500000,
+    status: 'PENDING',
+    paymentMethod: 'VNPAY',
+    paymentStatus: 'PENDING',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail001',
+        orderId: 'order001',
+        productId: '048d3a43-7b09-4e84-9130-e276c8e68c03',
+        quantity: 2,
+        unitPrice: 650000,
+        subTotal: 1300000,
+        productName: 'HG GQ Sugai\'s Gelgoog',
+        status: 'PENDING',
+      },
+      {
+        id: 'detail002',
+        orderId: 'order001',
+        productId: '061a0b2f-d03d-45b0-91e3-695a9a12266c',
+        quantity: 1,
+        unitPrice: 200000,
+        subTotal: 200000,
+        productName: 'SDW Heroes Alternative Justice Infinite Dragon',
+        status: 'PENDING',
+      },
+    ],
+  },
+  {
+    orderId: 'order002',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-09-28T14:00:00.000Z',
+    totalAmount: 3000000,
+    status: 'CONFIRMED',
+    paymentMethod: 'COD',
+    paymentStatus: 'CONFIRMED',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail003',
+        orderId: 'order002',
+        productId: '08b9a2c9-7512-4fcf-97b4-c0a0ada5469b',
+        quantity: 1,
+        unitPrice: 2079000,
+        subTotal: 2079000,
+        productName: 'RG Evangelion Unit-01 DX Transport Platform Set',
+        status: 'CONFIRMED',
+      },
+      {
+        id: 'detail004',
+        orderId: 'order002',
+        productId: '0a5328e7-6869-4eee-a4c9-3802078bfa37',
+        quantity: 3,
+        unitPrice: 300000,
+        subTotal: 900000,
+        productName: 'SDW Heroes Sun Quan Gundam Astray He Yan Xiang Hu',
+        status: 'CONFIRMED',
+      },
+    ],
+  },
+  {
+    orderId: 'order003',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-09-25T09:15:00.000Z',
+    totalAmount: 5000000,
+    status: 'PROCESSING',
+    paymentMethod: 'VNPAY',
+    paymentStatus: 'PAID',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail005',
+        orderId: 'order003',
+        productId: '0e353fff-be3c-4278-adb3-676e435ec7ed',
+        quantity: 2,
+        unitPrice: 900000,
+        subTotal: 1800000,
+        productName: 'RG 38 Epyon Gundam',
+        status: 'PROCESSING',
+      },
+      {
+        id: 'detail006',
+        orderId: 'order003',
+        productId: '189c2029-529a-4b4d-8106-b5177cf8dc12',
+        quantity: 1,
+        unitPrice: 3400000,
+        subTotal: 3400000,
+        productName: 'PG RX-178 Gundam MK-II',
+        status: 'PROCESSING',
+      },
+    ],
+  },
+  {
+    orderId: 'order004',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-09-20T16:45:00.000Z',
+    totalAmount: 2300000,
+    status: 'SHIPPED',
+    paymentMethod: 'COD',
+    paymentStatus: 'CONFIRMED',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail007',
+        orderId: 'order004',
+        productId: '1c9ca0b0-2708-4eb5-b7b5-e9f44b75db58',
+        quantity: 1,
+        unitPrice: 680000,
+        subTotal: 680000,
+        productName: 'RG 03 Aile Strike Gundam',
+        status: 'SHIPPED',
+      },
+      {
+        id: 'detail008',
+        orderId: 'order004',
+        productId: '1ccaaabb-6e26-409a-be64-892ae5e8b9db',
+        quantity: 2,
+        unitPrice: 950000,
+        subTotal: 1900000,
+        productName: 'Dragon Ball Super Saiyan Broly Full Power',
+        status: 'SHIPPED',
+      },
+    ],
+  },
+  {
+    orderId: 'order005',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-09-15T11:30:00.000Z',
+    totalAmount: 14999000,
+    status: 'DELIVERED',
+    paymentMethod: 'VNPAY',
+    paymentStatus: 'PAID',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail009',
+        orderId: 'order005',
+        productId: '3ff904a4-3e72-4fbc-aef8-fc62591ba232',
+        quantity: 1,
+        unitPrice: 14999000,
+        subTotal: 14999000,
+        productName: 'PG Unicorn Gundam 03 Phenex',
+        status: 'DELIVERED',
+      },
+    ],
+  },
+  {
+    orderId: 'order006',
+    userId: 'user005',
+    customerName: 'Nguyễn Văn A',
+    phoneNumber: '0123456789',
+    address: '123 Đường ABC, Quận 1, TP.HCM',
+    orderDate: '2025-09-10T14:00:00.000Z',
+    totalAmount: 3600000,
+    status: 'CANCELLED',
+    paymentMethod: 'COD',
+    paymentStatus: 'CANCELLED',
+    email: 'nguyenvana@example.com',
+    orderDetails: [
+      {
+        id: 'detail010',
+        orderId: 'order006',
+        productId: 'da2ea204-8237-420d-8f72-252f476180a6',
+        quantity: 1,
+        unitPrice: 3600000,
+        subTotal: 3600000,
+        productName: 'MGEX Strike Freedom Gundam',
+        status: 'CANCELLED',
+      },
+    ],
+  },
+];
