@@ -26,8 +26,8 @@ function ProductsPageContent() {
   const value = !subcategoryId ? true : false;
   
   const { isMobile, isTablet, windowWidth } = useResponsive({
-    mobile: 720,
-    tablet: 1000,
+    mobile: 840,
+    tablet: 1024,
   });
   
   const [showMobileFilter, toggleMobileFilter, setShowMobileFilter] = useToggle(false);
@@ -63,16 +63,15 @@ function ProductsPageContent() {
   };
 
   const getMaxColumns = () => {
-    if (isMobile) return 2;
-    const containerWidth = windowWidth - (isMobile ? 32 : 200);
-    const cardMinWidth = 250;
-    const gap = 24;
-    return Math.floor((containerWidth + gap) / (cardMinWidth + gap));
+    const containerWidth = windowWidth - 120;
+    const cardMinWidth = isMobile ? 150 : 250;
+    const gap = isMobile ? 12 : 24;
+    return Math.floor((containerWidth) / (cardMinWidth + gap));
   };
 
   const maxColumns = getMaxColumns();
   const productCount = sortedAndFilteredProducts.length;
-  const shouldUseFlex = productCount > 0 && productCount < maxColumns;
+  const shouldUseFlex = productCount > 0 && productCount < maxColumns - 1;
 
   if (loading) {
     return (
@@ -113,7 +112,7 @@ function ProductsPageContent() {
         gap: isMobile ? '20px' : '30px',
         flexDirection: isMobile ? 'column' : 'row',
       }}>
-        {!isMobile && (
+        {!(isMobile || isTablet) && (
           <FilterPanel
             pendingStockFilter={pendingFilters.stockFilter}
             pendingPriceRange={pendingFilters.priceRange}
@@ -136,6 +135,33 @@ function ProductsPageContent() {
             maxWidth: isMobile ? '100%' : 'none',
           }}
         >
+          {isMobile || isTablet ? (
+            <div>
+            <div style={{
+              ...styles.productInfo,
+            }}>
+              <span style={{
+                ...styles.productCount,
+                marginTop: isMobile ? '16px' : isTablet ? '20px' : '24px',
+                textAlign: 'center',
+                fontSize: "20px"
+              }}>
+                Hiện có {sortedAndFilteredProducts.length} sản phẩm
+              </span>
+            </div>
+            <div style={{
+              marginBottom: isMobile ? '16px' : isTablet ? '20px' : '24px',
+              alignItems: 'stretch',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '12px',
+            }}>
+              <SortBar
+                sortType={sortType}
+                onSortChange={setSortType} />
+            </div>
+          </div>
+          ):(
           <SortBar 
             sortType={sortType} 
             onSortChange={setSortType}
@@ -146,13 +172,12 @@ function ProductsPageContent() {
               </span>
             </div>
           </SortBar>
+          )}
 
           <div style={{
             ...(shouldUseFlex ? styles.productFlex : styles.productGrid),
             ...(!shouldUseFlex && {
-              gridTemplateColumns: isMobile 
-                ? 'repeat(2, 1fr)' 
-                : 'repeat(auto-fit, minmax(230px, 1fr))',
+              gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '220px'}, 1fr))`,
               gap: isMobile ? '16px' : '24px',
             }),
             ...(shouldUseFlex && {
@@ -168,9 +193,9 @@ function ProductsPageContent() {
                 onClick={handleProductClick}
                 isMobile={isMobile}
                 style={shouldUseFlex ? {
-                  width: isMobile ? 'calc(50% - 8px)' : '230px',
+                  width: isMobile ? "auto" : '220px',
                   flexShrink: 0,
-                } : undefined}
+                } : {}}
               />
             ))}
           </div>
@@ -187,14 +212,14 @@ function ProductsPageContent() {
         </div>
       </div>
 
-      {isMobile && (
+      {(isMobile || isTablet) && (
         <FilterButton 
           onClick={() => setShowMobileFilter(true)}
           filterCount={filterCount}
         />
       )}
 
-      {isMobile && showMobileFilter && (
+      {(isMobile || isTablet) && showMobileFilter && (
         <FilterPanel
           pendingStockFilter={pendingFilters.stockFilter}
           pendingPriceRange={pendingFilters.priceRange}
@@ -285,12 +310,12 @@ const styles = {
   productInfo: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '8px',
   },
   productCount: {
-    fontSize: '16px',
     fontWeight: '600',
-    color: '#374151',
+    color: '#000',
   },
   categoryName: {
     fontSize: '14px',

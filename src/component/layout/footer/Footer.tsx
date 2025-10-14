@@ -89,6 +89,7 @@ const styles = {
   },
   top: {
     display: "flex",
+    flexWrap: "wrap" as const,
     gap: "48px",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -99,7 +100,7 @@ const styles = {
   col: {
     minWidth: "180px",
     maxWidth: "260px",
-    flex: "1 1 0",
+    flex: "1 1 calc(25% - 48px)",
     marginBottom: "16px",
   },
   logoRow: {

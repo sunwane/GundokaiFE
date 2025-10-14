@@ -10,9 +10,11 @@ interface ProductInfoProps {
   product: Product;
   productDetail?: ProductDetail | null;
   onAddToCart?: (productId: string, quantity: number) => void;
+  isMobile: boolean;
 }
 
 export default function ProductInfo({
+  isMobile,
   product,
   productDetail,
   onAddToCart,
@@ -62,7 +64,7 @@ export default function ProductInfo({
     return price.toLocaleString("vi-VN") + " VNĐ";
   };
 
-  // ✅ THÊM LOGIC XỬ LÝ TRẠNG THÁI
+  // Logic xử lý trạng thái
   const isComingSoon = product.status === "Hàng sắp về";
   const isOutOfStock =
     !isComingSoon &&
@@ -73,7 +75,10 @@ export default function ProductInfo({
   const renderFeatures = () => {
     if (!productDetail) {
       return (
-        <ul style={styles.featureList}>
+        <ul style={{
+          ...styles.featureList,
+          fontSize: isMobile ? '13px' : '15px',
+        }}>
           <li style={{ fontStyle: "italic", color: "#9ca3af" }}>
             Đang tải thông tin chi tiết...
           </li>
@@ -82,7 +87,10 @@ export default function ProductInfo({
     }
 
     return (
-      <ul style={styles.featureList}>
+      <ul style={{
+        ...styles.featureList,
+        fontSize: isMobile ? '13px' : '15px',
+      }}>
         <li>Tỷ lệ {productDetail.ratio}</li>
         <li>Chất liệu {productDetail.material}</li>
         <li>Nhà sản xuất: {productDetail.manufacturer}</li>
@@ -94,33 +102,70 @@ export default function ProductInfo({
     );
   };
 
-
   return (
     <>
       <div style={styles.container}>
         {/* Product Title */}
-        <h1 style={styles.title}>{product.productName}</h1>
+        <h1 style={{
+          ...styles.title,
+          fontSize: isMobile ? '22px' : '28px',
+        }}>
+          {product.productName}
+        </h1>
 
         {/* Category Labels */}
         <div style={styles.labelRow}>
-          <span style={styles.categoryLabel}>{categoryName}</span>
-          <span style={styles.gradeLabel}>{subCategoryName}</span>
+          <span style={{
+            ...styles.categoryLabel,
+            fontSize: isMobile ? '10px' : '12px',
+          }}>
+            {categoryName}
+          </span>
+          <span style={{
+            ...styles.gradeLabel,
+            fontSize: isMobile ? '10px' : '12px',
+          }}>
+            {subCategoryName}
+          </span>
         </div>
 
         {/* Price */}
         <div style={styles.priceRow}>
-          <span style={styles.price}>{formatPrice(product.price)}</span>
+          <span style={{
+            ...styles.price,
+            fontSize: isMobile ? '26px' : '32px',
+          }}>
+            {formatPrice(product.price)}
+          </span>
         </div>
 
         {/* Stock Status */}
         <div style={styles.stockRow}>
-          <span style={styles.stockLabel}>Tình trạng:</span>
+          <span style={{
+            ...styles.stockLabel,
+            fontSize: isMobile ? '14px' : '16px',
+          }}>
+            Tình trạng:
+          </span>
           {isComingSoon ? (
-            <span style={styles.comingSoon}>Hàng sắp về</span>
+            <span style={{
+              ...styles.comingSoon,
+              fontSize: isMobile ? '14px' : '16px',
+            }}>
+              Hàng sắp về
+            </span>
           ) : isOutOfStock ? (
-            <span style={styles.outOfStock}>Hết hàng</span>
+            <span style={{
+              ...styles.outOfStock,
+              fontSize: isMobile ? '14px' : '16px',
+            }}>
+              Hết hàng
+            </span>
           ) : (
-            <span style={styles.inStock}>
+            <span style={{
+              ...styles.inStock,
+              fontSize: isMobile ? '14px' : '16px',
+            }}>
               Còn hàng ({product.stockQuantity} sản phẩm)
             </span>
           )}
@@ -130,11 +175,17 @@ export default function ProductInfo({
         {isInStock && (
           <div style={styles.actionRow}>
             <div style={styles.quantitySection}>
-              <span style={styles.quantityLabel}>Số lượng</span>
+              <span style={{
+                ...styles.quantityLabel,
+                fontSize: isMobile ? '14px' : '16px',
+              }}>
+                Số lượng
+              </span>
               <div style={styles.quantityControls}>
                 <button
                   style={{
                     ...styles.quantityBtn,
+                    fontSize: isMobile ? '16px' : '18px',
                     opacity: quantity <= 1 ? 0.5 : 1,
                     cursor: quantity <= 1 ? "not-allowed" : "pointer",
                   }}
@@ -151,10 +202,16 @@ export default function ProductInfo({
                 >
                   -
                 </button>
-                <span style={styles.quantityValue}>{quantity}</span>
+                <span style={{
+                  ...styles.quantityValue,
+                  fontSize: isMobile ? '14px' : '16px',
+                }}>
+                  {quantity}
+                </span>
                 <button
                   style={{
                     ...styles.quantityBtn,
+                    fontSize: isMobile ? '16px' : '18px',
                     opacity: quantity >= product.stockQuantity ? 0.5 : 1,
                     cursor:
                       quantity >= product.stockQuantity
@@ -177,7 +234,11 @@ export default function ProductInfo({
               </div>
             </div>
             <button
-              style={styles.addToCartBtn}
+              style={{
+                ...styles.addToCartBtn,
+                fontSize: '16px',
+                padding: isMobile ? '10px 16px' : '12px 32px',
+              }}
               onClick={handleAddToCart}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#1d4ed8";
@@ -188,30 +249,48 @@ export default function ProductInfo({
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              Thêm giỏ hàng
+              {isMobile ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '2px', fontSize: '16px' }}>
+                  + <img style={styles.iconCart} src={'./images/icons/whiteCart.png'} alt="Giỏ" />
+                </div>
+              ) : (
+                "Thêm giỏ hàng"
+              )}
             </button>
           </div>
         )}
 
-        {/* ✅ COMING SOON SECTION */}
+        {/* Coming Soon Section */}
         {isComingSoon && (
           <div style={styles.comingSoonSection}>
-            <button style={styles.comingSoonBtn} disabled>
-              ⏰ Hàng sắp về
+            <button style={{
+              ...styles.comingSoonBtn,
+              fontSize: isMobile ? '14px' : '16px',
+            }} disabled>
+              Hàng sắp về
             </button>
-            <p style={styles.comingSoonText}>
+            <p style={{
+              ...styles.comingSoonText,
+              fontSize: isMobile ? '12px' : '14px',
+            }}>
               Sản phẩm đang được nhập về. Chúng tôi sẽ thông báo khi có hàng!
             </p>
           </div>
         )}
 
-        {/* ✅ OUT OF STOCK SECTION - Chỉ hiện khi hết hàng (không phải sắp về) */}
+        {/* Out of Stock Section */}
         {isOutOfStock && (
           <div style={styles.outOfStockSection}>
-            <button style={styles.outOfStockBtn} disabled>
-              😞 Hết hàng
+            <button style={{
+              ...styles.outOfStockBtn,
+              fontSize: isMobile ? '14px' : '16px',
+            }} disabled>
+              Hết hàng
             </button>
-            <p style={styles.outOfStockText}>
+            <p style={{
+              ...styles.outOfStockText,
+              fontSize: isMobile ? '12px' : '14px',
+            }}>
               Sản phẩm tạm thời hết hàng. Vui lòng quay lại sau!
             </p>
           </div>
@@ -219,13 +298,26 @@ export default function ProductInfo({
 
         {/* Product Description Section */}
         <div style={styles.descriptionSection}>
-          <h3 style={styles.sectionTitle}>Mô tả sản phẩm</h3>
-          <div style={styles.description}>
+          <h3 style={{
+            ...styles.sectionTitle,
+            fontSize: isMobile ? '18px' : '20px',
+          }}>
+            Mô tả sản phẩm
+          </h3>
+          <div style={{
+            ...styles.description,
+            fontSize: isMobile ? '13px' : '15px',
+          }}>
             {product.description ||
               "Mô hình Gundam tỷ lệ 1/144 chất lượng cao từ Bandai. Sản phẩm được thiết kế chi tiết, có thể tùy chỉnh tư thế và trang bị vũ khí đa dạng. Phù hợp cho người sưu tập và những ai yêu thích dòng Gundam."}
           </div>
 
-          <h3 style={styles.sectionTitle}>Đặc điểm nổi bật:</h3>
+          <h3 style={{
+            ...styles.sectionTitle,
+            fontSize: isMobile ? '18px' : '20px',
+          }}>
+            Đặc điểm nổi bật:
+          </h3>
           {renderFeatures()}
         </div>
       </div>
@@ -238,7 +330,7 @@ export default function ProductInfo({
   );
 }
 
-// Enhanced styles
+// Styles (giữ nguyên, chỉ thêm responsive font size)
 const styles = {
   container: {
     flex: 1,
@@ -247,7 +339,6 @@ const styles = {
     marginTop: "8px",
   },
   title: {
-    fontSize: "28px",
     fontWeight: "bold",
     marginBottom: "12px",
     color: "#111827",
@@ -264,7 +355,6 @@ const styles = {
     color: "#1e40af",
     padding: "6px 12px",
     borderRadius: "15px",
-    fontSize: "12px",
     fontWeight: "600",
   },
   gradeLabel: {
@@ -272,14 +362,12 @@ const styles = {
     color: "#b45309",
     padding: "6px 12px",
     borderRadius: "15px",
-    fontSize: "12px",
     fontWeight: "600",
   },
   priceRow: {
     marginBottom: "0px",
   },
   price: {
-    fontSize: "32px",
     fontWeight: "bold",
     color: "#FB2F38",
   },
@@ -290,25 +378,20 @@ const styles = {
     marginBottom: "24px",
   },
   stockLabel: {
-    fontSize: "16px",
     fontWeight: "600",
     color: "#a3a3a3",
   },
   inStock: {
     color: "#059669",
     fontWeight: "600",
-    fontSize: "16px",
   },
   outOfStock: {
     color: "#dc2626",
     fontWeight: "600",
-    fontSize: "16px",
   },
-  // ✅ THÊM STYLE CHO COMING SOON
   comingSoon: {
     color: "#d97706",
     fontWeight: "600",
-    fontSize: "16px",
   },
   actionRow: {
     display: "flex",
@@ -327,7 +410,6 @@ const styles = {
   },
   quantityLabel: {
     fontWeight: "600",
-    fontSize: "16px",
     color: "#374151",
   },
   quantityControls: {
@@ -345,7 +427,6 @@ const styles = {
     background: "#f9fafb",
     color: "#374151",
     fontWeight: "bold",
-    fontSize: "18px",
     cursor: "pointer",
     transition: "all 0.2s ease",
     display: "flex",
@@ -359,24 +440,20 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "600",
-    fontSize: "16px",
     background: "#fff",
     borderLeft: "1px solid #d1d5db",
     borderRight: "1px solid #d1d5db",
   },
   addToCartBtn: {
-    padding: "12px 32px",
     background: "#2563eb",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
     fontWeight: "600",
-    fontSize: "16px",
     cursor: "pointer",
     transition: "all 0.2s ease",
     boxShadow: "0 2px 4px rgba(37, 99, 235, 0.2)",
   },
-  // ✅ THÊM STYLES CHO COMING SOON SECTION
   comingSoonSection: {
     display: "flex",
     flexDirection: "column" as const,
@@ -394,11 +471,9 @@ const styles = {
     border: "1px solid #fbbf24",
     borderRadius: "8px",
     fontWeight: "600",
-    fontSize: "16px",
     cursor: "not-allowed",
   },
   comingSoonText: {
-    fontSize: "14px",
     color: "#b45309",
     textAlign: "center" as const,
     margin: 0,
@@ -420,11 +495,9 @@ const styles = {
     border: "1px solid #d1d5db",
     borderRadius: "8px",
     fontWeight: "600",
-    fontSize: "16px",
     cursor: "not-allowed",
   },
   outOfStockText: {
-    fontSize: "14px",
     color: "#6b7280",
     textAlign: "center" as const,
     margin: 0,
@@ -433,22 +506,23 @@ const styles = {
     paddingTop: "24px",
   },
   sectionTitle: {
-    fontSize: "20px",
     fontWeight: "bold",
     margin: "0 0 12px 0",
     color: "#111827",
   },
   description: {
-    fontSize: "15px",
     color: "#4b5563",
     marginBottom: "24px",
     lineHeight: 1.6,
   },
   featureList: {
-    fontSize: "15px",
     color: "#4b5563",
     marginBottom: "0",
     paddingLeft: "20px",
     lineHeight: 1.8,
+  },
+  iconCart: {
+    width: '24px',
+    height: '24px',
   },
 };

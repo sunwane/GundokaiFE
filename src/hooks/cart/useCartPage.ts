@@ -21,7 +21,7 @@ export interface UseCartPageReturn {
 export function useCartPage(): UseCartPageReturn {
   const { cart, loading, updateQuantity, removeFromCart, clearCart } = useCart();
   const router = useRouter();
-  const { isMobile } = useResponsive();
+  const { isMobile } = useResponsive({ mobile: 960 });
   const popupMessage = usePopupMessage();
 
   const handleQuantityChange = (productId: string, quantity: number) => {

@@ -234,21 +234,6 @@ function AccountPageContent() {
             </div>
           )}
 
-          {isHydrated && isMobile && (
-            <div style={styles.mobileTabNav}>
-              <select
-                value={activeTab}
-                onChange={(e) => handleTabChange(e.target.value)}
-                style={styles.mobileSelect}
-              >
-                <option value="account">Thông tin tài khoản</option>
-                <option value="orders">Lịch sử đơn hàng</option>
-                <option value="notifications">Thông báo</option>
-                <option value="password">Đổi mật khẩu</option>
-              </select>
-            </div>
-          )}
-
           <div style={styles.mainContent}>{renderContent()}</div>
         </div>
       </div>

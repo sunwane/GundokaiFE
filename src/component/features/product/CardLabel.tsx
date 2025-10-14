@@ -65,7 +65,7 @@ const styles = {
     maxWidth: '180px', // ✅ Giới hạn chiều rộng tối đa
   },
   cardLabelMobile: {
-    maxWidth: '80px',
+    maxWidth: '140px',
   },
   categoryLabel: {
     border: 'none',
@@ -88,12 +88,13 @@ const styles = {
     whiteSpace: 'nowrap',    // Không xuống dòng
   },
   categoryLabelMobile: {
-    fontSize: '9px',
+    fontSize: '8px',
     height: '18px',
     paddingLeft: '4px',
-    paddingRight: '8px',
-    paddingTop: '3px',
+    paddingRight: '9px',
+    paddingTop: '4px',
     paddingBottom: '3px',
+    clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 100%, 0 100%)',
   },
   subcategoryLabel: {
     background: '#fff',
@@ -123,12 +124,12 @@ const styles = {
     whiteSpace: 'nowrap',    // Không xuống dòng
   },
   subcategoryLabelMobile: {
-    fontSize: '10px',
+    fontSize: '9.5px',
     height: '18px',
-    paddingLeft: '8px',
+    paddingLeft: '12px',
     paddingRight: '4px',
-    paddingTop: '3px',
-    paddingBottom: '3px',
-    maxWidth: '60px',
+    paddingTop: '4px',
+    paddingBottom: '4px',
+    maxWidth: '100px',
   },
 };

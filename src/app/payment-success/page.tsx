@@ -27,7 +27,7 @@ function PaymentSuccessContent() {
 
     // ✅ Auto redirect về trang chủ ngay lập tức
     setTimeout(() => {
-      window.location.href = "http://localhost:3000/";
+      window.location.href = "./";
     }, 100); // Delay 100ms để đảm bảo localStorage được clear
   }, [searchParams]);
 

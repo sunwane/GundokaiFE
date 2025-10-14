@@ -37,6 +37,7 @@ export function useResponsive(customBreakpoints?: Partial<ResponsiveBreakpoints>
   useEffect(() => {
     // Only update after hydration
     setIsHydrated(true);
+    console.log('window.innerWidth:', window.innerWidth);
     setWindowWidth(window.innerWidth);
     setWindowHeight(window.innerHeight);
 

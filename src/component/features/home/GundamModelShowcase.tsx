@@ -59,8 +59,14 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
     <section style={styles.section}>
       <div style={styles.container}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Khám phá các dòng Gundam</h2>
-          <p style={styles.subtitle}>
+          <h2 style={{
+            ...styles.title,
+            fontSize: isMobile ? "28px" : "40px",
+          }}>Khám phá các dòng Gundam</h2>
+          <p style={{
+            ...styles.subtitle,
+            fontSize: isMobile ? "14px" : "18px",
+          }}>
             Tìm hiểu chi tiết về từng dòng mô hình Gundam qua trải nghiệm 3D tương tác
           </p>
         </div>
@@ -68,9 +74,8 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
         {/* Category Buttons - Nằm ngang ở phía trên */}
         <div style={{
           ...styles.categoryButtons,
-          flexDirection: isMobile ? "column" : "row",
           gap: isMobile ? "8px" : "16px",
-          marginBottom: "32px",
+          marginBottom: isMobile ? "20px" : "32px",
           width: isMobile ? "100%" : "auto",
         }}>
           {models.map((model, index) => (
@@ -81,12 +86,9 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
                 backgroundColor: index === activeModelIndex ? "#2563eb" : "#f8fafc",
                 color: index === activeModelIndex ? "#fff" : "#64748b",
                 border: index === activeModelIndex ? "2px solid #2563eb" : "2px solid #e2e8f0",
-                flex: isMobile ? "none" : "1",
                 textAlign: "center" as const,
                 padding: isMobile ? "12px 16px" : "16px 24px",
                 fontSize: isMobile ? "14px" : "16px",
-                width: isMobile ? "100%" : "auto", // Thêm dòng này
-                minWidth: isMobile ? "0" : undefined, // Đảm bảo không bị giới hạn min-width
               }}
               onClick={() => {
                 setActiveModelIndex(index);
@@ -170,7 +172,7 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                🔍 Khám phá tất cả {activeModel.category}
+                Xem tất cả {activeModel.category}
               </a>
             </div>
           </div>
@@ -263,10 +265,12 @@ const styles = {
   },
   categoryButtons: {
     display: "flex",
-    justifyContent: "center",
+    flexWrap: "wrap" as const, // Cho phép xuống dòng
     alignItems: "center",
+    justifyContent: "center",
   },
   categoryButton: {
+    flex: "1 1 calc(25% - 12px)", // Button chiếm 25% chiều ngang trừ khoảng cách (gap)
     borderRadius: "12px",
     fontWeight: "600",
     cursor: "pointer",
@@ -276,7 +280,6 @@ const styles = {
   },
   content: {
     display: "flex",
-    alignItems: "flex-start",
   },
   leftColumn: {
     display: "flex",

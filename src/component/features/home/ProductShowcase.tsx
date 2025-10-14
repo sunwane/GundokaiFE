@@ -25,8 +25,6 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
           ProductService.getHotProducts(),
           ProductService.getLatestProducts()
         ]);
-        // setHotProducts(hotResponse.result || hotResponse.data || hotResponse || []);
-        // setLatestProducts(latestResponse.result || latestResponse.data || latestResponse || []);
         setHotProducts(hotResponse?.result || hotResponse || []);
         setLatestProducts(latestResponse?.result || latestResponse || []);
       } catch (error) {
@@ -45,8 +43,14 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
 
   if (loading) {
     return (
-      <section style={styles.section}>
-        <div style={styles.container}>
+      <section style={{
+        ...styles.section,
+        padding: isMobile ? "40px 0" : "80px 0",
+      }}>
+        <div style={{
+          ...styles.container,
+          padding: isMobile ? "0 16px" : "0 24px",
+        }}>
           <div style={styles.loadingContainer}>
             <div style={styles.loadingSpinner}></div>
             <p style={styles.loadingText}>Đang tải sản phẩm...</p>
@@ -57,29 +61,63 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
   }
 
   return (
-    <section style={styles.section}>
-      <div style={styles.container}>
+    <section style={{
+      ...styles.section,
+      padding: isMobile ? "40px 0" : "80px 0",
+    }}>
+      <div style={{
+        ...styles.container,
+        padding: isMobile ? "0 16px" : "0 24px",
+      }}>
         
         {/* Hot Products Section */}
-        <div style={styles.showcase}>
-          {/* Hot Products Title - Style cháy */}
-          <div style={styles.hotTitleContainer}>
+        <div style={{
+          ...styles.showcase,
+          marginBottom: isMobile ? "40px" : "60px",
+        }}>
+          {/* Hot Products Title */}
+          <div style={{
+            ...styles.hotTitleContainer,
+            marginBottom: isMobile ? "24px" : "40px",
+          }}>
             <div style={styles.hotTitleWrapper}>
-              <span style={styles.hotIcon}>🔥</span>
-              <h2 style={styles.hotTitle}>SẮP CHÁY HÀNG</h2>
-              <span style={styles.hotIcon}>🔥</span>
+              <span style={{
+                ...styles.hotIcon,
+                fontSize: isMobile ? "20px" : "28px",
+              }}>🔥</span>
+              <h2 style={{
+                ...styles.hotTitle,
+                fontSize: isMobile ? "24px" : "36px",
+                letterSpacing: isMobile ? "1px" : "2px",
+              }}>SẮP CHÁY HÀNG</h2>
+              <span style={{
+                ...styles.hotIcon,
+                fontSize: isMobile ? "20px" : "28px",
+              }}>🔥</span>
             </div>
-            <div style={styles.hotSubtitle}>Nhanh tay kẻo hết!</div>
-            <div style={styles.hotGlow}></div>
+            <div style={{
+              ...styles.hotSubtitle,
+              fontSize: isMobile ? "14px" : "16px",
+            }}>Nhanh tay kẻo hết!</div>
+            <div style={{
+              ...styles.hotGlow,
+              width: isMobile ? "200px" : "300px",
+              height: isMobile ? "40px" : "60px",
+            }}></div>
           </div>
           
-          {/* Hot Products List */}
-          <div style={{
-            ...styles.productGrid,
-            justifyContent: isMobile ? "flex-start" : "center",
-            overflowX: isMobile ? "auto" : "visible",
-            gap: isMobile ? "12px" : "20px",
-          }}>
+          {/* Hot Products Horizontal Scroll */}
+          <div 
+            className="product-grid"
+            style={{
+              ...styles.productGridHorizontal,
+              gap: isMobile ? "24px" : "32px",
+              justifyContent: isMobile? "flex-start" : "center",
+              flexDirection: isMobile? "row" as const : "row" as const,
+              flexWrap: isMobile? "nowrap" as const : "wrap" as const,
+              padding: isMobile ? "0 5px 10px 5px" : "0 10px 15px 10px",
+            }}
+          >
             {hotProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -88,7 +126,8 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
                 isMobile={isMobile}
                 style={{
                   flexShrink: 0,
-                  ...(isMobile ? { width: "140px" } : {}),
+                  width: isMobile ? "150px" : "200px",
+                  scrollSnapAlign: "start",
                 }}
               />
             ))}
@@ -96,28 +135,59 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
         </div>
 
         {/* Divider */}
-        <div style={styles.divider}></div>
+        <div style={{
+          ...styles.divider,
+          margin: isMobile ? "30px 0" : "40px 0",
+        }}></div>
 
         {/* Latest Products Section */}
-        <div style={styles.showcase}>
-          {/* Latest Products Title - Style fresh */}
-          <div style={styles.freshTitleContainer}>
+        <div style={{
+          ...styles.showcase,
+          marginBottom: isMobile ? "40px" : "60px",
+        }}>
+          {/* Latest Products Title */}
+          <div style={{
+            ...styles.freshTitleContainer,
+            marginBottom: isMobile ? "24px" : "40px",
+          }}>
             <div style={styles.freshTitleWrapper}>
-              <span style={styles.freshIcon}>✨</span>
-              <h2 style={styles.freshTitle}>HÀNG MỚI</h2>
-              <span style={styles.freshIcon}>✨</span>
+              <span style={{
+                ...styles.freshIcon,
+                fontSize: isMobile ? "20px" : "28px",
+              }}>✨</span>
+              <h2 style={{
+                ...styles.freshTitle,
+                fontSize: isMobile ? "24px" : "36px",
+                letterSpacing: isMobile ? "1px" : "2px",
+              }}>HÀNG MỚI</h2>
+              <span style={{
+                ...styles.freshIcon,
+                fontSize: isMobile ? "20px" : "28px",
+              }}>✨</span>
             </div>
-            <div style={styles.freshSubtitle}>Mới về từ Nhật Bản</div>
-            <div style={styles.freshGlow}></div>
+            <div style={{
+              ...styles.freshSubtitle,
+              fontSize: isMobile ? "14px" : "16px",
+            }}>Mới về từ Nhật Bản</div>
+            <div style={{
+              ...styles.freshGlow,
+              width: isMobile ? "200px" : "300px",
+              height: isMobile ? "40px" : "60px",
+            }}></div>
           </div>
           
-          {/* Latest Products List */}
-          <div style={{
-            ...styles.productGrid,
-            justifyContent: isMobile ? "flex-start" : "center",
-            overflowX: isMobile ? "auto" : "visible",
-            gap: isMobile ? "12px" : "20px",
-          }}>
+          {/* Latest Products Horizontal Scroll */}
+          <div 
+            className="product-grid"
+            style={{
+              ...styles.productGridHorizontal,
+              gap: isMobile ? "24px" : "32px",
+              justifyContent: isMobile? "flex-start" : "center",
+              flexDirection: isMobile? "row" as const : "row" as const,
+              flexWrap: isMobile? "nowrap" as const : "wrap" as const,
+              padding: isMobile ? "0 5px 10px 5px" : "0 10px 15px 10px",
+            }}
+          >
             {latestProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -126,7 +196,8 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
                 isMobile={isMobile}
                 style={{
                   flexShrink: 0,
-                  ...(isMobile ? { width: "140px" } : {}),
+                  width: isMobile ? "150px" : "200px",
+                  scrollSnapAlign: "start",
                 }}
               />
             ))}
@@ -139,13 +210,11 @@ export default function ProductShowcase({ isMobile = false }: ProductShowcasePro
 
 const styles = {
   section: {
-    padding: "80px 0",
     background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
   },
   container: {
-    maxWidth: "1200px",
+    maxWidth: "1260px",
     margin: "0 auto",
-    padding: "0 24px",
   },
   loadingContainer: {
     display: "flex",
@@ -167,15 +236,25 @@ const styles = {
     color: "#6b7280",
     fontSize: "16px",
   },
-  showcase: {
-    marginBottom: "60px",
-  },
+  showcase: {},
   
-  // Hot Products Styles - Cháy
+  // Horizontal scrolling product grid
+  productGridHorizontal: {
+    display: "flex",
+    alignItems: "center",
+    overflowX: "auto" as const,
+    overflowY: "hidden" as const,
+    scrollBehavior: "smooth" as const,
+    scrollSnapType: "x mandatory",
+    WebkitOverflowScrolling: "touch" as const, // Smooth scrolling on iOS
+    msOverflowStyle: "none" as const, // Hide scrollbar on IE
+    scrollbarWidth: "thin" as const, // Thin scrollbar on Firefox
+  },
+
+  // Hot Products Styles
   hotTitleContainer: {
     position: "relative" as const,
     textAlign: "center" as const,
-    marginBottom: "40px",
   },
   hotTitleWrapper: {
     display: "inline-flex",
@@ -183,25 +262,23 @@ const styles = {
     gap: "12px",
     position: "relative" as const,
     zIndex: 2,
+    flexWrap: "nowrap" as const,
   },
   hotTitle: {
-    fontSize: "36px",
     fontWeight: "900",
     background: "linear-gradient(45deg, #ff4444, #ff8800, #ffaa00)",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     color: "transparent",
     textShadow: "0 0 30px rgba(255, 68, 68, 0.5)",
-    letterSpacing: "2px",
     margin: 0,
     animation: "hotPulse 2s ease-in-out infinite alternate",
+    whiteSpace: "nowrap" as const,
   },
   hotIcon: {
-    fontSize: "28px",
     animation: "bounce 1s ease-in-out infinite alternate",
   },
   hotSubtitle: {
-    fontSize: "16px",
     color: "#dc2626",
     fontWeight: "600",
     marginTop: "8px",
@@ -213,18 +290,15 @@ const styles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "300px",
-    height: "60px",
     background: "radial-gradient(ellipse, rgba(255, 68, 68, 0.3) 0%, transparent 70%)",
     filter: "blur(20px)",
     zIndex: 1,
   },
 
-  // Fresh Products Styles - Fresh
+  // Fresh Products Styles
   freshTitleContainer: {
     position: "relative" as const,
     textAlign: "center" as const,
-    marginBottom: "40px",
   },
   freshTitleWrapper: {
     display: "inline-flex",
@@ -232,25 +306,23 @@ const styles = {
     gap: "12px",
     position: "relative" as const,
     zIndex: 2,
+    flexWrap: "nowrap" as const,
   },
   freshTitle: {
-    fontSize: "36px",
     fontWeight: "900",
     background: "linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6)",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     color: "transparent",
     textShadow: "0 0 30px rgba(16, 185, 129, 0.5)",
-    letterSpacing: "2px",
     margin: 0,
     animation: "freshGlow 3s ease-in-out infinite alternate",
+    whiteSpace: "nowrap" as const,
   },
   freshIcon: {
-    fontSize: "28px",
     animation: "sparkle 2s ease-in-out infinite",
   },
   freshSubtitle: {
-    fontSize: "16px",
     color: "#059669",
     fontWeight: "600",
     marginTop: "8px",
@@ -262,27 +334,18 @@ const styles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "300px",
-    height: "60px",
     background: "radial-gradient(ellipse, rgba(16, 185, 129, 0.3) 0%, transparent 70%)",
     filter: "blur(20px)",
     zIndex: 1,
   },
 
-  productGrid: {
-    display: "flex",
-    gap: "20px",
-    flexWrap: "wrap" as const,
-    padding: "0 10px",
-  },
   divider: {
     height: "2px",
     background: "linear-gradient(90deg, transparent 0%, #cbd5e1 50%, transparent 100%)",
-    margin: "40px 0",
   },
 };
 
-// CSS Animations
+// CSS Animations và Scrollbar customization
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = `
@@ -327,6 +390,44 @@ if (typeof document !== 'undefined') {
         transform: scale(1.2) rotate(180deg);
         opacity: 0.8;
       }
+    }
+
+    /* Custom scrollbar styling */
+    .product-grid::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .product-grid::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 0.8);
+      border-radius: 4px;
+      margin: 0 10px;
+    }
+    
+    .product-grid::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #cbd5e1, #94a3b8);
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    
+    .product-grid::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(90deg, #94a3b8, #64748b);
+    }
+
+    /* Mobile specific styles */
+    @media (max-width: 768px) {
+      .product-grid::-webkit-scrollbar {
+        height: 6px;
+      }
+      
+      .product-grid::-webkit-scrollbar-track {
+        margin: 0 5px;
+      }
+    }
+
+    /* Firefox scrollbar */
+    .product-grid {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 rgba(241, 245, 249, 0.8);
     }
   `;
   document.head.appendChild(style);

@@ -25,7 +25,10 @@ import Footer from '@/component/layout/footer/Footer';
 function SearchResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { isMobile, windowWidth } = useResponsive();
+  const { isMobile, isTablet, windowWidth } = useResponsive({
+    mobile: 840,
+    tablet: 1024,
+  });
   
   const query = searchParams.get('query') || '';
   
@@ -57,19 +60,17 @@ function SearchResultContent() {
     sortType
   );
 
-  // Tính số cột tối đa có thể hiển thị trên một hàng
+  // Simplified responsive logic - giống Products page
   const getMaxColumns = () => {
-    if (isMobile) return 2;
-    // Tính dựa trên width container và min-width của product card
-    const containerWidth = windowWidth - (isMobile ? 32 : 200); // Trừ padding và filter panel
-    const cardMinWidth = 250; // Min width của product card cho search
-    const gap = 24;
-    return Math.floor((containerWidth + gap) / (cardMinWidth + gap));
+    const containerWidth = windowWidth - 120;
+    const cardMinWidth = isMobile ? 140 : 220;
+    const gap = isMobile ? 16 : 24;
+    return Math.floor((containerWidth) / (cardMinWidth + gap));
   };
 
   const maxColumns = getMaxColumns();
   const productCount = sortedAndFilteredProducts.length;
-  const shouldUseFlex = productCount > 0 && productCount < maxColumns;
+  const shouldUseFlex = productCount > 0 && productCount < maxColumns - 1;
 
   // Initial search
   useEffect(() => {
@@ -104,74 +105,167 @@ function SearchResultContent() {
       
       <div style={{
         ...styles.container,
-        padding: isMobile ? '16px 4vw' : '24px 5vw',
+        padding: isMobile ? '16px 4vw' : '20px 5vw',
+        gap: isMobile ? '20px' : '30px',
+        flexDirection: isMobile ? 'column' : 'row',
       }}>
         {/* Content Layout */}
         <div style={{
           ...styles.contentLayout,
-          flexDirection: isMobile ? 'column' : 'row',
+          flexDirection: (isMobile || isTablet) ? 'column' : 'row',
+          gap: isMobile ? '16px' : isTablet ? '20px' : '48px',
         }}>
-          {/* Filter Panel - Desktop */}
-          {!isMobile && (
-            <FilterPanel
-              pendingStockFilter={pendingFilters.stockFilter}
-              pendingPriceRange={pendingFilters.priceRange}
-              pendingCategories={pendingFilters.categories}
-              onPendingStockChange={updatePendingStockFilter}
-              onPendingPriceChange={updatePendingPriceRange}
-              onPendingCategoryChange={updatePendingCategories}
-              onApply={handleApplyFilters}
-              onReset={resetFilters}
-              hasChanges={hasChanges}
-              products={searchResults}
-              showCategories={true}
-            />
+          {/* Filter Panel - Desktop Only */}
+          {!(isMobile || isTablet) && (
+            <div style={styles.filterPanelContainer}>
+              <FilterPanel
+                pendingStockFilter={pendingFilters.stockFilter}
+                pendingPriceRange={pendingFilters.priceRange}
+                pendingCategories={pendingFilters.categories}
+                onPendingStockChange={updatePendingStockFilter}
+                onPendingPriceChange={updatePendingPriceRange}
+                onPendingCategoryChange={updatePendingCategories}
+                onApply={handleApplyFilters}
+                onReset={resetFilters}
+                hasChanges={hasChanges}
+                products={searchResults}
+                showCategories={true}
+              />
+            </div>
           )}
 
           {/* Products Container */}
-          <div style={styles.productsContainer}>
-            {/* SortBar with search info */}
-            <SortBar
-              sortType={sortType}
-              onSortChange={setSortType}
-            >
-              <div style={styles.searchHeader}>
-                <h1 style={styles.title}>
-                  Kết quả tìm kiếm cho: <span style={styles.queryText}>{`"${query}"`}</span>
-                </h1>
-                <p style={styles.resultCount}>
-                  Tìm thấy {sortedAndFilteredProducts.length} sản phẩm
-                </p>
+          <div style={{
+            marginTop: (isMobile || isTablet) ? '0' : '20px',
+            width: (isMobile || isTablet) ? '100%' : 'auto',
+            flex: 1,
+            minWidth: 0,
+          }}>
+            {/* Search Header + SortBar - Responsive như Products */}
+            {isMobile || isTablet ? (
+              <div>
+                <div style={{
+                  ...styles.searchHeader,
+                  marginTop: isMobile ? '16px' : isTablet ? '20px' : '24px',
+                  textAlign: 'center',
+                }}>
+                  <h1 style={{
+                    ...styles.title,
+                    fontSize: isMobile ? '20px' : isTablet ? '24px' : '28px',
+                    lineHeight: '1.3',
+                    marginBottom: '4px',
+                  }}>
+                    Kết quả tìm kiếm cho: <span style={styles.queryText}>{`"${query}"`}</span>
+                  </h1>
+                  <p style={{
+                    ...styles.resultCount,
+                    fontSize: '20px',
+                  }}>
+                    Tìm thấy {sortedAndFilteredProducts.length} sản phẩm
+                  </p>
+                </div>
+                <div style={{
+                  marginBottom: isMobile ? '16px' : isTablet ? '20px' : '24px',
+                  alignItems: 'stretch',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '12px',
+                }}>
+                  <SortBar
+                    sortType={sortType}
+                    onSortChange={setSortType} 
+                  />
+                </div>
               </div>
-            </SortBar>
+            ) : (
+              <SortBar
+                sortType={sortType}
+                onSortChange={setSortType}
+              >
+                <div style={styles.searchHeader}>
+                  <h1 style={styles.title}>
+                    Kết quả tìm kiếm cho: <span style={styles.queryText}>{`"${query}"`}</span>
+                  </h1>
+                  <p style={styles.resultCount}>
+                    Tìm thấy {sortedAndFilteredProducts.length} sản phẩm
+                  </p>
+                </div>
+              </SortBar>
+            )}
 
-            {/* Results Grid/Flex */}
+            {/* Results Grid/Flex - Simplified logic */}
             {sortedAndFilteredProducts.length === 0 ? (
-              <div style={styles.noResults}>
-                <div style={styles.noResultsIcon}>🔍</div>
-                <h3 style={styles.noResultsTitle}>
+              <div style={{
+                ...styles.noResults,
+                padding: isMobile ? '40px 16px' : isTablet ? '60px 20px' : '80px 20px',
+              }}>
+                <div style={{
+                  fontSize: isMobile ? '60px' : isTablet ? '70px' : '80px',
+                  marginBottom: isMobile ? '16px' : '24px',
+                  opacity: 0.5,
+                }}>🔍</div>
+                <h3 style={{
+                  fontSize: isMobile ? '20px' : isTablet ? '22px' : '24px',
+                  marginBottom: isMobile ? '8px' : '12px',
+                  fontWeight: 'bold',
+                  color: '#374151',
+                }}>
                   {searchResults.length === 0 
                     ? 'Không tìm thấy sản phẩm phù hợp' 
                     : 'Không có sản phẩm nào phù hợp với bộ lọc'
                   }
                 </h3>
-                <p style={styles.noResultsText}>
+                <p style={{
+                  fontSize: isMobile ? '14px' : '16px',
+                  marginBottom: isMobile ? '24px' : '32px',
+                  maxWidth: isMobile ? '300px' : '500px',
+                  color: '#6b7280',
+                  lineHeight: 1.6,
+                }}>
                   {searchResults.length === 0 
                     ? 'Hãy thử tìm kiếm với từ khóa khác hoặc kiểm tra chính tả.' 
                     : 'Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác.'
                   }
-                </p>
-                <div style={styles.noResultsActions}>
+                  </p>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  gap: isMobile ? '12px' : '16px',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}>
                   {searchResults.length > 0 && (
                     <button 
-                      style={styles.resetFiltersButton}
+                      style={{
+                        backgroundColor: '#f3f4f6',
+                        color: '#374151',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        padding: isMobile ? '10px 20px' : '12px 24px',
+                        fontSize: isMobile ? '14px' : '16px',
+                        width: isMobile ? '100%' : 'auto',
+                      }}
                       onClick={resetFilters}
                     >
                       Xóa bộ lọc
                     </button>
                   )}
                   <button 
-                    style={styles.backButton}
+                    style={{
+                      backgroundColor: '#2563eb',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      padding: isMobile ? '10px 20px' : '12px 32px',
+                      fontSize: isMobile ? '14px' : '16px',
+                      width: isMobile ? '100%' : 'auto',
+                    }}
                     onClick={() => router.push('/products')}
                   >
                     Xem tất cả sản phẩm
@@ -179,20 +273,16 @@ function SearchResultContent() {
                 </div>
               </div>
             ) : (
-              /* Dynamic Grid/Flex Container */
+              /* Simplified Grid/Flex Container - giống Products */
               <div style={{
                 ...(shouldUseFlex ? styles.productFlex : styles.productGrid),
-                // Grid styles khi có nhiều sản phẩm
                 ...(!shouldUseFlex && {
-                  gridTemplateColumns: isMobile 
-                    ? 'repeat(2, 1fr)' 
-                    : 'repeat(auto-fit, minmax(210px, 1fr))',
+                  gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '220px'}, 1fr))`,
                   gap: isMobile ? '16px' : '24px',
                 }),
-                // Flex styles khi có ít sản phẩm
                 ...(shouldUseFlex && {
                   gap: isMobile ? '16px' : '32px',
-                  justifyContent: 'center',
+                  justifyContent: 'flex-start',
                   alignItems: 'center',
                 }),
               }}>
@@ -201,10 +291,11 @@ function SearchResultContent() {
                     key={product.id} 
                     product={product} 
                     onClick={handleProductClick}
+                    isMobile={isMobile}
                     style={shouldUseFlex ? {
-                      width: isMobile ? 'calc(50% - 8px)' : '210px',
+                      width: isMobile ? "auto" : '220px',
                       flexShrink: 0,
-                    } : undefined}
+                    } : {}}
                   />
                 ))}
               </div>
@@ -212,16 +303,16 @@ function SearchResultContent() {
           </div>
         </div>
 
-        {/* Mobile Filter Button */}
-        {isMobile && (
+        {/* Mobile/Tablet Filter Button */}
+        {(isMobile || isTablet) && (
           <FilterButton 
             onClick={() => setShowFilterPanel(true)}
             filterCount={filterCount}
           />
         )}
 
-        {/* Mobile Filter Popup */}
-        {isMobile && showFilterPanel && (
+        {/* Mobile/Tablet Filter Popup */}
+        {(isMobile || isTablet) && showFilterPanel && (
           <FilterPanel
             pendingStockFilter={pendingFilters.stockFilter}
             pendingPriceRange={pendingFilters.priceRange}
@@ -256,20 +347,26 @@ export default function SearchResultPage() {
   );
 }
 
-// Updated styles với productFlex
+// Simplified styles - giống Products
 const styles = {
   container: {
     margin: '0 auto',
     minHeight: '70vh',
     marginBottom: '70px',
+    width: '100%',
+    boxSizing: 'border-box' as const,
+    display: 'flex',
+    alignItems: 'flex-start',
   },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     height: '50vh',
+    width: '100%',
   },
   searchHeader: {
+    // marginBottom will be set dynamically
   },
   title: {
     fontSize: '28px',
@@ -284,22 +381,25 @@ const styles = {
   resultCount: {
     fontSize: '16px',
     color: '#6b7280',
+    fontWeight: '600',
     margin: 0,
   },
   contentLayout: {
     display: 'flex',
-    gap: '32px',
     alignItems: 'flex-start',
+    width: '100%',
   },
-  productsContainer: {
-    flex: 1,
-    minWidth: 0,
+  filterPanelContainer: {
+    width: '280px',
+    flexShrink: 0,
+    position: 'sticky' as const,
+    top: '20px',
+    height: 'fit-content',
   },
   productGrid: {
     display: 'grid',
     justifyItems: 'center',
   },
-  // Thêm style cho flex layout
   productFlex: {
     display: 'flex',
     flexWrap: 'wrap' as const,
@@ -311,53 +411,7 @@ const styles = {
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '80px 20px',
     textAlign: 'center' as const,
-  },
-  noResultsIcon: {
-    fontSize: '80px',
-    marginBottom: '24px',
-    opacity: 0.5,
-  },
-  noResultsTitle: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#374151',
-    marginBottom: '12px',
-  },
-  noResultsText: {
-    fontSize: '16px',
-    color: '#6b7280',
-    marginBottom: '32px',
-    maxWidth: '500px',
-    lineHeight: 1.6,
-  },
-  noResultsActions: {
-    display: 'flex',
-    gap: '16px',
-    flexWrap: 'wrap' as const,
-    justifyContent: 'center',
-  },
-  resetFiltersButton: {
-    padding: '12px 24px',
-    backgroundColor: '#f3f4f6',
-    color: '#374151',
-    border: '1px solid #d1d5db',
-    borderRadius: '8px',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'background 0.2s ease',
-  },
-  backButton: {
-    padding: '12px 32px',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'background 0.2s ease',
+    width: '100%',
   },
 };

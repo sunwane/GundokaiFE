@@ -39,8 +39,8 @@ export default function CartBadge({
 const styles = {
   mobileBadge: {
     position: 'absolute' as const,
-    top: '-6px',
-    right: '-6px',
+    top: '0px',
+    right: '0px',
     backgroundColor: '#ef4444',
     borderRadius: '10px',
     minWidth: '18px',
@@ -54,8 +54,8 @@ const styles = {
   },
   tabletBadge: {
     position: 'absolute' as const,
-    top: '-4px',
-    right: '-4px', // Position trên icon, không có text
+    top: '0px',
+    right: '0px', // Position trên icon, không có text
     backgroundColor: '#ef4444',
     borderRadius: '10px',
     minWidth: '18px',

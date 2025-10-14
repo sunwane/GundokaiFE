@@ -19,8 +19,16 @@ interface ProductCategoryIntroProps {
 export default function ProductCategoryIntro({ categories, isMobile }: ProductCategoryIntroProps) {
   return (
     <section style={styles.section}>
-      <h2 style={styles.title}>Khám phá danh mục</h2>
-      <p style={styles.subtitle}>
+      <h2 style={{
+        ...styles.title,
+        fontSize: isMobile ? "28px" : "40px"
+      }}>
+        Khám phá danh mục
+      </h2>
+      <p style={{
+        ...styles.subtitle,
+        fontSize: isMobile ? "14px" : "18px",
+      }}>
         Khám phá 4 danh mục chính với hàng ngàn sản phẩm chất lượng
       </p>
       <div style={styles.grid}>
@@ -62,7 +70,7 @@ export default function ProductCategoryIntro({ categories, isMobile }: ProductCa
       >
         <div>→</div>
     { isMobile ?
-        <div>Xem tất cả</div>
+        <div>Xem tất cả sản phẩm</div>
         :
         <div>Khám phá tất cả sản phẩm</div>
     }

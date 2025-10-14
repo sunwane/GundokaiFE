@@ -241,11 +241,22 @@ export default function CartPage() {
           padding: isMobile ? "16px 4vw" : "24px 5vw",
         }}
       >
-        <div style={styles.header}>
-          <h1 style={styles.title}>Giỏ hàng của bạn</h1>
+        <div style={{
+          ...styles.header,
+          gap: isMobile ? "16px" : "0",
+          marginBottom: isMobile ? "16px" : "32px",
+        }}>
+          <h1 style={{
+            ...styles.title,
+            fontSize: isMobile ? "20px" : "32px",
+          }}>Giỏ hàng của bạn</h1>
           {cart?.items?.length > 0 && (
             <button
-              style={styles.clearButton}
+              style={{
+                ...styles.clearButton,
+                alignSelf: isMobile ? "flex-start" : "auto",
+                fontSize: isMobile ? "12px" : "14px",
+              }}
               onClick={handleClearCart}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#fef2f2";
@@ -261,9 +272,19 @@ export default function CartPage() {
 
         {!cart?.items || cart.items.length === 0 ? (
           <div style={styles.emptyCart}>
-            <div style={styles.emptyCartIcon}>🛒</div>
-            <h2 style={styles.emptyCartTitle}>Giỏ hàng trống</h2>
-            <p style={styles.emptyCartText}>
+            <div style={{
+              ...styles.emptyCartIcon,
+              fontSize: isMobile ? "60px" : "80px",
+            }}>🛒</div>
+            <h2 style={{
+              ...styles.emptyCartTitle,
+              fontSize: isMobile ? "20px" : "28px",
+            }}>Giỏ hàng trống</h2>
+            <p style={{
+              ...styles.emptyCartText,
+              fontSize: isMobile ? "14px" : "16px",
+              padding: isMobile ? "0 16px" : "0",
+            }}>
               Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm
               Gundam tuyệt vời của chúng tôi!
             </p>
@@ -286,11 +307,15 @@ export default function CartPage() {
               ...styles.cartContent,
               flexDirection: isMobile ? "column" : "row",
               gap: isMobile ? "24px" : "32px",
+              alignItems: isMobile ? "stretch" : "flex-start",
             }}
           >
             <div style={styles.cartItems}>
               <div style={styles.itemsHeader}>
-                <span style={styles.itemsCount}>
+                <span style={{
+                  ...styles.itemsCount,
+                  fontSize: isMobile ? "15px" : "18px",
+                }}>
                   {cart.total_quantity || 0} sản phẩm
                 </span>
               </div>
@@ -302,13 +327,22 @@ export default function CartPage() {
                     item={item}
                     onQuantityChange={handleQuantityChange}
                     onRemove={handleRemoveItem}
+                    isMobile={isMobile} // Pass isMobile prop
                   />
                 ))}
               </div>
             </div>
 
-            <div style={styles.cartSummary}>
-              <div style={styles.summaryCard}>
+            <div style={{
+              ...styles.cartSummary,
+              width: isMobile ? "100%" : "350px",
+              position: isMobile ? "static" : "sticky",
+            }}>
+              <div style={{
+                ...styles.summaryCard,
+                position: isMobile ? "static" : "sticky",
+                top: isMobile ? "auto" : "100px",
+              }}>
                 <h3 style={styles.summaryTitle}>Tóm tắt đơn hàng</h3>
 
                 <div style={styles.summaryContent}>
@@ -340,10 +374,10 @@ export default function CartPage() {
                     width: "100%",
                     backgroundColor: !canCheckout() ? "#9ca3af" : "#2563eb",
                     color: "white",
-                    padding: "12px 24px",
+                    padding: isMobile ? "16px 24px" : "12px 24px",
                     borderRadius: "8px",
                     border: "none",
-                    fontSize: "16px",
+                    fontSize: isMobile ? "18px" : "16px",
                     fontWeight: "600",
                     marginTop: "16px",
                     cursor: !canCheckout() ? "not-allowed" : "pointer",
@@ -421,7 +455,6 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "32px",
     borderBottom: "2px solid #e5e7eb",
     paddingBottom: "16px",
   },
@@ -481,7 +514,6 @@ const styles = {
   },
   cartContent: {
     display: "flex",
-    alignItems: "flex-start",
   },
   cartItems: {
     flex: 1,

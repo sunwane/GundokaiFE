@@ -407,3 +407,5 @@ if (typeof document !== 'undefined') {
 }
 
 useGLTF.preload('/model/gat-x105_aile_strike.glb');
+useGLTF.preload('/model/33tos_4TH.glb');
+useGLTF.preload('/model/MBF-02StrikeRougeOotori.glb');

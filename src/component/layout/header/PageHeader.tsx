@@ -14,8 +14,6 @@ import AccountShortcut from '@/component/features/header/AccountShortcut';
 function PageHeader() {
   const router = useRouter();
   const { isMobile, isSmallScreen, isTablet } = useResponsive({
-    mobile: 760,
-    tablet: 1000, // Breakpoint cho tablet
   });
   
   // Use toggle hooks instead of individual state

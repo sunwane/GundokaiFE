@@ -7,6 +7,7 @@ import { useProductStatus } from '@/hooks/product/useProductStatus';
 import CardLabel from '@/component/features/product/CardLabel';
 import ProductImage from '@/component/features/product/ProductImage';
 import { SubCategoryService } from '@/services/SubCategoryService';
+import { max } from 'three/tsl';
 
 interface ProductCardProps {
   product: Product;
@@ -121,7 +122,6 @@ const styles = {
   cardWrapper: {
     position: 'relative' as const,
     display: 'inline-block',
-    width: '100%',
     maxWidth: '210px',
     transition: 'all 0.3s ease',
   },
@@ -144,7 +144,7 @@ const styles = {
   },
   gundamShadowMobile: {
     width: '150px',
-    height: '200px',
+    height: '220px',
   },
   mainCard: {
     position: 'relative' as const,
@@ -162,7 +162,7 @@ const styles = {
   },
   mainCardMobile: {
     width: '150px',
-    height: '200px',
+    height: '220px',
     padding: '4px 4px',
   },
   productImageContainer: {
@@ -170,10 +170,11 @@ const styles = {
   },
   cardLabelContainer: {
     marginBottom: '5px',
+    maxWidth: '195px',
   },
   cardLabelMobile: {
     marginBottom: '3px',
-    maxWidth: '80px',
+    maxWidth: '135px',
   },
   productInfo: {
     flex: 1,

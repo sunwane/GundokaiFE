@@ -8,12 +8,14 @@ interface CartItemProps {
   item: CartItemType;
   onQuantityChange: (productId: string, quantity: number) => void;
   onRemove: (productId: string) => void;
+  isMobile?: boolean; // Add isMobile prop
 }
 
 export default function CartItem({
   item,
   onQuantityChange,
   onRemove,
+  isMobile = false,
 }: CartItemProps) {
   const formatPrice = (price: number) => {
     return price.toLocaleString("vi-VN") + " VNĐ";
@@ -33,12 +35,22 @@ export default function CartItem({
 
   console.log("id", item.product.subcategory.id);
 
-  console.log({ categoryName, subCategoryName});
+  console.log({ categoryName, subCategoryName });
 
   return (
-    <div style={styles.container}>
+    <div style={{
+      ...styles.container,
+      flexDirection: isMobile ? "column" : "row",
+      alignItems: isMobile ? "stretch" : "flex-start",
+      padding: isMobile ? "16px" : "20px 20px 20px 24px",
+    }}>
       {/* Product Image */}
-      <div style={styles.imageContainer}>
+      <div style={{
+        ...styles.imageContainer,
+        width: isMobile ? "100%" : "120px",
+        height: isMobile ? "200px" : "120px",
+        marginBottom: isMobile ? "16px" : "0",
+      }}>
         <img
           src={item.product.thumbnail}
           alt={item.product.productName}
@@ -73,8 +85,13 @@ export default function CartItem({
       </div>
 
       {/* Product Info */}
-      <div style={styles.infoContainer}>
-        <h3 style={styles.productName}>{item.product.productName}</h3>
+      <div style={{
+        ...styles.infoContainer,
+      }}>
+        <h3 style={{
+          ...styles.productName,
+          fontSize: isMobile ? "16px" : "18px",
+        }}>{item.product.productName}</h3>
 
         {/* Card Label */}
         <div style={styles.cardLabelContainer}>
@@ -84,21 +101,45 @@ export default function CartItem({
           />
         </div>
 
-        <div style={styles.priceRow}>
-          <span style={styles.unitPrice}>
+        <div style={{
+          ...styles.priceRow,
+          justifyContent: isMobile ? "space-between" : "flex-start",
+        }}>
+          <span style={{
+            ...styles.unitPrice,
+            fontSize: isMobile ? "12px" : "14px",
+          }}>
             Đơn giá: {formatPrice(item.product.price)}
           </span>
-          <span style={styles.totalPrice}>
+          <span style={{
+            ...styles.totalPrice,
+            fontSize: isMobile ? "16px" : "18px",
+          }}>
             Thành tiền: {formatPrice(item.total_price)}
           </span>
         </div>
       </div>
 
       {/* Actions */}
-      <div style={styles.actionsContainer}>
+      <div style={{
+        ...styles.actionsContainer,
+        flexDirection: isMobile ? "row" : "column",
+        justifyContent: isMobile ? "space-between" : "flex-end",
+        alignItems: isMobile ? "center" : "flex-end",
+        minWidth: isMobile ? "100%" : "140px",
+        gap: isMobile ? "16px" : "16px",
+      }}>
         {/* Quantity Selector */}
-        <div style={styles.quantityContainer}>
-          <span style={styles.quantityLabel}>Số lượng:</span>
+        <div style={{
+          ...styles.quantityContainer,
+          flexDirection: isMobile ? "row" : "column",
+          alignItems: isMobile ? "center" : "flex-end",
+          gap: isMobile ? "8px" : "8px",
+        }}>
+          <span style={{
+            ...styles.quantityLabel,
+            fontSize: isMobile ? "12px" : "14px",
+          }}>Số lượng:</span>
           <QuantitySelector
             quantity={item.quantity}
             onQuantityChange={handleQuantityChange}
@@ -111,7 +152,12 @@ export default function CartItem({
 
         {/* Remove Button */}
         <button
-          style={styles.removeButton}
+          style={{
+            ...styles.removeButton,
+            padding: isMobile ? "10px 16px" : "8px 16px",
+            fontSize: isMobile ? "12px" : "14px",
+            minWidth: isMobile ? "auto" : "auto",
+          }}
           onClick={handleRemove}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#fef2f2";
@@ -131,20 +177,17 @@ export default function CartItem({
 
 const styles = {
   container: {
+    width: "100%",
     display: "flex",
     gap: "16px",
-    padding: "20px 20px 20px 24px",
     backgroundColor: "#fff",
     borderRadius: "12px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
     border: "1px solid #e5e7eb",
-    alignItems: "flex-start",
   },
   imageContainer: {
     position: "relative" as const,
     flexShrink: 0,
-    width: "120px",
-    height: "120px",
   },
   image: {
     width: "100%",
@@ -179,7 +222,6 @@ const styles = {
     minWidth: 0,
   },
   productName: {
-    fontSize: "18px",
     fontWeight: "bold",
     color: "#111827",
     marginBottom: "3px",
@@ -191,11 +233,9 @@ const styles = {
     marginBottom: "8px",
   },
   unitPrice: {
-    fontSize: "14px",
     color: "#6b7280",
   },
   totalPrice: {
-    fontSize: "18px",
     fontWeight: "bold",
     color: "#dc2626",
   },
@@ -222,31 +262,22 @@ const styles = {
   },
   actionsContainer: {
     display: "flex",
-    flexDirection: "column" as const,
-    gap: "16px",
-    alignItems: "flex-end",
-    minWidth: "140px",
   },
   quantityContainer: {
     display: "flex",
-    flexDirection: "column" as const,
-    gap: "8px",
-    alignItems: "flex-end",
   },
   quantityLabel: {
-    fontSize: "14px",
     color: "#374151",
     fontWeight: "600",
   },
   removeButton: {
-    padding: "8px 16px",
     backgroundColor: "transparent",
     color: "#6b7280",
     border: "1px solid #d1d5db",
     borderRadius: "6px",
     cursor: "pointer",
-    fontSize: "14px",
     fontWeight: "500",
     transition: "all 0.2s ease",
+    whiteSpace: "nowrap" as const,
   },
 };

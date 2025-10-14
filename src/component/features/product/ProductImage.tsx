@@ -33,7 +33,7 @@ export default function ProductImage({
   return (
     <div style={{
       ...styles.container,
-      ...(isMobile ? { height: '100px' } : { height: '180px' }),
+      ...(isMobile ? { height: '120px' } : { height: '180px' }),
       backgroundColor,
       ...style,
     }} className={className}>
