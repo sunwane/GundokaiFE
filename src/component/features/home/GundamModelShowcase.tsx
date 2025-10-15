@@ -159,7 +159,10 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
                 bottom: isMobile ? "16px" : "24px",
                 left: isMobile ? "16px" : "24px",
               }}>
-                <h3 style={styles.modelName}>{activeModel.name}</h3>
+                <h3
+                  style={styles.modelName}
+                  dangerouslySetInnerHTML={{ __html: activeModel.name }}
+                ></h3>
                 <p style={styles.modelCategory}>{activeModel.category}</p>
               </div>
             </div>

@@ -18,7 +18,7 @@ export default function About() {
       department: "BE",
       avatar: "👨‍💻",
       description: "Phát triển và maintain hệ thống backend, API services",
-      github: "https://github.com/vuhoangquan"
+      github: "https://github.com/Hiuth"
     },
     {
       name: "Đỗ Thanh Hòa", 
@@ -50,7 +50,7 @@ export default function About() {
       department: "FE Admin",
       avatar: "👨‍🔧",
       description: "Phát triển giao diện dashboard admin, quản lý hệ thống dữ liệu nhập xuất",
-      github: "https://github.com/nguyenhuynhquoctuan"
+      github: "https://github.com/QuocTuan1432004"
     }
   ];
 
