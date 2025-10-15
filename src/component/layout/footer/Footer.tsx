@@ -36,9 +36,9 @@ export default function Footer() {
                 Điểm đến tin cậy cho mọi sản phẩm hobby chất lượng cao. Từ Gundam đến figure, chúng tôi mang đến trải nghiệm mua sắm tuyệt vời nhất.
               </div>
               <div style={styles.socialRow}>
-                <a href="#" style={styles.social}><img src="/images/icons/facebook.svg" alt="fb" style={styles.socialIcon} /></a>
-                <a href="#" style={styles.social}><img src="/images/icons/instagram.svg" alt="ig" style={styles.socialIcon} /></a>
-                <a href="#" style={styles.social}><img src="/images/icons/youtube.svg" alt="yt" style={styles.socialIcon} /></a>
+                <a href="#" style={styles.social}><img src="https://www.huang-dan.vn/thumbs/brands/s/1360-facebook_logo.jpg" alt="fb" style={styles.socialIcon} /></a>
+                <a href="#" style={styles.social}><img src="https://img.freepik.com/free-vector/instagram-logo_1199-122.jpg?semt=ais_hybrid&w=740&q=80" alt="ig" style={styles.socialIcon} /></a>
+                <a href="#" style={styles.social}><img src="https://yt3.googleusercontent.com/8YREjMpJG4lXPc4oAIXZbSL6GniENWwAJIAGQ2yR3yphhJz_0XUoNoj6uMaWPevxVl721QKKnqM=s900-c-k-c0x00ffffff-no-rj" alt="yt" style={styles.socialIcon} /></a>
               </div>
             </div>
             <div style={styles.col}>

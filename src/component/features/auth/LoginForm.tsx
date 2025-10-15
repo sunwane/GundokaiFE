@@ -38,7 +38,7 @@ export default function LoginForm({
   const password = data?.password || '';
 
   const handleForgotPassword = () => {
-    router.push('/forgot-password');
+    router.push('/auth/forgot-password');
   };
 
   return (

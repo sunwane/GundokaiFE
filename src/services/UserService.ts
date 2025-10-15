@@ -1,6 +1,10 @@
 import { Account } from '@/types/Account';
+import { CheckAPIService } from './CheckAPIService';
+import { mockAccounts } from '@/data/mockAccounts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/users");
 
 export interface UserResponse {
   result?: Omit<Account, 'password'>;
@@ -19,6 +23,11 @@ export class UserService {
    * 📧 Gửi mã xác thực khi đăng ký
    */
   static async sendVerificationCode(email: string): Promise<{ message: string }> {
+    const apiAvailable = await check_api_url;
+    if (!apiAvailable) {
+      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể gửi mã xác thực, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
+      return { message: 'Hệ thống đang thử nghiệm, không thể gửi mã xác thực' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/users/send-code?email=${encodeURIComponent(email)}`, {
         method: 'POST',
@@ -46,6 +55,11 @@ export class UserService {
    * 📧 Gửi mã xác thực khi quên mật khẩu  
    */
   static async sendPasswordResetCode(email: string): Promise<{ message: string }> {
+    const apiAvailable = await check_api_url;
+    if (!apiAvailable) {
+      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể gửi mã đặt lại mật khẩu, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
+      return { message: 'Hệ thống đang thử nghiệm, không thể gửi mã đặt lại mật khẩu' };
+    }
     try {
       const response = await fetch(`${API_BASE_URL}/users/request-password-reset?email=${encodeURIComponent(email)}`, {
         method: 'POST',
@@ -105,6 +119,10 @@ export class UserService {
    * 👤 Lấy thông tin người dùng hiện tại
    */
   static async getMyInfo(): Promise<Omit<Account, 'password'>> {
+    const apiAvailable = await check_api_url;
+    if (!apiAvailable) {
+      return mockAccounts[4];
+    }
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {

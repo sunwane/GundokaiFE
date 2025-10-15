@@ -1,6 +1,7 @@
 import { Account, AuthResponse, LoginRequest, RegisterRequest } from '@/types/Account';
 import { UserService } from './UserService';
 import { mockAccounts } from '@/data/mockAccounts';
+import { CheckAPIService } from './CheckAPIService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -115,6 +116,11 @@ export class AuthService {
    * 📝 Đăng ký - CHỈ API thật
    */
   static async register(userData: RegisterRequest): Promise<AuthResponse> {
+    const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/users");
+    if (!await check_api_url) {
+      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể đăng ký thật, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
+      throw new Error('Không thể đăng ký khi hệ thống đang thử nghiệm');
+    }
     try {
       const userCreationRequest: UserCreationRequest = {
         username: userData.username,
@@ -193,7 +199,6 @@ export class AuthService {
       return await UserService.sendPasswordResetCode(data.email);
     } catch (error) {
       console.error('ForgotPassword API failed:', error);
-      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể thay đổi mật khẩu thật");
       throw new Error('Không thể gửi mã xác thực khi hệ thống đang thử nghiệm');
     }
   }
@@ -223,7 +228,6 @@ export class AuthService {
       return await UserService.sendVerificationCode(data.email);
     } catch (error) {
       console.error('ResendVerificationCode API failed:', error);
-      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể gửi mã xác thực thật");
       throw new Error('Không thể gửi lại mã xác thực khi hệ thống đang thử nghiệm');
     }
   }

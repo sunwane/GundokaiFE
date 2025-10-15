@@ -34,6 +34,6 @@ export const mockAccounts: Account[] = [
     username: 'admin',
     password: 'admin',
     email: 'admin',
-    gender: 'male'
+    gender: 'MALE'
   }
 ];

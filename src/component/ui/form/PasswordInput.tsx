@@ -37,7 +37,7 @@ export default function PasswordInput({
         {label} {required && <span style={{ color: theme.errorText }}>*</span>}
       </label>
       <div style={styles.inputWrapper}>
-        <input
+      <input
           id={id}
           name={name}
           type={showPassword ? 'text' : 'password'}
@@ -47,7 +47,7 @@ export default function PasswordInput({
           required={required}
           style={{
             ...styles.input,
-            ...(error ? styles.inputError : {})
+            ...(error ? styles.inputError : {}),
           }}
           className={`form-input-${mode}`}
         />
