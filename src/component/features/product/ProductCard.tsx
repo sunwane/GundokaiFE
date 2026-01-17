@@ -38,16 +38,14 @@ export default function ProductCard({ product, onClick, style, isMobile = false 
     categoryName, 
     subCategoryName, 
     loading 
-  } = useCategory(product.subcategory.id);
+  } = useCategory(product.subcategory?.id || null);
   
   const { backgroundColor, imgRef, handleImageLoad } = useImageBackgroundColor(
-    product.subcategory.id,
+    product.subcategory?.id || '',
     'rgba(248, 249, 250, 0.8)'
   );
 
   const { isOutOfStock } = useProductStatus(product);
-
-  const categoryId = useCategoryId(product.subcategory.id);
 
   return (
     <div 
@@ -89,7 +87,7 @@ export default function ProductCard({ product, onClick, style, isMobile = false 
           {/* Card Label */}
           {!loading && (
             <CardLabel 
-              subcategoryId={subCategoryName || product.subcategory.subCategoryName}
+              subcategoryId={subCategoryName || product.subcategory?.subCategoryName || 'Danh mục con'}
               categoryId={categoryName || 'Gundam'}
               style={isMobile ? styles.cardLabelMobile : styles.cardLabelContainer}
               isMobile={isMobile}

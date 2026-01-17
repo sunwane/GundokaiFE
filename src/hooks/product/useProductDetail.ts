@@ -40,6 +40,8 @@ export function useProductDetail(productId: string | null): UseProductDetailRetu
         ProductDetailService.getProductDetail(productId),
       ]);
 
+      console.log("Detail Data:", detailData);
+
       if (!productData) {
         throw new Error('Product not found');
       }

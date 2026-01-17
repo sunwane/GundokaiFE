@@ -58,12 +58,32 @@ function ProductDetailContent() {
     );
   }
 
+  // Helper function to get category info
+  const getCategoryInfo = () => {
+    if (!product?.subcategory) {
+      return { categoryName: 'Danh mục', categoryId: '' };
+    }
+    
+    const categoryName = product.subcategory?.mainCategory?.categoryName || 'Danh mục';
+    const categoryId = product.subcategory?.mainCategory?.id || product.subcategory?.mainCategoryId || '';
+    
+    return { categoryName, categoryId };
+  };
+
+  const { categoryName, categoryId } = getCategoryInfo();
+
   // Breadcrumbs data
   const breadcrumbs = [
     { label: 'Trang chủ', href: '/' },
     { label: 'Danh mục sản phẩm', href: '/products' },
-    { label: product.subcategory.mainCategory.categoryName, href: `/products?category=${product.subcategory.mainCategory.id}` },
-    { label: product.subcategory.subCategoryName, href: `/products?subcategory=${product.subcategory.id}` },
+    { 
+      label: categoryName, 
+      href: `/products?category=${categoryId}` 
+    },
+    { 
+      label: product?.subcategory?.subCategoryName || 'Danh mục con', 
+      href: `/products?subcategory=${product?.subcategory?.id || ''}` 
+    },
   ];
 
   return (

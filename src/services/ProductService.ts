@@ -33,7 +33,12 @@ export class ProductService {
       }
       
       const data = await response.json();
-      return data; // Backend trả về ProductResponse format
+      // ✅ Return result or data (whichever is not null), fallback to mock data structure
+      return {
+        result: data.result || data.data || data,
+        total: data.total || (Array.isArray(data.result || data.data || data) ? (data.result || data.data || data).length : 0),
+        message: data.message || 'Products fetched successfully (Real API)'
+      };
       
     } catch (error) {
       console.error('Error fetching products, fallback mockup data:', error);
@@ -64,7 +69,8 @@ export class ProductService {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const product = await response.json();
-      return product;
+      // ✅ Return result or data (whichever is not null)
+      return product.result || product.data || product;
     } catch (error) {
       console.error(`Error fetching product ${id}:`, error);
       return null;
@@ -76,7 +82,7 @@ export class ProductService {
 
     if (!apiAvailable) {
       const filteredProduct = mockProducts.filter(
-        pro => pro.subcategory.id === subCategoryId
+        pro => pro.subcategory?.id === subCategoryId
       );
       return {
         result: filteredProduct,
@@ -89,10 +95,23 @@ export class ProductService {
       const response = await fetch(`${API_BASE_URL}/getProductBySubCategory/${subCategoryId}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return data;
+      // ✅ Return result or data (whichever is not null), fallback to mock data structure
+      return {
+        result: data.result || data.data || data,
+        total: data.total || (Array.isArray(data.result || data.data || data) ? (data.result || data.data || data).length : 0),
+        message: data.message || 'Products by subcategory fetched successfully (Real API)'
+      };
     } catch (error) {
       console.error('Error fetching products by subcategory:', error);
-      throw error;
+      // 🔄 Fallback: Return filtered mock data
+      const filteredProduct = mockProducts.filter(
+        pro => pro.subcategory?.id === subCategoryId
+      );
+      return {
+        result: filteredProduct,
+        total: filteredProduct.length,
+        message: 'Products fetched successfully (Mock Data - API Failed)'
+      };
     }
 
   }
@@ -153,10 +172,23 @@ static async searchProducts(query: string): Promise<ProductResponse> {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const data = await response.json();
-    return data;
+    // ✅ Return result or data (whichever is not null), fallback to mock data structure
+    return {
+      result: data.result || data.data || data,
+      total: data.total || (Array.isArray(data.result || data.data || data) ? (data.result || data.data || data).length : 0),
+      message: data.message || 'Products searched successfully (Real API)'
+    };
   } catch (error) {
     console.error('Error searching products:', error);
-    throw error;
+    // 🔄 Fallback: Return filtered mock data
+    const filteredProduct = mockProducts.filter(
+      pro => pro.productName.toLowerCase().includes(query.toLowerCase())
+    );
+    return {
+      result: filteredProduct,
+      total: filteredProduct.length,
+      message: 'Products fetched successfully (Mock Data - API Failed)'
+    };
   }
 }
   /**
@@ -245,10 +277,24 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      return data;
+      // ✅ Return result or data (whichever is not null), fallback to mock data structure
+      return {
+        result: data.result || data.data || data,
+        total: data.total || (Array.isArray(data.result || data.data || data) ? (data.result || data.data || data).length : 0),
+        message: data.message || 'Hot products fetched successfully (Real API)'
+      };
     } catch (error) {
       console.error('Error fetching hot products:', error);
-      throw error;
+      // 🔄 Fallback: Return filtered mock data
+      const filteredProducts = mockProducts.filter(pro => pro.stockQuantity > 0);
+      const sortedProducts = filteredProducts.sort((a, b) => a.stockQuantity - b.stockQuantity);
+      const leastQuantityProducts = sortedProducts.slice(0, 5);
+
+      return {
+        result: leastQuantityProducts,
+        total: leastQuantityProducts.length,
+        message: 'Top 5 products with the least quantity fetched successfully (Mock Data - API Failed)',
+      };
     }
 
   }
@@ -273,10 +319,24 @@ static async searchProducts(query: string): Promise<ProductResponse> {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      return data;
+      // ✅ Return result or data (whichever is not null), fallback to mock data structure
+      return {
+        result: data.result || data.data || data,
+        total: data.total || (Array.isArray(data.result || data.data || data) ? (data.result || data.data || data).length : 0),
+        message: data.message || 'Latest products fetched successfully (Real API)'
+      };
     } catch (error) {
       console.error('Error fetching latest products:', error);
-      throw error;
+      // 🔄 Fallback: Return filtered mock data
+      const sortedByDate = [...mockProducts].sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      const latest5Products = sortedByDate.slice(0, 5);
+      return {
+        result: latest5Products,
+        total: latest5Products.length,
+        message: 'Top 5 newest products fetched successfully (Mock Data - API Failed)',
+      };
     }
   }
 }

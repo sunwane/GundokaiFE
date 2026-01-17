@@ -20,7 +20,7 @@ export function useSubCategories(categoryId?: string) {
         
       } else {
         const response = await SubCategoryService.getSubCategories();
-        data = response.result || response || [];
+        data = Array.isArray(response.result) ? response.result : [];
       }
       setSubCategories(Array.isArray(data) ? data : []);
     } catch (err) {

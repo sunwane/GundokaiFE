@@ -31,11 +31,11 @@ export default function CartItem({
 
   // Hooks
   const { categoryName, subCategoryName, category, subCategory, loading } =
-    useCategory(item.product.subcategory.id);
+    useCategory(item.product.subcategory?.id || item.product.subCategoryId);
 
-  console.log("id", item.product.subcategory.id);
+  console.log("id", item.product.subcategory?.id);
 
-  console.log({ categoryName, subCategoryName });
+  console.log("Category:", { categoryName, subCategoryName });
 
   return (
     <div style={{

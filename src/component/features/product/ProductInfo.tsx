@@ -30,7 +30,7 @@ export default function ProductInfo({
 
   // Hooks
   const { categoryName, subCategoryName } = useCategory(
-    product.subcategory.id
+    product.subcategory?.id || product.subCategoryId
   );
 
   const handleAddToCart = () => {

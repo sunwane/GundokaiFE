@@ -27,7 +27,8 @@ export class ProductDetailService {
       }
       
       const data = await response.json();
-      return data.result || data;
+      // ✅ Return result or data (whichever is not null)
+      return data.result || data.data || data;
     } catch (error) {
       console.error('❌ Error fetching product by ID, fallback to mock:', error);
       
@@ -52,28 +53,35 @@ export class ProductDetailService {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const data = await response.json();
-      return data.result || data;
+      // ✅ Return result or data (whichever is not null), fallback to empty array
+      const result = data.result || data.data || data;
+      return Array.isArray(result) ? result : [];
     } catch (error) {
       console.error('❌ Error fetching product images, fallback to mock:', error);
-      throw error; // Ném lỗi để gọi fallback ở hàm gọi
+      // 🔄 Fallback: Return mock images
+      const mockImages = mockProductImages.filter(img => img.productId === productId);
+      return mockImages;
     }
   }
 
   static async getProductDetail(productId: string): Promise<ProductDetail | null> {
-    const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
+    const apiAvailable = await CheckAPIService.checkApiAvailability(check_API_URL);
 
     if (!apiAvailable) {
       const mockDetail = mockProductDetails.find(detail => detail.id === productId);
+      console.log("API not available, returning mock detail:", mockDetail);
       return mockDetail || null;
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/productDetail/get/${productId}`, {
+      const response = await fetch(`http://localhost:8080/productDetail/get/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         }
       });
+
+      console.log("Fetching Product Detail from API:", response);
       
       if (!response.ok) {
         if (response.status === 404) return null;
@@ -81,11 +89,14 @@ export class ProductDetailService {
       }
       
       const data = await response.json();
-      return data.result || null;
+      // ✅ Return result or data (whichever is not null)
+      return data.result || data.data || data;
     } catch (error) {
       console.error('❌ Error fetching product detail, fallback to mock:', error);
       
-      throw error; // Ném lỗi để gọi fallback ở hàm gọi
+      // 🔄 Fallback: Return mock detail
+      const mockDetail = mockProductDetails.find(detail => detail.id === productId);
+      return mockDetail || null;
     }
   }
 
@@ -106,11 +117,16 @@ export class ProductDetailService {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
       const data = await response.json();
-      return data.result || [];
+      // ✅ Return result or data (whichever is not null), fallback to empty array
+      const result = data.result || data.data || data;
+      return Array.isArray(result) ? result : [];
     } catch (error) {
       console.error('❌ Error fetching related products, fallback to mock:', error);
       
-      throw error; // Ném lỗi để gọi fallback ở hàm gọi
+      // 🔄 Fallback: Return random mock products
+      const shuffledProducts = [...mockProducts].sort(() => 0.5 - Math.random());
+      const relatedProducts = shuffledProducts.slice(0, 5);
+      return relatedProducts;
     }
   }
 }

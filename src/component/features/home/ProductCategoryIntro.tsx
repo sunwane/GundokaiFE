@@ -1,6 +1,3 @@
-import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
-import React from "react";
-
 interface Category {
   name: string;
   desc: string;

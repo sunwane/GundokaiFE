@@ -116,7 +116,7 @@ export class AuthService {
    * 📝 Đăng ký - CHỈ API thật
    */
   static async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/users");
+    const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/mainCategory");
     if (!await check_api_url) {
       alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể đăng ký thật, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
       throw new Error('Không thể đăng ký khi hệ thống đang thử nghiệm');
@@ -163,7 +163,7 @@ export class AuthService {
 
     } catch (error) {
       console.error('Register API failed:', error);
-      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể đăng ký thật, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
+      alert("Chưa kết nối với hệ thống, hiện không thể đăng ký thật, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
       throw new Error('Không thể đăng ký khi hệ thống đang thử nghiệm');
     }
   }
@@ -215,7 +215,7 @@ export class AuthService {
       return await UserService.resetPassword(data.email, data.code, data.newPassword);
     } catch (error) {
       console.error('ResetPassword API failed:', error);
-      alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể thay đổi mật khẩu thật");
+      alert("Chưa kết nối với hệ thống, hiện không thể thay đổi mật khẩu thật");
       throw new Error('Không thể đặt lại mật khẩu khi hệ thống đang thử nghiệm');
     }
   }
@@ -272,7 +272,7 @@ export class AuthService {
 
       // Nếu là mock token, không cho phép đổi mật khẩu
       if (token.startsWith('mock_token_')) {
-        alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể thay đổi mật khẩu thật");
+        alert("Chưa kết nối với hệ thống, hiện không thể thay đổi mật khẩu thật");
         throw new Error('Không thể đổi mật khẩu với tài khoản thử nghiệm');
       }
 
@@ -309,7 +309,7 @@ export class AuthService {
       
       // Chỉ hiển thị alert nếu không phải lỗi validation
       if (error instanceof Error && !error.message.includes('Không thể đổi mật khẩu với tài khoản thử nghiệm')) {
-        alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể thay đổi mật khẩu thật");
+        alert("Kết nối có vấn đề, hiện không thể thay đổi mật khẩu thật");
       }
       
       throw error;

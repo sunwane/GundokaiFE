@@ -49,20 +49,25 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
       try {
         // 🔄 Lấy subcategory đầy đủ
         const subCategory = await SubCategoryService.getSubCategoryById(subCategoryId)!;
-        // const subCategoryData = subCategory?.result || subCategory?.data || subCategory;
-        const subCategoryData = subCategory;
-        if (subCategoryData) {
-          setSubCategory(subCategoryData);
-          setSubCategoryName(subCategoryData.subCategoryName);
-          setCategoryId(subCategoryData.mainCategory.id);
+        if (subCategory) {
+          setSubCategory(subCategory);
+          setSubCategoryName(subCategory.subCategoryName);
+          
+          // ✅ Safely get categoryId from either mainCategory.id or mainCategoryId
+          const categoryId = subCategory.mainCategory?.id || subCategory.mainCategoryId || null;
+          setCategoryId(categoryId);
         
-          // 🔄 Lấy category đầy đủ từ categoryId
-          const category = await CategoryService.getCategoryById(subCategoryData.mainCategory.id);
-          console.log("Fetched Category:", category);
-          const categoryData = category;
-          if (categoryData) {
-            setCategory(categoryData);
-            setCategoryName(categoryData.categoryName);
+          // 🔄 Lấy category đầy đủ từ categoryId nếu có
+          if (categoryId) {
+            const category = await CategoryService.getCategoryById(categoryId);
+            console.log("Fetched Category:", category);
+            if (category) {
+              setCategory(category);
+              setCategoryName(category.categoryName);
+            } else {
+              setCategory(null);
+              setCategoryName(null);
+            }
           } else {
             setCategory(null);
             setCategoryName(null);

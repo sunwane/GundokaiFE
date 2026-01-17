@@ -3,7 +3,8 @@ export interface SubCategory {
   subCategoryName: string;   
   subCategoryImg: string;    
   description: string;
-  mainCategory: {             
+  mainCategoryId?: string;
+  mainCategory?: {             
     id: string;
     categoryName: string;
     categoryImg: string;
@@ -11,7 +12,8 @@ export interface SubCategory {
 }
 
 export interface SubCategoryResponse {
-  result: SubCategory[];      // ✅ Đổi từ data thành result nếu cần
+  data?: SubCategory[];
+  result?: SubCategory[];      // ✅ Đổi từ data thành result nếu cần
   total?: number;
   message?: string;
 }

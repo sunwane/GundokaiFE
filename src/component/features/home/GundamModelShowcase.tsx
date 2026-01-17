@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import GundamScene3D from "@/component/features/auth/GundamScene3D";
+import { useRouter } from "next/navigation";
 
 interface GundamDetail {
   label: string;
@@ -54,6 +55,7 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
   const [activeDetailIndex, setActiveDetailIndex] = useState<number | null>(null);
   
   const activeModel = models[activeModelIndex];
+  const route = useRouter();
   
   return (
     <section style={styles.section}>
@@ -169,14 +171,13 @@ export default function GundamModelShowcase({ models, isMobile = false }: Gundam
           </div>
           {/* Category Link Button - Đặt ngay dưới modelWrapper */}
           <div style={styles.bottomButtonContainer}>
-              <a
-                href={activeModel.categoryLink}
+              <button
+                onClick={() => route.push(activeModel.categoryLink)}
                 style={styles.categoryLinkButton}
-                target="_blank"
                 rel="noopener noreferrer"
               >
                 Xem tất cả {activeModel.category}
-              </a>
+              </button>
             </div>
           </div>
 

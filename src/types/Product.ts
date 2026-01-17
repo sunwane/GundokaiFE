@@ -7,12 +7,14 @@ export interface Product {
   description: string;
   thumbnail: string;
   status: string; // 'Còn hàng', 'Hết hàng', 'Hàng sắp về'
-  subcategory: {             // ✅ Thêm subcategory object thay vì subCategory_id
+  subCategoryId?: string;   // ✅ Thêm subCategoryId nếu BE trả về ID thay vì object
+  subcategory?: {             // ✅ Make subcategory optional to handle different BE responses
     id: string;
     subCategoryName: string;
     subCategoryImg: string;
     description: string;
-    mainCategory: {
+    mainCategoryId?: string;
+    mainCategory?: {
       id: string;
       categoryName: string;
       categoryImg: string;

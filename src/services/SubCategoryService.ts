@@ -56,9 +56,9 @@ export class SubCategoryService {
     const apiAvailable = await CheckAPIService.checkApiAvailability(API_BASE_URL);
     
     if (!apiAvailable) {
-
+      // ✅ Filter with support for both mainCategory.id and mainCategoryId
       const filteredSubCategories = mockSubCategories.filter(
-        subCat => subCat.mainCategory && subCat.mainCategory.id === categoryId
+        subCat => (subCat.mainCategory?.id === categoryId) || (subCat.mainCategoryId === categoryId)
       );
       return filteredSubCategories;
     }
@@ -71,11 +71,17 @@ export class SubCategoryService {
       }
       
       const data = await response.json();
-      return !Array.isArray(data) ? data : [];
+      // ✅ Return result or data (whichever is not null), fallback to empty array
+      const result = data.result || data.data || data;
+      return Array.isArray(result) ? result : [];
       
     } catch (error) {
       console.error('❌ Real API failed, falling back to mock data:', error);
-      throw error;
+      // 🔄 Fallback: Return filtered mock data with support for both formats
+      const filteredSubCategories = mockSubCategories.filter(
+        subCat => (subCat.mainCategory?.id === categoryId) || (subCat.mainCategoryId === categoryId)
+      );
+      return filteredSubCategories;
     }
   }
 
@@ -99,7 +105,8 @@ export class SubCategoryService {
       }
       
       const data = await response.json();
-      return data;
+      // ✅ Return result or data (whichever is not null)
+      return data.result || data.data || data;
       
     } catch (error) {
       
@@ -118,7 +125,10 @@ export class SubCategoryService {
   // Get categoryId by subCategoryId
   static async getCategoryIdBySubCategoryId(subCategoryId: string): Promise<string | null> {
     const subCategory = await this.getSubCategoryById(subCategoryId);
-    return subCategory && typeof subCategory.mainCategory === 'object' ? subCategory.mainCategory.id : null;
+    if (!subCategory) return null;
+    
+    // ✅ Handle both response formats: mainCategory.id or mainCategoryId
+    return subCategory.mainCategory?.id || subCategory.mainCategoryId || null;
   }
 
   /**

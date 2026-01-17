@@ -73,7 +73,8 @@ export class CategoryService {
       }
       
       const data = await response.json();
-      return data;
+      // ✅ Return result or data (whichever is not null)
+      return data.result || data.data || data;
       
     } catch (error) {
       console.error('❌ Real API failed, falling back to mock data:', error);

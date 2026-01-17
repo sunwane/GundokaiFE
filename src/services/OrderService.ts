@@ -4,7 +4,7 @@ import { CheckAPIService } from './CheckAPIService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-const check_api_url = 'http://localhost:8080/order'
+const check_api_url = 'http://localhost:8080/mainCategory'
 
 export interface OrderResponse {
   result?: Order;
