@@ -3,7 +3,7 @@ import { UserService } from './UserService';
 import { mockAccounts } from '@/data/mockAccounts';
 import { CheckAPIService } from './CheckAPIService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gundokai.cevvian.space';
 
 export interface ApiResponse<T> {
   code?: number;
@@ -116,7 +116,7 @@ export class AuthService {
    * 📝 Đăng ký - CHỈ API thật
    */
   static async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/mainCategory");
+    const check_api_url = CheckAPIService.checkApiAvailability("https://gundokai.cevvian.space/mainCategory");
     if (!await check_api_url) {
       alert("Chưa kết nối với API, hệ thống đang thử nghiệm, không thể đăng ký thật, vui lòng đăng nhập bằng tài khoản với tên đăng nhập 'admin' và mật khẩu 'admin' để xem giao diện");
       throw new Error('Không thể đăng ký khi hệ thống đang thử nghiệm');

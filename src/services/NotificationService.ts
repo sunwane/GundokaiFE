@@ -2,9 +2,9 @@ import { Notification, NotificationBEResponse } from '@/types/Notification';
 import { CheckAPIService } from './CheckAPIService';
 import { mockNotifications } from '@/data/mockNoti';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://gundokai.cevvian.space';
 
-const check_api_url = 'http://localhost:8080/notification';
+const check_api_url = 'https://gundokai.cevvian.space/notification';
 
 export class NotificationService {
   // ✅ Hàm helper để lấy token

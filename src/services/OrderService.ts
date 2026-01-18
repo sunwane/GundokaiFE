@@ -2,9 +2,9 @@ import { Order, OrderDetail, CreateOrderRequest, CreateOrderResponse, OrderStatu
 import { mockOrders } from '@/data/mockOrders';
 import { CheckAPIService } from './CheckAPIService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gundokai.cevvian.space';
 
-const check_api_url = 'http://localhost:8080/mainCategory'
+const check_api_url = 'https://gundokai.cevvian.space/mainCategory'
 
 export interface OrderResponse {
   result?: Order;

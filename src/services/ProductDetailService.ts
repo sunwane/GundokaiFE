@@ -6,9 +6,9 @@ import { mockProductDetails } from '@/data/mockProductDetails';
 import { mockProducts } from '@/data/mockProducts';
 import { mockProductImages } from '@/data/mockProductImg';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://gundokai.cevvian.space';
 
-const check_API_URL = 'http://localhost:8080/product';
+const check_API_URL = 'https://gundokai.cevvian.space/product';
 
 export class ProductDetailService {
   static async getProductById(productId: string): Promise<Product | null> {
@@ -74,7 +74,7 @@ export class ProductDetailService {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/productDetail/get/${productId}`, {
+      const response = await fetch(`https://gundokai.cevvian.space/productDetail/get/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -2,7 +2,7 @@ import { Category, CategoryResponse } from '@/types/Category';
 import { mockCategories } from '@/data/mockCategories';
 import { CheckAPIService } from './CheckAPIService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/mainCategory';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gundokai.cevvian.space/mainCategory';
 
 export class CategoryService {
   

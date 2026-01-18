@@ -2,7 +2,7 @@ import { SubCategory, SubCategoryResponse } from '@/types/SubCategory';
 import { mockSubCategories } from '@/data/mockSubCategories';
 import { CheckAPIService } from './CheckAPIService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/subCategory';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gundokai.cevvian.space/subCategory';
 
 export class SubCategoryService {
   

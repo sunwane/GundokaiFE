@@ -16,7 +16,7 @@ interface UseAutoRefreshNotificationsReturn {
   markAllAsRead: () => Promise<void>;
 }
 
-const check_api_url = 'http://localhost:8080/notification';
+const check_api_url = 'https://gundokai.cevvian.space/notification';
 
 export function useAutoRefreshNotifications(userId: string): UseAutoRefreshNotificationsReturn {
   const [notifications, setNotifications] = useState<Notification[]>([]);

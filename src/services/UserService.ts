@@ -2,9 +2,9 @@ import { Account } from '@/types/Account';
 import { CheckAPIService } from './CheckAPIService';
 import { mockAccounts } from '@/data/mockAccounts';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gundokai.cevvian.space';
 
-const check_api_url = CheckAPIService.checkApiAvailability("http://localhost:8080/mainCategory");
+const check_api_url = CheckAPIService.checkApiAvailability("https://gundokai.cevvian.space/mainCategory");
 
 export interface UserResponse {
   result?: Omit<Account, 'password'>;

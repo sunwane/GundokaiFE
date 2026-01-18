@@ -2,7 +2,7 @@ import { Product, ProductResponse } from '@/types/Product';
 import { mockProducts } from '@/data/mockProducts';
 import { CheckAPIService } from './CheckAPIService';
 
-const API_BASE_URL = 'http://localhost:8080/product';
+const API_BASE_URL = 'https://gundokai.cevvian.space/product';
 
 export class ProductService {
   static async getProducts(): Promise<ProductResponse> {
