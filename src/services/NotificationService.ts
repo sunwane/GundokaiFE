@@ -102,7 +102,6 @@ export class NotificationService {
       }
 
       const data = await response.json();
-      console.log('Mark as read response:', data);
 
     } catch (error) {
       console.error('Error marking notification as read:', error);

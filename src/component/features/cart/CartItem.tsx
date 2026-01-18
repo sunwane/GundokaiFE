@@ -33,10 +33,6 @@ export default function CartItem({
   const { categoryName, subCategoryName, category, subCategory, loading } =
     useCategory(item.product.subcategory?.id || item.product.subCategoryId);
 
-  console.log("id", item.product.subcategory?.id);
-
-  console.log("Category:", { categoryName, subCategoryName });
-
   return (
     <div style={{
       ...styles.container,

@@ -33,7 +33,6 @@ export function useProductFilter(
   // Tích hợp category filter hook
   const categoryFilterData = useCategoryFilter(products);
   // Filter products
-  console.log(products)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       // Stock filter

@@ -80,8 +80,6 @@ export class ProductDetailService {
           'Content-Type': 'application/json',
         }
       });
-
-      console.log("Fetching Product Detail from API:", response);
       
       if (!response.ok) {
         if (response.status === 404) return null;

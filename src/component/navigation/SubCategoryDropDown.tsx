@@ -19,7 +19,6 @@ function SubCategoryDropdown({
   const { subCategories, loading, error } = useSubCategories(categoryId);
 
   const handleSubCategoryClick = (subCategoryId: string, subCategoryName: string) => {
-    console.log(`Navigate to subcategory: ${subCategoryId} - ${subCategoryName}`);
     onSubCategoryClick(subCategoryId);
   };
 

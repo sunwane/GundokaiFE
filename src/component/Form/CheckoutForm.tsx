@@ -79,8 +79,6 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       }
       const response = await OrderService.createOrder(orderRequest);
 
-      console.log("Order response:", response);
-
       if (response.code === 1000) {
         onOrderSuccess(response.result);
 

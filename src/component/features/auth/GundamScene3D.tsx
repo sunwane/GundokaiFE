@@ -97,7 +97,6 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
 
     // Animation logic với config
     if (actions && Object.keys(actions).length > 0) {
-      console.log('Available animations:', Object.keys(actions));
       
       // Tìm animation appear theo config
       const appearAction = finalConfig.appearAnimationNames
@@ -110,7 +109,6 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
         .find(action => action) || Object.values(actions)[2];
       
       if (appearAction && !hasAppeared) {
-        console.log('Playing appear animation:', appearAction.getClip().name);
         
         // Set scale và position cho appear animation theo config
         scene.scale.setScalar(finalConfig.appearScale);
@@ -129,12 +127,9 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
         // Tính toán thời điểm chuyển đổi theo config
         const originalDuration = appearAction.getClip().duration;
         const transitionTime = Math.max(0, originalDuration - finalConfig.appearCutTime);
-        
-        console.log(`Appear duration: ${originalDuration}s, will transition at: ${transitionTime}s`);
-        
+                
         // Timeout để chuyển sang pose
         const transitionTimeout = setTimeout(() => {
-          console.log('Transitioning to pose animation...');
           
           if (poseAction) {
             // Smooth scale transition theo config
@@ -176,7 +171,6 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
             // Sử dụng crossFadeTo với duration từ config
             appearAction.crossFadeTo(poseAction, finalConfig.transitionDuration, true);
             poseAction.setLoop(THREE.LoopRepeat, Infinity);
-            console.log('Playing pose animation:', poseAction.getClip().name);
             
             setHasAppeared(true);
           }
@@ -191,7 +185,6 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
         scene.scale.setScalar(finalConfig.poseScale);
         scene.position.set(...finalConfig.posePosition);
         
-        console.log('Running pose animation:', poseAction.getClip().name);
         poseAction.reset().play();
         poseAction.setLoop(THREE.LoopRepeat, Infinity);
         
@@ -200,7 +193,6 @@ function GundamModel({ modelPath, config = {} }: GundamModelProps) {
         scene.scale.setScalar(finalConfig.defaultScale);
         scene.position.set(...finalConfig.defaultPosition);
         
-        console.log('No appear animation found, playing pose:', poseAction.getClip().name);
         poseAction.reset().play();
         poseAction.setLoop(THREE.LoopRepeat, Infinity);
         setHasAppeared(true);

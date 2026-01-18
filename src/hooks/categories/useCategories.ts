@@ -31,7 +31,6 @@ export function useCategories() {
       
       // 🌐 Gọi API thông qua CategoryService
       const response = await CategoryService.getCategories();
-      console.log('Fetched categories:', response);
       // ✅ Cách ngắn gọn với optional chaining
       // const categoriesData = response.result || response.data || [];
       const categoriesData = response?.result || response || [];

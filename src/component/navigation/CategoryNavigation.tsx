@@ -22,7 +22,6 @@ function CategoryNavigation() {
 
   const handleCategoryClick = (categoryId: string) => {
     if (categoryId === 'info') {
-      console.log('Navigate to info page');
       router.push('/about');
     }
   };

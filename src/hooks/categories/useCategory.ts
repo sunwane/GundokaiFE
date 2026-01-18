@@ -60,7 +60,6 @@ export function useCategory(subCategoryId: string | null | undefined): CategoryR
           // 🔄 Lấy category đầy đủ từ categoryId nếu có
           if (categoryId) {
             const category = await CategoryService.getCategoryById(categoryId);
-            console.log("Fetched Category:", category);
             if (category) {
               setCategory(category);
               setCategoryName(category.categoryName);
