@@ -32,14 +32,14 @@ export default function About() {
       name: "Nguyễn Việt Dũng",
       role: "Backend Developer", 
       department: "BE",
-      avatar: "👨‍💼",
+      avatar: "👩‍💻",
       description: "Xây dựng architecture, security và deployment",
       github: "https://github.com/Wjndz"
     },
     {
       name: "Âu Xuân Hoa",
       role: "Frontend Developer",
-      department: "FE",
+      department: "FE for User",
       avatar: "👩‍💻", 
       description: "Phát triển giao diện người dùng, UX/UI implementation",
       github: "https://github.com/sunwane"
@@ -47,10 +47,18 @@ export default function About() {
     {
       name: "Nguyễn Huỳnh Quốc Tuấn",
       role: "Frontend Developer",
-      department: "FE Admin",
-      avatar: "👨‍🔧",
+      department: "FE for Admin",
+      avatar: "👩‍💻",
       description: "Phát triển giao diện dashboard admin, quản lý hệ thống dữ liệu nhập xuất",
       github: "https://github.com/QuocTuan1432004"
+    },
+    {
+      name: "Phạm Huỳnh Anh Thư",
+      role: "Devops Engineer",
+      department: "Devops",
+      avatar: "🧑‍🔧",
+      description: "Phát triển giao diện dashboard admin, quản lý hệ thống dữ liệu nhập xuất",
+      github: "https://github.com/cevvian"
     }
   ];
 
@@ -61,15 +69,20 @@ export default function About() {
         text: '#1565c0', 
         border: '#2196f3' 
       };
-      case 'FE': return { 
+      case 'FE for User': return { 
         bg: '#ffebee', 
         text: '#c62828', 
         border: '#f44336' 
       };
-      case 'FE Admin': return { 
-        bg: '#f5f5f5', 
-        text: '#424242', 
-        border: '#757575' 
+      case 'FE for Admin': return { 
+        bg: '#fff0fe', 
+        text: '#ff00ea', 
+        border: '#ff3bef' 
+      };
+      case 'Devops': return { 
+        bg: '#e8f5e9', 
+        text: '#2e7d32', 
+        border: '#4caf50' 
       };
       default: return { 
         bg: '#f3f4f6', 
@@ -82,6 +95,38 @@ export default function About() {
   return (
     <div>
       <PageHeader />
+
+      {/* Banner Section */}
+      <div style={{ height: '80px', backgroundColor: '#f3f4f6', position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '24px',
+          fontWeight: 'bold',
+          background: 'linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)',
+          backgroundSize: '200% auto',
+          color: 'white',
+          textTransform: 'uppercase',
+          animation: 'colorShift 3s linear infinite',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}>
+          Thạch là thằng tồi
+        </div>
+      </div>
+
+      <style>
+      {`
+        @keyframes colorShift {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+      `}
+      </style>
       
       {/* Hero Section */}
       <div style={styles.heroSection}>
@@ -95,7 +140,7 @@ export default function About() {
           </p>
           <div style={styles.heroStats}>
             <div style={styles.statItem}>
-              <div style={styles.statNumber}>5</div>
+              <div style={styles.statNumber}>6</div>
               <div style={styles.statLabel}>Thành viên</div>
             </div>
             <div style={styles.statItem}>
@@ -321,7 +366,7 @@ const styles = {
   // Project Section - Responsive
   projectSection: {
     padding: 'clamp(60px, 10vw, 100px) 0',
-    background: 'linear-gradient(135deg,rgb(228, 228rgb(239, 239, 239)%, #f6f6f6 100%)',
+    background: '#f1f1f1',
   },
   
   container: {
@@ -424,7 +469,7 @@ const styles = {
   
   teamGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: 'clamp(20px, 4vw, 30px)',
     padding: '0 10px',
   },
