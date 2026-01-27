@@ -95,38 +95,6 @@ export default function About() {
   return (
     <div>
       <PageHeader />
-
-      {/* Banner Section */}
-      <div style={{ height: '80px', backgroundColor: '#f3f4f6', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '24px',
-          fontWeight: 'bold',
-          background: 'linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)',
-          backgroundSize: '200% auto',
-          color: 'white',
-          textTransform: 'uppercase',
-          animation: 'colorShift 3s linear infinite',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}>
-          Thạch là thằng tồi
-        </div>
-      </div>
-
-      <style>
-      {`
-        @keyframes colorShift {
-          0% { background-position: 0% 50%; }
-          100% { background-position: 100% 50%; }
-        }
-      `}
-      </style>
       
       {/* Hero Section */}
       <div style={styles.heroSection}>
