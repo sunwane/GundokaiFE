@@ -80,7 +80,7 @@ export default function ProductInfo({
           fontSize: isMobile ? '13px' : '15px',
         }}>
           <li style={{ fontStyle: "italic", color: "#9ca3af" }}>
-            Đang tải thông tin chi tiết...
+            Chưa có thông tin chi tiết về sản phẩm
           </li>
         </ul>
       );
@@ -90,12 +90,13 @@ export default function ProductInfo({
       <ul style={{
         ...styles.featureList,
         fontSize: isMobile ? '13px' : '15px',
+        listStyleType: 'disc', // Kiểu chấm đầu dòng
       }}>
-        <li>Tỷ lệ {productDetail.ratio}</li>
-        <li>Chất liệu {productDetail.material}</li>
-        <li>Nhà sản xuất: {productDetail.manufacturer}</li>
-        <li>Xuất xứ: {productDetail.origin}</li>
-        <li>Chiều cao hoàn thiện: {productDetail.height}</li>
+        {productDetail.ratio ? <li>Tỷ lệ: <b className="text-blue-700 ml-1">{productDetail.ratio}</b></li> : null}
+        {productDetail.material ? <li>Chất liệu: <b className="text-black ml-1">{productDetail.material}</b></li> : null}
+        {productDetail.manufacturer ? <li>Nhà sản xuất: <b className="text-black ml-1">{productDetail.manufacturer}</b></li> : null}
+        {productDetail.origin ? <li>Xuất xứ: <b className="text-black ml-1">{productDetail.origin}</b></li> : null}
+        {productDetail.height ? <li>Chiều cao hoàn thiện: <b className="text-black ml-1">{productDetail.height}</b></li> : null}
         <li>Bao gồm vũ khí và phụ kiện</li>
         <li>Hướng dẫn lắp ráp chi tiết</li>
       </ul>
@@ -516,10 +517,11 @@ const styles = {
     lineHeight: 1.6,
   },
   featureList: {
-    color: "#4b5563",
     marginBottom: "0",
+    marginLeft: "10px",
     paddingLeft: "20px",
     lineHeight: 1.8,
+    color: "#4b5563",
   },
   iconCart: {
     width: '24px',
