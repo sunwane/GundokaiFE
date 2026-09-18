@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lexend } from 'next/font/google';
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 //set mặc định font chữ cho toàn bộ trang web
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="vi">
       <body className={lexend.className}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
