@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Lexend } from 'next/font/google';
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 //set mặc định font chữ cho toàn bộ trang web
@@ -29,7 +28,6 @@ export default function RootLayout({
       <body className={lexend.className}>
         {children}
         <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
